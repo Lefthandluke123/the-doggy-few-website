@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Doggy Few - Admin</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,sans-serif;background:#0c1310;color:#e8e8e8}
+.login-page{display:flex;align-items:center;justify-content:center;min-height:100vh}
+.login-form{background:#15231a;border:2px solid #5fa777;border-radius:8px;padding:2rem;width:90%;max-width:400px}
+.login-form h1{color:#e0922f;margin-bottom:1.5rem;text-align:center}
+input,textarea,select{width:100%;padding:.6rem;margin-bottom:1rem;background:#0c1310;border:1px solid #5fa777;color:#e8e8e8;border-radius:4px;font-family:inherit}
+.btn{padding:.8rem 1.5rem;background:#5fa777;color:#0c1310;border:none;border-radius:4px;cursor:pointer;font-weight:bold;margin-right:.5rem}
+.btn-secondary{background:#ff6b35}
+.btn-danger{background:#c41e3a;color:#fff}
+.app{display:flex;min-height:100vh}
+.sidebar{width:240px;background:#15231a;border-right:2px solid #5fa777;padding:1.5rem}
+.sidebar h2{color:#e0922f;margin-bottom:1.5rem}
+.nav-item{padding:.8rem 1rem;margin-bottom:.5rem;background:#0c1310;border-left:3px solid transparent;cursor:pointer;border-radius:4px}
+.nav-item.active{border-left-color:#e0922f;color:#e0922f}
+.main-content{flex:1;padding:2rem;overflow-y:auto}
+.header{display:flex;justify-content:space-between;align-items:center;margin-bottom:2rem;padding-bottom:1rem;border-bottom:2px solid #5fa777}
+.header h1{color:#e0922f}
+.logout-btn{padding:.6rem 1.2rem;background:#c41e3a;color:#fff;border:none;border-radius:4px;cursor:pointer}
+.tab-content{display:none}
+.tab-content.active{display:block}
+.form-group{margin-bottom:1rem}
+.form-group label{display:block;margin-bottom:.4rem;color:#e0922f;font-weight:bold}
+.items-list{display:grid;gap:1rem;margin-top:1.5rem}
+.item-card{background:#15231a;border:1px solid #5fa777;border-radius:8px;padding:1.5rem;display:flex;justify-content:space-between}
+.item-content{flex:1}
+.item-content h3{color:#e0922f;margin-bottom:.5rem}
+.item-content p{color:#b0b0b0;font-size:.9rem;margin-bottom:.3rem}
+.item-actions{display:flex;gap:.5rem}
+.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);align-items:center;justify-content:center;z-index:1000}
+.modal.active{display:flex}
+.modal-content{background:#15231a;border:2px solid #5fa777;border-radius:8px;padding:2rem;max-width:600px;width:90%;max-height:90vh;overflow-y:auto}
+.modal-header{display:flex;justify-content:space-between;margin-bottom:1.5rem;padding-bottom:1rem;border-bottom:2px solid #5fa777}
+.modal-header h2{color:#e0922f}
+.close-btn{background:none;border:none;color:#e0922f;font-size:1.5rem;cursor:pointer}
+.success-message{background:#5fa777;color:#0c1310;padding:1rem;border-radius:4px;margin-bottom:1rem;display:none}
+.error-message{background:#c41e3a;color:#fff;padding:1rem;border-radius:4px;margin-bottom:1rem;display:none}
+.image-preview{max-width:200px;max-height:200px;margin-top:.5rem;border-radius:4px}
+.language-tabs{display:flex;gap:.5rem;margin-bottom:1rem;border-bottom:2px solid #5fa777}
+.lang-tab{padding:.6rem 1rem;background:#0c1310;border:none;color:#b0b0b0;cursor:pointer;border-bottom:3px solid transparent}
+.lang-tab.active{color:#e0922f;border-bottom-color:#e0922f}
+.lang-content{display:none}
+.lang-content.active{display:block}
+</style>
+</head>
+<body><div id="loginPage" class="login-page">
+<div class="login-form">
+<h1>🍀 The Doggy Few Admin</h1>
+<div id="loginError" class="error-message"></div>
+<div class="form-group"><input type="email" id="loginEmail" placeholder="E-mailadres"></div>
+<div class="form-group"><input type="password" id="loginPassword" placeholder="Wachtwoord"></div>
+<button onclick="login()" class="btn" style="width:100%;background:#e0922f;color:#0c1310">Inloggen</button>
+</div>
+</div>
+
+<div id="app" class="app" style="display:none">
+<div class="sidebar">
+<h2>🍀 Admin</h2>
+<div class="nav-item active" onclick="switchTab(event,'dashboard')">📊 Dashboard</div>
+<div class="nav-item" onclick="switchTab(event,'gigs')">🎸 Optredens</div>
+<div class="nav-item" onclick="switchTab(event,'blog')">📝 Blog</div>
+<div class="nav-item" onclick="switchTab(event,'photos')">📸 Foto's</div>
+<div class="nav-item" onclick="switchTab(event,'videos')">🎬 Video's</div>
+<div class="nav-item" onclick="switchTab(event,'members')">👥 Bandleden</div>
+<div class="nav-item" onclick="switchTab(event,'pages')">📄 Pagina's</div>
+<hr style="border:none;border-top:1px solid #5fa777;margin:1.5rem 0">
+<button onclick="logout()" class="logout-btn" style="width:100%">Uitloggen</button>
+</div>
+<div class="main-content">
+<div class="header"><h1 id="pageTitle">Dashboard</h1></div>
+
+<div id="dashboard" class="tab-content active">
+<h2 style="color:#e0922f">Welkom</h2>
+<p>Beheer hier alle content voor The Doggy Few.</p>
+</div>
+
+<div id="gigs" class="tab-content">
+<div style="display:flex;justify-content:space-between"><h2 style="color:#e0922f">🎸 Optredens</h2><button onclick="openModal('gig')" class="btn btn-secondary">+ Nieuw</button></div>
+<div id="gigsList" class="items-list"></div>
+</div>
+
+<div id="blog" class="tab-content">
+<div style="display:flex;justify-content:space-between"><h2 style="color:#e0922f">📝 Blog</h2><button onclick="openModal('blog')" class="btn btn-secondary">+ Nieuw</button></div>
+<div id="blogList" class="items-list"></div>
+</div>
+
+<div id="photos" class="tab-content">
+<div style="display:flex;justify-content:space-between"><h2 style="color:#e0922f">📸 Foto's</h2><button onclick="openModal('photo')" class="btn btn-secondary">+ Upload</button></div>
+<div id="photosList" class="items-list"></div>
+</div>
+
+<div id="videos" class="tab-content">
+<div style="display:flex;justify-content:space-between"><h2 style="color:#e0922f">🎬 Video's</h2><button onclick="openModal('video')" class="btn btn-secondary">+ Nieuw</button></div>
+<div id="videosList" class="items-list"></div>
+</div>
+
+<div id="members" class="tab-content">
+<div style="display:flex;justify-content:space-between"><h2 style="color:#e0922f">👥 Bandleden</h2><button onclick="openModal('member')" class="btn btn-secondary">+ Nieuw</button></div>
+<div id="membersList" class="items-list"></div>
+</div>
+
+<div id="pages" class="tab-content">
+<div style="display:flex;justify-content:space-between"><h2 style="color:#e0922f">📄 Pagina's</h2><button onclick="openModal('page')" class="btn btn-secondary">+ Nieuw</button></div>
+<div id="pagesList" class="items-list"></div>
+</div>
+</div>
+</div>
+
+<div id="gigModal" class="modal">
+<div class="modal-content">
+<div class="modal-header"><h2>Optreden</h2><button class="close-btn" onclick="closeModal('gig')">&times;</button></div>
+<div id="gigError" class="error-message"></div><div id="gigSuccess" class="success-message"></div>
+<div class="form-group"><label>Datum</label><input type="date" id="gigDate"></div>
+<div class="form-group"><label>Titel</label><input type="text" id="gigTitle"></div>
+<div class="form-group"><label>Locatie</label><input type="text" id="gigLocation"></div>
+<div class="form-group"><label>Tijd</label><input type="time" id="gigTime"></div>
+<div class="form-group"><label>Beschrijving</label><textarea id="gigDescription"></textarea></div>
+<button onclick="saveGig()" class="btn">Opslaan</button>
+</div>
+</div>
+
+<div id="blogModal" class="modal">
+<div class="modal-content">
+<div class="modal-header"><h2>Blog</h2><button class="close-btn" onclick="closeModal('blog')">&times;</button></div>
+<div id="blogError" class="error-message"></div><div id="blogSuccess" class="success-message"></div>
+<div class="form-group"><label>Titel</label><input type="text" id="blogTitle"></div>
+<div class="form-group"><label>Inhoud</label><textarea id="blogContent"></textarea></div>
+<div class="form-group"><label>Afbeelding</label><input type="file" id="blogImage" accept="image/*"></div>
+<button onclick="saveBlog()" class="btn">Opslaan</button>
+</div>
+</div>
+
+<div id="photoModal" class="modal">
+<div class="modal-content">
+<div class="modal-header"><h2>Foto</h2><button class="close-btn" onclick="closeModal('photo')">&times;</button></div>
+<div id="photoError" class="error-message"></div><div id="photoSuccess" class="success-message"></div>
+<div class="form-group"><label>Foto</label><input type="file" id="photoFile" accept="image/*"></div>
+<div class="form-group"><label>Omschrijving</label><input type="text" id="photoCaption"></div>
+<button onclick="savePhoto()" class="btn">Uploaden</button>
+</div>
+</div>
+
+<div id="videoModal" class="modal">
+<div class="modal-content">
+<div class="modal-header"><h2>Video</h2><button class="close-btn" onclick="closeModal('video')">&times;</button></div>
+<div id="videoError" class="error-message"></div><div id="videoSuccess" class="success-message"></div>
+<div class="form-group"><label>YouTube URL</label><input type="url" id="videoUrl"></div>
+<div class="form-group"><label>Titel</label><input type="text" id="videoTitle"></div>
+<button onclick="saveVideo()" class="btn">Opslaan</button>
+</div>
+</div>
+
+<div id="memberModal" class="modal">
+<div class="modal-content">
+<div class="modal-header"><h2>Bandlid</h2><button class="close-btn" onclick="closeModal('member')">&times;</button></div>
+<div id="memberError" class="error-message"></div><div id="memberSuccess" class="success-message"></div>
+<div class="form-group"><label>Naam</label><input type="text" id="memberName"></div>
+<div class="form-group"><label>Rol/Instrument</label><input type="text" id="memberRole"></div>
+<div class="form-group"><label>Bio</label><textarea id="memberBio"></textarea></div>
+<button onclick="saveMember()" class="btn">Opslaan</button>
+</div>
+</div>
+
+<div id="pageModal" class="modal">
+<div class="modal-content">
+<div class="modal-header"><h2>Pagina</h2><button class="close-btn" onclick="closeModal('page')">&times;</button></div>
+<div id="pageError" class="error-message"></div><div id="pageSuccess" class="success-message"></div>
+<div class="form-group"><label>Titel</label><input type="text" id="pageTitle2"></div>
+<div class="form-group"><label>Inhoud</label><textarea id="pageContent"></textarea></div>
+<button onclick="savePage()" class="btn">Opslaan</button>
+</div>
+</div><script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-storage-compat.js"></script>
+<script>
+const firebaseConfig = {
+  apiKey: 'AIzaSyD7j7nLLpLnH8vNznqiGWyBXvZrwZ6-Jjs',
+  authDomain: 'the-doggy-few.firebaseapp.com',
+  projectId: 'the-doggy-few',
+  storageBucket: 'the-doggy-few.firebasestorage.app',
+  messagingSenderId: '920453037109',
+  appId: '1:920453037109:web:74684c7f7e64a13aebc57c'
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+const auth = firebase.auth();
+let editId = {};
+
+function login(){
+  const e=document.getElementById('loginEmail').value;
+  const p=document.getElementById('loginPassword').value;
+  auth.signInWithEmailAndPassword(e,p).catch(err=>showMsg('loginError',err.message,1));
+}
+function logout(){auth.signOut();}
+auth.onAuthStateChanged(u=>{
+  if(u){document.getElementById('loginPage').style.display='none';document.getElementById('app').style.display='flex';}
+  else{document.getElementById('loginPage').style.display='flex';document.getElementById('app').style.display='none';}
+});
+
+function switchTab(ev,t){
+  document.querySelectorAll('.tab-content').forEach(x=>x.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(x=>x.classList.remove('active'));
+  document.getElementById(t).classList.add('active');
+  ev.target.classList.add('active');
+  document.getElementById('pageTitle').textContent=ev.target.textContent;
+  const loaders={gigs:loadGigs,blog:loadBlog,photos:loadPhotos,videos:loadVideos,members:loadMembers,pages:loadPages};
+  if(loaders[t])loaders[t]();
+}
+
+function openModal(m){editId[m]=null;document.getElementById(m+'Modal').classList.add('active');}
+function closeModal(m){document.getElementById(m+'Modal').classList.remove('active');}
+function showMsg(id,msg,isErr){const el=document.getElementById(id);el.textContent=msg;el.style.display='block';setTimeout(()=>el.style.display='none',4000);}
+function val(id){return document.getElementById(id).value;}
+
+function saveGig(){
+  const d={date:val('gigDate'),title:val('gigTitle'),location:val('gigLocation'),time:val('gigTime'),description:val('gigDescription'),createdAt:new Date()};
+  if(!d.date||!d.title||!d.location){showMsg('gigError','Vul datum, titel en locatie in',1);return;}
+  const op=editId.gig?db.collection('gigs').doc(editId.gig).update(d):db.collection('gigs').add(d);
+  op.then(()=>{showMsg('gigSuccess','Opgeslagen!');loadGigs();setTimeout(()=>closeModal('gig'),1200);}).catch(e=>showMsg('gigError',e.message,1));
+}
+function loadGigs(){
+  db.collection('gigs').orderBy('createdAt','desc').get().then(s=>{
+    let h='';s.forEach(doc=>{const d=doc.data();h+=`<div class="item-card"><div class="item-content"><h3>${d.title}</h3><p>${d.date} ${d.time||''}</p><p>${d.location}</p><p>${d.description||''}</p></div><div class="item-actions"><button class="btn" onclick="editGig('${doc.id}')">Bewerk</button><button class="btn btn-danger" onclick="delDoc('gigs','${doc.id}',loadGigs)">Verwijder</button></div></div>`;});
+    document.getElementById('gigsList').innerHTML=h||'<p>Nog geen optredens</p>';
+  });
+}
+function editGig(id){db.collection('gigs').doc(id).get().then(doc=>{const d=doc.data();editId.gig=id;document.getElementById('gigDate').value=d.date;document.getElementById('gigTitle').value=d.title;document.getElementById('gigLocation').value=d.location;document.getElementById('gigTime').value=d.time||'';document.getElementById('gigDescription').value=d.description||'';document.getElementById('gigModal').classList.add('active');});}
+
+function saveBlog(){
+  const d={title:val('blogTitle'),content:val('blogContent'),createdAt:new Date()};
+  if(!d.title||!d.content){showMsg('blogError','Vul titel en inhoud in',1);return;}
+  const f=document.getElementById('blogImage').files[0];
+  if(f){const r=new FileReader();r.onload=e=>{d.imageUrl=e.target.result;saveBlogDoc(d);};r.readAsDataURL(f);}else saveBlogDoc(d);
+}
+function saveBlogDoc(d){const op=editId.blog?db.collection('blog').doc(editId.blog).update(d):db.collection('blog').add(d);op.then(()=>{showMsg('blogSuccess','Opgeslagen!');loadBlog();setTimeout(()=>closeModal('blog'),1200);}).catch(e=>showMsg('blogError',e.message,1));}
+function loadBlog(){
+  db.collection('blog').orderBy('createdAt','desc').get().then(s=>{
+    let h='';s.forEach(doc=>{const d=doc.data();h+=`<div class="item-card"><div class="item-content"><h3>${d.title}</h3><p>${(d.content||'').substring(0,100)}...</p>${d.imageUrl?`<img src="${d.imageUrl}" class="image-preview">`:''}</div><div class="item-actions"><button class="btn" onclick="editBlog('${doc.id}')">Bewerk</button><button class="btn btn-danger" onclick="delDoc('blog','${doc.id}',loadBlog)">Verwijder</button></div></div>`;});
+    document.getElementById('blogList').innerHTML=h||'<p>Nog geen blogs</p>';
+  });
+}
+function editBlog(id){db.collection('blog').doc(id).get().then(doc=>{const d=doc.data();editId.blog=id;document.getElementById('blogTitle').value=d.title;document.getElementById('blogContent').value=d.content;document.getElementById('blogModal').classList.add('active');});}
+
+function savePhoto(){
+  const f=document.getElementById('photoFile').files[0];
+  if(!f){showMsg('photoError','Kies een foto',1);return;}
+  const r=new FileReader();r.onload=e=>{const d={url:e.target.result,caption:val('photoCaption'),createdAt:new Date()};db.collection('photos').add(d).then(()=>{showMsg('photoSuccess','Geupload!');loadPhotos();setTimeout(()=>closeModal('photo'),1200);}).catch(er=>showMsg('photoError',er.message,1));};r.readAsDataURL(f);
+}
+function loadPhotos(){
+  db.collection('photos').orderBy('createdAt','desc').get().then(s=>{
+    let h='';s.forEach(doc=>{const d=doc.data();h+=`<div class="item-card"><div class="item-content"><img src="${d.url}" class="image-preview"><p>${d.caption||''}</p></div><div class="item-actions"><button class="btn btn-danger" onclick="delDoc('photos','${doc.id}',loadPhotos)">Verwijder</button></div></div>`;});
+    document.getElementById('photosList').innerHTML=h||'<p>Nog geen fotos</p>';
+  });
+}
+
+function saveVideo(){
+  const d={url:val('videoUrl'),title:val('videoTitle'),createdAt:new Date()};
+  if(!d.url||!d.title){showMsg('videoError','Vul URL en titel in',1);return;}
+  const op=editId.video?db.collection('videos').doc(editId.video).update(d):db.collection('videos').add(d);
+  op.then(()=>{showMsg('videoSuccess','Opgeslagen!');loadVideos();setTimeout(()=>closeModal('video'),1200);}).catch(e=>showMsg('videoError',e.message,1));
+}
+function loadVideos(){
+  db.collection('videos').orderBy('createdAt','desc').get().then(s=>{
+    let h='';s.forEach(doc=>{const d=doc.data();h+=`<div class="item-card"><div class="item-content"><h3>${d.title}</h3><p><a href="${d.url}" target="_blank" style="color:#e0922f">${d.url}</a></p></div><div class="item-actions"><button class="btn" onclick="editVideo('${doc.id}')">Bewerk</button><button class="btn btn-danger" onclick="delDoc('videos','${doc.id}',loadVideos)">Verwijder</button></div></div>`;});
+    document.getElementById('videosList').innerHTML=h||'<p>Nog geen videos</p>';
+  });
+}
+function editVideo(id){db.collection('videos').doc(id).get().then(doc=>{const d=doc.data();editId.video=id;document.getElementById('videoUrl').value=d.url;document.getElementById('videoTitle').value=d.title;document.getElementById('videoModal').classList.add('active');});}
+
+function saveMember(){
+  const d={name:val('memberName'),role:val('memberRole'),bio:val('memberBio'),createdAt:new Date()};
+  if(!d.name||!d.role){showMsg('memberError','Vul naam en rol in',1);return;}
+  const op=editId.member?db.collection('members').doc(editId.member).update(d):db.collection('members').add(d);
+  op.then(()=>{showMsg('memberSuccess','Opgeslagen!');loadMembers();setTimeout(()=>closeModal('member'),1200);}).catch(e=>showMsg('memberError',e.message,1));
+}
+function loadMembers(){
+  db.collection('members').orderBy('createdAt','desc').get().then(s=>{
+    let h='';s.forEach(doc=>{const d=doc.data();h+=`<div class="item-card"><div class="item-content"><h3>${d.name}</h3><p>${d.role}</p><p>${d.bio||''}</p></div><div class="item-actions"><button class="btn" onclick="editMember('${doc.id}')">Bewerk</button><button class="btn btn-danger" onclick="delDoc('members','${doc.id}',loadMembers)">Verwijder</button></div></div>`;});
+    document.getElementById('membersList').innerHTML=h||'<p>Nog geen leden</p>';
+  });
+}
+function editMember(id){db.collection('members').doc(id).get().then(doc=>{const d=doc.data();editId.member=id;document.getElementById('memberName').value=d.name;document.getElementById('memberRole').value=d.role;document.getElementById('memberBio').value=d.bio||'';document.getElementById('memberModal').classList.add('active');});}
+
+function savePage(){
+  const d={title:val('pageTitle2'),content:val('pageContent'),createdAt:new Date()};
+  if(!d.title||!d.content){showMsg('pageError','Vul titel en inhoud in',1);return;}
+  const op=editId.page?db.collection('pages').doc(editId.page).update(d):db.collection('pages').add(d);
+  op.then(()=>{showMsg('pageSuccess','Opgeslagen!');loadPages();setTimeout(()=>closeModal('page'),1200);}).catch(e=>showMsg('pageError',e.message,1));
+}
+function loadPages(){
+  db.collection('pages').orderBy('createdAt','desc').get().then(s=>{
+    let h='';s.forEach(doc=>{const d=doc.data();h+=`<div class="item-card"><div class="item-content"><h3>${d.title}</h3><p>${(d.content||'').substring(0,100)}...</p></div><div class="item-actions"><button class="btn" onclick="editPage('${doc.id}')">Bewerk</button><button class="btn btn-danger" onclick="delDoc('pages','${doc.id}',loadPages)">Verwijder</button></div></div>`;});
+    document.getElementById('pagesList').innerHTML=h||'<p>Nog geen paginas</p>';
+  });
+}
+function editPage(id){db.collection('pages').doc(id).get().then(doc=>{const d=doc.data();editId.page=id;document.getElementById('pageTitle2').value=d.title;document.getElementById('pageContent').value=d.content;document.getElementById('pageModal').classList.add('active');});}
+
+function delDoc(col,id,reload){if(confirm('Zeker weten?'))db.collection(col).doc(id).delete().then(reload);}
+</script>
+</body>
+</html>
