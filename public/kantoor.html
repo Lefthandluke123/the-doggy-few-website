@@ -1,0 +1,799 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KANTOOR · The Doggy Few</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+<!-- Firebase compat scripts -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0c1310;
+    --surface: #131c17;
+    --surface-2: #1a2620;
+    --border: rgba(255,255,255,0.08);
+    --text: #f0e6d3;
+    --muted: #8a9a8e;
+    --green: #2a9d5c;
+    --green-dim: rgba(42,157,92,0.15);
+    --orange: #d4870a;
+    --orange-dim: rgba(212,135,10,0.15);
+    --red: #c0392b;
+    --radius: 14px;
+    --font-head: 'Cinzel', serif;
+    --font-body: 'Inter', sans-serif;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-body);
+    min-height: 100vh;
+    font-size: 15px;
+  }
+
+  /* ── Login scherm ── */
+  .login-screen {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2rem;
+    padding: 2rem;
+    text-align: center;
+  }
+  .login-screen h1 {
+    font-family: var(--font-head);
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: var(--orange);
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+  .login-screen p {
+    color: var(--muted);
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    font-weight: 600;
+  }
+  .login-btn {
+    background: var(--green);
+    color: #fff;
+    border: none;
+    border-radius: var(--radius);
+    padding: 14px 32px;
+    font-family: var(--font-body);
+    font-size: 0.85rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    cursor: pointer;
+    transition: opacity 0.15s, transform 0.1s;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .login-btn:hover { opacity: 0.9; }
+  .login-btn:active { transform: scale(0.97); }
+
+  /* ── App layout ── */
+  .app { display: none; min-height: 100vh; }
+  .app.active { display: flex; }
+
+  .sidebar {
+    width: 240px;
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+  }
+  .sidebar-head {
+    padding: 1.5rem 1.25rem;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .sidebar-head .badge {
+    width: 42px; height: 42px;
+    background: var(--green-dim);
+    border: 1px solid rgba(42,157,92,0.3);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.3rem;
+  }
+  .sidebar-head .titles { display: flex; flex-direction: column; }
+  .sidebar-head .titles .t1 {
+    font-family: var(--font-head);
+    font-weight: 800;
+    font-size: 0.95rem;
+    color: var(--orange);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    line-height: 1;
+  }
+  .sidebar-head .titles .t2 {
+    font-size: 0.62rem;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    font-weight: 600;
+    margin-top: 3px;
+  }
+
+  .nav { flex: 1; padding: 1rem 0.75rem; overflow-y: auto; }
+  .nav-group { margin-bottom: 1.5rem; }
+  .nav-group-label {
+    padding: 0 0.75rem;
+    font-size: 0.6rem;
+    font-weight: 800;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    margin-bottom: 0.6rem;
+    opacity: 0.6;
+  }
+  .nav-item {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 12px;
+    border: none;
+    background: none;
+    color: var(--muted);
+    font-family: var(--font-body);
+    font-size: 0.82rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background 0.12s, color 0.12s;
+    text-align: left;
+  }
+  .nav-item:hover { background: var(--surface-2); color: var(--text); }
+  .nav-item.active {
+    background: var(--green-dim);
+    color: #6fd99a;
+    border: 1px solid rgba(42,157,92,0.25);
+  }
+  .nav-item .ico { font-size: 1.05rem; width: 20px; text-align: center; }
+
+  .sidebar-foot { padding: 1rem 0.75rem; border-top: 1px solid var(--border); }
+  .logout-btn {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    border: none;
+    background: none;
+    color: rgba(192,57,43,0.7);
+    font-family: var(--font-body);
+    font-size: 0.78rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background 0.12s, color 0.12s;
+  }
+  .logout-btn:hover { background: rgba(192,57,43,0.1); color: var(--red); }
+
+  /* ── Main content ── */
+  .main { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+  .topbar {
+    height: 64px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 2rem;
+    background: rgba(19,28,23,0.5);
+    flex-shrink: 0;
+  }
+  .topbar h2 {
+    font-family: var(--font-head);
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--orange);
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+  }
+  .topbar .user {
+    font-size: 0.72rem;
+    color: var(--muted);
+    font-weight: 600;
+  }
+
+  .content { flex: 1; padding: 2rem; overflow-y: auto; }
+
+  /* ── Placeholder voor lege tabs ── */
+  .placeholder {
+    height: 60vh;
+    border: 2px dashed var(--border);
+    border-radius: 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    color: var(--muted);
+    opacity: 0.5;
+    gap: 1rem;
+  }
+  .placeholder .big { font-size: 3rem; }
+  .placeholder .label {
+    font-family: var(--font-head);
+    font-size: 1.4rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+  }
+  .placeholder .sub {
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    font-weight: 600;
+  }
+
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; animation: fade 0.3s ease; }
+  @keyframes fade { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+
+  /* ── Panel head ── */
+  .panel-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+  .panel-title {
+    font-family: var(--font-head);
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--orange);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+  .btn-primary {
+    background: var(--green);
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    padding: 11px 20px;
+    font-family: var(--font-body);
+    font-size: 0.78rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    cursor: pointer;
+    transition: opacity 0.15s, transform 0.1s;
+  }
+  .btn-primary:hover { opacity: 0.9; }
+  .btn-primary:active { transform: scale(0.97); }
+
+  /* ── Cards ── */
+  .card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1rem;
+  }
+  .loading, .empty {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 4rem 2rem;
+    color: var(--muted);
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    font-weight: 600;
+    opacity: 0.5;
+  }
+  .contact-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.25rem;
+    transition: border-color 0.15s;
+  }
+  .contact-card:hover { border-color: rgba(42,157,92,0.3); }
+  .contact-card .cc-top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 0.75rem;
+    gap: 0.75rem;
+  }
+  .contact-card .cc-name {
+    font-weight: 800;
+    font-size: 1.05rem;
+    color: var(--text);
+    letter-spacing: 0.02em;
+  }
+  .contact-card .cc-type {
+    display: inline-block;
+    margin-top: 4px;
+    font-size: 0.6rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    padding: 3px 8px;
+    border-radius: 6px;
+  }
+  .cc-type.venue { background: var(--orange-dim); color: var(--orange); }
+  .cc-type.boeker { background: var(--green-dim); color: #6fd99a; }
+  .contact-card .cc-actions { display: flex; gap: 6px; flex-shrink: 0; }
+  .icon-btn {
+    width: 32px; height: 32px;
+    border: 1px solid var(--border);
+    background: var(--surface-2);
+    color: var(--muted);
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    transition: color 0.15s, border-color 0.15s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .icon-btn:hover { color: var(--text); border-color: var(--muted); }
+  .icon-btn.danger:hover { color: var(--red); border-color: var(--red); }
+  .contact-card .cc-detail {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.8rem;
+    color: var(--muted);
+    margin-top: 5px;
+  }
+  .contact-card .cc-detail .lbl { opacity: 0.5; min-width: 16px; }
+
+  /* ── Dialog ── */
+  .dialog-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.65);
+    z-index: 200;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+  }
+  .dialog-overlay.open { display: flex; }
+  .dialog {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    width: 100%;
+    max-width: 520px;
+    max-height: 90vh;
+    overflow-y: auto;
+    animation: fade 0.25s ease;
+  }
+  .dialog-head {
+    padding: 1.5rem 1.5rem 1rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .dialog-head h3 {
+    font-family: var(--font-head);
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--orange);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+  .dialog-body { padding: 1.5rem; display: flex; flex-direction: column; gap: 1rem; }
+  .field { display: flex; flex-direction: column; gap: 6px; }
+  .field label {
+    font-size: 0.65rem;
+    font-weight: 800;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+  .field input, .field select, .field textarea {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 11px 14px;
+    color: var(--text);
+    font-family: var(--font-body);
+    font-size: 0.9rem;
+    outline: none;
+    transition: border-color 0.15s;
+  }
+  .field input:focus, .field select:focus, .field textarea:focus { border-color: var(--green); }
+  .field textarea { resize: vertical; min-height: 70px; }
+  .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+  .dialog-foot {
+    padding: 1rem 1.5rem 1.5rem;
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+  }
+  .btn-ghost {
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    border-radius: 10px;
+    padding: 11px 20px;
+    font-family: var(--font-body);
+    font-size: 0.78rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    cursor: pointer;
+    transition: color 0.15s, border-color 0.15s;
+  }
+  .btn-ghost:hover { color: var(--text); border-color: var(--muted); }
+
+  /* ── Mobiel ── */
+  @media (max-width: 768px) {
+    .app.active { flex-direction: column; }
+    .sidebar {
+      width: 100%;
+      height: auto;
+      position: relative;
+      flex-direction: row;
+      flex-wrap: wrap;
+    }
+    .sidebar-head { width: 100%; }
+    .nav { display: flex; flex-wrap: wrap; gap: 6px; padding: 0.75rem; }
+    .nav-group { margin: 0; display: contents; }
+    .nav-group-label { display: none; }
+    .nav-item { width: auto; padding: 8px 12px; font-size: 0.72rem; }
+    .nav-item .ico { display: none; }
+    .sidebar-foot { width: 100%; }
+    .content { padding: 1rem; }
+    .topbar { padding: 0 1rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div class="login-screen" id="loginScreen">
+  <h1>Kantoor</h1>
+  <p>The Doggy Few · Bandleiding</p>
+  <input type="email" id="emailInput" placeholder="E-mail" autocomplete="username" style="width:280px;max-width:90vw;padding:13px 16px;border:1px solid var(--border);border-radius:var(--radius);background:var(--surface);color:var(--text);font-family:var(--font-body);font-size:0.9rem;outline:none;" onkeydown="if(event.key==='Enter')document.getElementById('pwInput').focus()">
+  <input type="password" id="pwInput" placeholder="Wachtwoord" autocomplete="current-password" style="width:280px;max-width:90vw;padding:13px 16px;border:1px solid var(--border);border-radius:var(--radius);background:var(--surface);color:var(--text);font-family:var(--font-body);font-size:0.9rem;outline:none;" onkeydown="if(event.key==='Enter')document.getElementById('loginBtn').click()">
+  <button class="login-btn" id="loginBtn">
+    Inloggen
+  </button>
+  <p id="loginError" style="color:var(--red);display:none;"></p>
+</div>
+
+<!-- APP -->
+<div class="app" id="app">
+  <aside class="sidebar">
+    <div class="sidebar-head">
+      <div class="badge">🎻</div>
+      <div class="titles">
+        <span class="t1">Kantoor</span>
+        <span class="t2">The Doggy Few</span>
+      </div>
+    </div>
+    <nav class="nav">
+      <div class="nav-group">
+        <div class="nav-group-label">Cockpit</div>
+        <button class="nav-item active" data-tab="dashboard"><span class="ico">▤</span> Dashboard</button>
+        <button class="nav-item" data-tab="boekingen"><span class="ico">◆</span> Boekingen</button>
+        <button class="nav-item" data-tab="agenda"><span class="ico">▦</span> Agenda</button>
+      </div>
+      <div class="nav-group">
+        <div class="nav-group-label">Administratie</div>
+        <button class="nav-item" data-tab="facturen"><span class="ico">▥</span> Facturen</button>
+        <button class="nav-item" data-tab="financien"><span class="ico">€</span> Financiën</button>
+      </div>
+      <div class="nav-group">
+        <div class="nav-group-label">Relaties</div>
+        <button class="nav-item" data-tab="contacten"><span class="ico">◉</span> Contacten</button>
+      </div>
+    </nav>
+    <div class="sidebar-foot">
+      <button class="logout-btn" id="logoutBtn">⏻ Uitloggen</button>
+    </div>
+  </aside>
+
+  <main class="main">
+    <div class="topbar">
+      <h2 id="topbarTitle">Dashboard</h2>
+      <span class="user" id="userLabel"></span>
+    </div>
+    <div class="content" id="content">
+      <div class="tab-panel active" data-panel="dashboard">
+        <div class="placeholder"><span class="big">▤</span><span class="label">Dashboard</span><span class="sub">Komt in een latere stap</span></div>
+      </div>
+      <div class="tab-panel" data-panel="boekingen">
+        <div class="placeholder"><span class="big">◆</span><span class="label">Boekingen</span><span class="sub">Komt in een latere stap</span></div>
+      </div>
+      <div class="tab-panel" data-panel="agenda">
+        <div class="placeholder"><span class="big">▦</span><span class="label">Agenda</span><span class="sub">Komt in een latere stap</span></div>
+      </div>
+      <div class="tab-panel" data-panel="facturen">
+        <div class="placeholder"><span class="big">▥</span><span class="label">Facturen</span><span class="sub">Komt in een latere stap</span></div>
+      </div>
+      <div class="tab-panel" data-panel="financien">
+        <div class="placeholder"><span class="big">€</span><span class="label">Financiën</span><span class="sub">Komt in een latere stap</span></div>
+      </div>
+      <div class="tab-panel" data-panel="contacten">
+        <div class="panel-head">
+          <h3 class="panel-title">Relatiebeheer</h3>
+          <button class="btn-primary" id="newContactBtn">+ Nieuw contact</button>
+        </div>
+        <div id="contactsList" class="card-grid">
+          <div class="loading">Laden…</div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Contact Dialog -->
+  <div class="dialog-overlay" id="contactDialog">
+    <div class="dialog">
+      <div class="dialog-head"><h3 id="contactDialogTitle">Nieuw contact</h3></div>
+      <div class="dialog-body">
+        <div class="field">
+          <label>Naam</label>
+          <input type="text" id="cName" placeholder="Naam venue of boeker">
+        </div>
+        <div class="field-row">
+          <div class="field">
+            <label>Type</label>
+            <select id="cType">
+              <option value="venue">Venue / Locatie</option>
+              <option value="boeker">Boeker / Agent</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Telefoon</label>
+            <input type="text" id="cPhone" placeholder="06 …">
+          </div>
+        </div>
+        <div class="field">
+          <label>E-mail</label>
+          <input type="email" id="cEmail" placeholder="naam@example.com">
+        </div>
+        <div class="field">
+          <label>Adres</label>
+          <input type="text" id="cAddress" placeholder="Straat, plaats">
+        </div>
+        <div class="field">
+          <label>Notities</label>
+          <textarea id="cNotes" placeholder="Vrije notities…"></textarea>
+        </div>
+      </div>
+      <div class="dialog-foot">
+        <button class="btn-ghost" id="cCancel">Annuleren</button>
+        <button class="btn-primary" id="cSave">Opslaan</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ─────────────────────────────────────────────
+   FIREBASE CONFIG — the-doggy-few
+   ───────────────────────────────────────────── */
+const firebaseConfig = {
+  apiKey: "AIzaSyD7j7nLLpLnH8vNznqiGWyBXvZrwZ6-Jjs",
+  authDomain: "the-doggy-few.firebaseapp.com",
+  projectId: "the-doggy-few",
+  storageBucket: "the-doggy-few.firebasestorage.app",
+  appId: "1:920453037109:web:74684c7f7e64a13aebc57c"
+};
+
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db = firebase.firestore();
+
+/* ─────────────────────────────────────────────
+   AUTH
+   ───────────────────────────────────────────── */
+const loginScreen = document.getElementById('loginScreen');
+const app = document.getElementById('app');
+const loginBtn = document.getElementById('loginBtn');
+const logoutBtn = document.getElementById('logoutBtn');
+const loginError = document.getElementById('loginError');
+const userLabel = document.getElementById('userLabel');
+
+loginBtn.addEventListener('click', () => {
+  const email = document.getElementById('emailInput').value.trim();
+  const pw = document.getElementById('pwInput').value;
+  if (!email || !pw) {
+    loginError.textContent = 'Vul e-mail en wachtwoord in.';
+    loginError.style.display = 'block';
+    return;
+  }
+  auth.signInWithEmailAndPassword(email, pw).catch(err => {
+    loginError.textContent = err.message;
+    loginError.style.display = 'block';
+  });
+});
+
+logoutBtn.addEventListener('click', () => auth.signOut());
+
+auth.onAuthStateChanged(user => {
+  if (user) {
+    loginScreen.style.display = 'none';
+    app.classList.add('active');
+    userLabel.textContent = user.email || user.displayName || '';
+    startContactsListener();
+  } else {
+    app.classList.remove('active');
+    loginScreen.style.display = 'flex';
+    userLabel.textContent = '';
+    stopContactsListener();
+  }
+});
+
+/* ─────────────────────────────────────────────
+   TAB NAVIGATIE
+   ───────────────────────────────────────────── */
+const navItems = document.querySelectorAll('.nav-item');
+const panels = document.querySelectorAll('.tab-panel');
+const topbarTitle = document.getElementById('topbarTitle');
+
+navItems.forEach(btn => {
+  btn.addEventListener('click', () => {
+    const tab = btn.dataset.tab;
+    navItems.forEach(b => b.classList.toggle('active', b === btn));
+    panels.forEach(p => p.classList.toggle('active', p.dataset.panel === tab));
+    topbarTitle.textContent = btn.textContent.trim();
+  });
+});
+
+/* ─────────────────────────────────────────────
+   CONTACTEN
+   ───────────────────────────────────────────── */
+const contactsList = document.getElementById('contactsList');
+const contactDialog = document.getElementById('contactDialog');
+const contactDialogTitle = document.getElementById('contactDialogTitle');
+const newContactBtn = document.getElementById('newContactBtn');
+let editingContactId = null;
+
+const cName = document.getElementById('cName');
+const cType = document.getElementById('cType');
+const cPhone = document.getElementById('cPhone');
+const cEmail = document.getElementById('cEmail');
+const cAddress = document.getElementById('cAddress');
+const cNotes = document.getElementById('cNotes');
+
+function esc(s) {
+  return String(s == null ? '' : s)
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
+function openContactDialog(contact) {
+  if (contact) {
+    editingContactId = contact.id;
+    contactDialogTitle.textContent = 'Contact bewerken';
+    cName.value = contact.name || '';
+    cType.value = contact.type || 'venue';
+    cPhone.value = contact.phone || '';
+    cEmail.value = contact.email || '';
+    cAddress.value = contact.address || '';
+    cNotes.value = contact.notes || '';
+  } else {
+    editingContactId = null;
+    contactDialogTitle.textContent = 'Nieuw contact';
+    cName.value = ''; cType.value = 'venue'; cPhone.value = '';
+    cEmail.value = ''; cAddress.value = ''; cNotes.value = '';
+  }
+  contactDialog.classList.add('open');
+  cName.focus();
+}
+
+function closeContactDialog() {
+  contactDialog.classList.remove('open');
+  editingContactId = null;
+}
+
+newContactBtn.addEventListener('click', () => openContactDialog(null));
+document.getElementById('cCancel').addEventListener('click', closeContactDialog);
+contactDialog.addEventListener('click', e => { if (e.target === contactDialog) closeContactDialog(); });
+
+document.getElementById('cSave').addEventListener('click', () => {
+  const name = cName.value.trim();
+  if (!name) { cName.focus(); return; }
+  const data = {
+    name,
+    type: cType.value,
+    phone: cPhone.value.trim(),
+    email: cEmail.value.trim(),
+    address: cAddress.value.trim(),
+    notes: cNotes.value.trim(),
+    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+  };
+  const ref = editingContactId
+    ? db.collection('kantoor_contacts').doc(editingContactId)
+    : db.collection('kantoor_contacts').doc();
+  ref.set(data, { merge: true })
+    .then(closeContactDialog)
+    .catch(err => alert('Opslaan mislukt: ' + err.message));
+});
+
+function deleteContact(id, name) {
+  if (!confirm('Contact "' + name + '" verwijderen?')) return;
+  db.collection('kantoor_contacts').doc(id).delete()
+    .catch(err => alert('Verwijderen mislukt: ' + err.message));
+}
+
+function renderContacts(contacts) {
+  if (!contacts.length) {
+    contactsList.innerHTML = '<div class="empty">Nog geen contacten</div>';
+    return;
+  }
+  contactsList.innerHTML = contacts.map(c => `
+    <div class="contact-card">
+      <div class="cc-top">
+        <div>
+          <div class="cc-name">${esc(c.name)}</div>
+          <span class="cc-type ${c.type === 'boeker' ? 'boeker' : 'venue'}">${c.type === 'boeker' ? 'Boeker' : 'Venue'}</span>
+        </div>
+        <div class="cc-actions">
+          <button class="icon-btn" data-edit="${c.id}" title="Bewerken">✎</button>
+          <button class="icon-btn danger" data-del="${c.id}" title="Verwijderen">🗑</button>
+        </div>
+      </div>
+      ${c.email ? `<div class="cc-detail"><span class="lbl">✉</span> ${esc(c.email)}</div>` : ''}
+      ${c.phone ? `<div class="cc-detail"><span class="lbl">☎</span> ${esc(c.phone)}</div>` : ''}
+      ${c.address ? `<div class="cc-detail"><span class="lbl">⌖</span> ${esc(c.address)}</div>` : ''}
+      ${c.notes ? `<div class="cc-detail"><span class="lbl">≡</span> ${esc(c.notes)}</div>` : ''}
+    </div>
+  `).join('');
+
+  contactsList.querySelectorAll('[data-edit]').forEach(b => {
+    b.addEventListener('click', () => {
+      const c = contacts.find(x => x.id === b.dataset.edit);
+      if (c) openContactDialog(c);
+    });
+  });
+  contactsList.querySelectorAll('[data-del]').forEach(b => {
+    b.addEventListener('click', () => {
+      const c = contacts.find(x => x.id === b.dataset.del);
+      if (c) deleteContact(c.id, c.name);
+    });
+  });
+}
+
+// Live luisteren naar de collectie zodra ingelogd
+let contactsUnsub = null;
+function startContactsListener() {
+  if (contactsUnsub) return;
+  contactsUnsub = db.collection('kantoor_contacts')
+    .orderBy('name')
+    .onSnapshot(snap => {
+      const list = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      renderContacts(list);
+    }, err => {
+      contactsList.innerHTML = '<div class="empty">Fout bij laden: ' + esc(err.message) + '</div>';
+    });
+}
+function stopContactsListener() {
+  if (contactsUnsub) { contactsUnsub(); contactsUnsub = null; }
+}
+</script>
+</body>
+</html>

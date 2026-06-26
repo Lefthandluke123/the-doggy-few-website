@@ -2,1538 +2,288 @@
 <html lang="nl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
-    <!-- Primary Meta Tags -->
-    <title>The Doggy Few | Celtic Folk Band Boeken Nederland | Authentieke Ierse Muziek</title>
-    <meta name="title" content="The Doggy Few | Celtic Folk Band Boeken Nederland | Authentieke Ierse Muziek">
-    <meta name="description" content="The Doggy Few: authentieke Celtic folk band uit Nederland. Ierse ballades, traditionele folk en originele composities. Boek ons voor je evenement!">
-    <meta name="keywords" content="Celtic band boeken, Irish folk band Nederland, folk muziek, Ierse muziek, traditionele folk, banda folk, Celtic folk muziek, folk band Nederland">
-    <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">
-    <meta name="language" content="Dutch, English, German">
-    <meta name="revisit-after" content="7 days">
-    <meta name="author" content="The Doggy Few">
-    
-    <!-- Open Graph / Facebook -->
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="https://doggyfew.com/">
-    <meta property="og:title" content="The Doggy Few | Celtic Folk Band Nederland">
-    <meta property="og:description" content="Authentieke Celtic folk band uit Nederland. Ierse muziek, traditionele folk nummers en originele composities. Boek ons voor je evenement!">
-    <meta property="og:image" content="https://firebasestorage.googleapis.com/v0/b/the-doggy-few.firebasestorage.app/o/doggy-few%2Fhero-band.jpg?alt=media">
-    <meta property="og:image:width" content="1200">
-    <meta property="og:image:height" content="630">
-    <meta property="og:site_name" content="The Doggy Few">
-    <meta property="og:locale" content="nl_NL">
-    <meta property="og:locale:alternate" content="en_US">
-    <meta property="og:locale:alternate" content="de_DE">
-    
-    <!-- Twitter -->
-    <meta property="twitter:card" content="summary_large_image">
-    <meta property="twitter:url" content="https://doggyfew.com/">
-    <meta property="twitter:title" content="The Doggy Few | Celtic Folk Band Nederland">
-    <meta property="twitter:description" content="Authentieke Celtic folk band uit Nederland. Ierse muziek, traditionele folk nummers en originele composities.">
-    <meta property="twitter:image" content="https://firebasestorage.googleapis.com/v0/b/the-doggy-few.firebasestorage.app/o/doggy-few%2Fhero-band.jpg?alt=media">
-    <meta property="twitter:creator" content="@doggyfew">
-    
-    <!-- Image SEO Meta Tags -->
-    <meta property="og:type:image" content="image/jpeg">
-    <meta property="image:url" content="https://firebasestorage.googleapis.com/v0/b/the-doggy-few.firebasestorage.app/o/doggy-few%2Fhero-band.jpg?alt=media">
-    
-    <!-- Video SEO Meta Tags -->
-    <meta property="og:video:type" content="application/x-shockwave-flash">
-    <meta property="og:video:width" content="1280">
-    <meta property="og:video:height" content="720">
-    
-    <!-- Additional Performance SEO -->
-    <meta http-equiv="x-ua-compatible" content="IE=edge">
-    <meta name="format-detection" content="telephone=no">
-    <meta name="format-detection" content="address=no">
-    
-    <!-- Additional Meta Tags -->
-    <meta name="theme-color" content="#0c1310">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <link rel="canonical" href="https://doggyfew.com/">
-    
-    <!-- Structured Data - LocalBusiness + MusicGroup -->
-    <script type="application/ld+json">
-    {
-        "@context": "https://schema.org",
-        "@type": ["LocalBusiness", "MusicGroup"],
-        "name": "The Doggy Few",
-        "alternateName": "Doggy Few",
-        "description": "Authentieke Celtic folk band uit Nederland met traditionele Ierse muziek en originele composities",
-        "url": "https://doggyfew.com",
-        "telephone": "+31-6-XXXXXXXX",
-        "email": "info@doggyfew.com",
-        "genre": ["Folk", "Celtic", "Traditional Irish Music"],
-        "foundingDate": "2018",
-        "areaServed": ["NL", "BE", "DE"],
-        "priceRange": "€€",
-        "image": "https://firebasestorage.googleapis.com/v0/b/the-doggy-few.firebasestorage.app/o/doggy-few%2Fhero-band.jpg?alt=media",
-        "address": {
-            "@type": "PostalAddress",
-            "streetAddress": "Rijnsburg",
-            "addressLocality": "Rijnsburg",
-            "addressCountry": "NL"
-        },
-        "sameAs": [
-            "https://www.facebook.com/doggyfew",
-            "https://www.instagram.com/doggyfew",
-            "https://open.spotify.com/artist/doggyfew"
-        ],
-        "member": [
-            {
-                "@type": "Person",
-                "name": "Lucas",
-                "roleName": "Zanger, Gitarist"
-            }
-        ]
-    }
-    </script>
-    
-    <!-- Structured Data - Breadcrumb -->
-    <script type="application/ld+json">
-    {
-        "@context": "https://schema.org",
-        "@type": "BreadcrumbList",
-        "itemListElement": [
-            {
-                "@type": "ListItem",
-                "position": 1,
-                "name": "Home",
-                "item": "https://doggyfew.com"
-            }
-        ]
-    }
-    </script>
-    
-    <!-- Preconnect to Firebase -->
-    <link rel="preconnect" href="https://firebasestorage.googleapis.com">
-    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>TDF Music Toolset</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+        :root {
+            --bg-dark: #1a1c1a;
+            --card-bg: #242b24;
+            --celtic-green: #4a7c2c;
+            --griffin-orange: #e67e22;
+            --griffin-red: #c0392b;
+            --text-light: #e0eadd;
+            --lcd-bg: #0d110d;
         }
 
         body {
-            font-family: 'Spline Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            background-color: #0c1310;
-            color: #e8e8e8;
-            line-height: 1.6;
-        }
-
-        /* Navigation */
-        nav {
-            background-color: #0c1310;
-            border-bottom: 2px solid #5fa777;
-            padding: 1rem 2rem;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-
-        nav .container {
-            max-width: 1200px;
-            margin: 0 auto;
+            font-family: 'Segoe UI', Roboto, sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-light);
+            margin: 0;
             display: flex;
-            justify-content: space-between;
+            flex-direction: column;
             align-items: center;
+            min-height: 100vh;
         }
 
-        .logo {
-            font-family: 'Fraunces', serif;
-            font-size: 1.8rem;
-            font-weight: 700;
-            color: #e0922f;
-            text-decoration: none;
+        .header { text-align: center; margin: 20px 0; width: 90%; }
+        
+        /* De logo-stijl die rekening houdt met Base64 data */
+        .logo { 
+            max-height: 80px; 
+            max-width: 100%; 
+            height: auto; 
+            margin-bottom: 10px; 
+            object-fit: contain;
         }
 
-        .nav-center {
-            display: flex;
-            align-items: center;
-            gap: 3rem;
+        .tabs {
+            display: flex; width: 100%; max-width: 500px;
+            background: var(--card-bg); border-radius: 15px 15px 0 0;
+            overflow: hidden; border: 2px solid var(--celtic-green); border-bottom: none;
         }
 
-        nav ul {
-            list-style: none;
-            display: flex;
-            gap: 2rem;
-            flex-wrap: wrap;
+        .tab {
+            flex: 1; padding: 15px; text-align: center; cursor: pointer;
+            font-weight: bold; background: #1a1f1a; transition: 0.2s;
         }
 
-        nav a {
-            color: #e8e8e8;
-            text-decoration: none;
-            font-size: 0.95rem;
-            transition: color 0.3s;
-            border-bottom: 2px solid transparent;
-        }
-
-        nav a:hover {
-            color: #e0922f;
-            border-bottom-color: #5fa777;
-        }
-
-        /* Language Switcher */
-        .language-switcher {
-            display: flex;
-            gap: 0.5rem;
-            align-items: center;
-        }
-
-        .lang-btn {
-            background-color: transparent;
-            border: 2px solid #5fa777;
-            color: #e8e8e8;
-            padding: 0.4rem 0.8rem;
-            border-radius: 4px;
-            cursor: pointer;
-            font-weight: 600;
-            font-size: 0.85rem;
-            transition: all 0.3s;
-        }
-
-        .lang-btn:hover {
-            background-color: #5fa777;
-            color: #0c1310;
-        }
-
-        .lang-btn.active {
-            background-color: #e0922f;
-            border-color: #e0922f;
-            color: #0c1310;
-        }
-
-        /* Container */
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 2rem;
-        }
-
-        /* Hero Section */
-        .hero {
-            background: linear-gradient(135deg, rgba(95, 167, 119, 0.15) 0%, rgba(224, 146, 47, 0.1) 100%), url('https://firebasestorage.googleapis.com/v0/b/the-doggy-few.firebasestorage.app/o/doggy-few%2Fhero-band.jpg?alt=media') center/cover;
-            border-bottom: 2px solid #5fa777;
-            padding: 6rem 2rem;
-            text-align: center;
-            position: relative;
-        }
-
-        .hero::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(12, 19, 16, 0.6);
-            z-index: 1;
-        }
-
-        .hero-content {
-            position: relative;
-            z-index: 2;
-        }
-
-        .hero h1 {
-            font-family: 'Fraunces', serif;
-            font-size: 3.5rem;
-            color: #e0922f;
-            margin-bottom: 1rem;
-        }
-
-        .hero p {
-            font-size: 1.3rem;
-            color: #7cc096;
-            margin-bottom: 2rem;
-        }
-
-        .cta-button {
-            display: inline-block;
-            background-color: #e0922f;
-            color: #0c1310;
-            padding: 0.8rem 2rem;
-            border-radius: 4px;
-            text-decoration: none;
-            font-weight: 600;
-            transition: background-color 0.3s, transform 0.2s;
-            border: none;
-            cursor: pointer;
-            font-size: 1rem;
-        }
-
-        .cta-button:hover {
-            background-color: #f5a938;
-            transform: translateY(-2px);
-        }
-
-        /* Section Styles */
-        section {
-            padding: 4rem 2rem;
-            border-bottom: 1px solid #1a2720;
-        }
-
-        section h2 {
-            font-family: 'Fraunces', serif;
-            font-size: 2.2rem;
-            color: #5fa777;
-            margin-bottom: 2rem;
-            text-align: center;
-        }
-
-        section h3 {
-            color: #e0922f;
-        }
-
-        /* Gigs Section */
-        .gigs-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2rem;
-            margin-bottom: 2rem;
-        }
-
-        .gig-card {
-            background-color: #15231a;
-            border-left: 4px solid #e0922f;
-            padding: 1.5rem;
-            border-radius: 4px;
-            transition: transform 0.3s, box-shadow 0.3s;
-        }
-
-        .gig-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 16px rgba(95, 167, 119, 0.2);
-        }
-
-        .gig-card h3 {
-            color: #e0922f;
-            margin-bottom: 0.5rem;
-        }
-
-        .gig-date {
-            color: #7cc096;
-            font-weight: 600;
-            margin-bottom: 0.5rem;
-        }
-
-        .gig-location {
-            color: #a8c8b2;
-            font-size: 0.9rem;
-            margin-bottom: 1rem;
-        }
-
-        .status-badge {
-            display: inline-block;
-            padding: 0.3rem 0.8rem;
-            border-radius: 4px;
-            font-size: 0.8rem;
-            font-weight: 600;
-            margin-bottom: 1rem;
-        }
-
-        .status-confirmed {
-            background-color: #5fa777;
-            color: #0c1310;
-        }
-
-        .status-option {
-            background-color: #e0922f;
-            color: #0c1310;
-        }
-
-        .status-cancelled {
-            background-color: #dc2626;
-            color: white;
-        }
-
-        .loading-placeholder {
-            background-color: #1a2720;
-            border-radius: 4px;
-            padding: 2rem;
-            text-align: center;
-            color: #7cc096;
-            animation: pulse 1.5s infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% { opacity: 0.6; }
-            50% { opacity: 1; }
-        }
-
-        /* Lyrics Section */
-        .lyrics-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 1.5rem;
-        }
-
-        .lyrics-item {
-            background-color: #15231a;
-            padding: 1.5rem;
-            border-radius: 4px;
-            border: 1px solid #2a3f34;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .lyrics-item:hover {
-            border-color: #5fa777;
-            box-shadow: 0 4px 12px rgba(95, 167, 119, 0.15);
-        }
-
-        .lyrics-item h3 {
-            color: #e0922f;
-            margin-bottom: 0.5rem;
-        }
-
-        .lyrics-item p {
-            color: #a8c8b2;
-            font-size: 0.9rem;
-        }
-
-        /* Blog Section */
-        .blog-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 2rem;
-        }
-
-        .blog-card {
-            background-color: #15231a;
-            border-radius: 4px;
-            overflow: hidden;
-            border: 1px solid #2a3f34;
-            transition: all 0.3s;
-        }
-
-        .blog-card:hover {
-            border-color: #5fa777;
-            transform: translateY(-5px);
-        }
-
-        .blog-image {
-            width: 100%;
-            height: 200px;
-            object-fit: cover;
-        }
-
-        .blog-content {
-            padding: 1.5rem;
-        }
-
-        .blog-date {
-            color: #7cc096;
-            font-size: 0.85rem;
-            margin-bottom: 0.5rem;
-        }
+        .tab.active { background: var(--card-bg); color: var(--celtic-green); border-bottom: 3px solid var(--celtic-green); }
 
-        .blog-card h3 {
-            color: #e0922f;
-            margin-bottom: 0.8rem;
-        }
-
-        .blog-card p {
-            color: #a8c8b2;
-            font-size: 0.95rem;
-            margin-bottom: 1rem;
-        }
-
-        .read-more {
-            color: #e0922f;
-            text-decoration: none;
-            font-weight: 600;
-            transition: color 0.3s;
-        }
-
-        .read-more:hover {
-            color: #f5a938;
-        }
-
-        /* Photos Gallery */
-        .photos-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 1.5rem;
-        }
-
-        .photo-card {
-            background-color: #15231a;
-            border-radius: 4px;
-            overflow: hidden;
-            border: 1px solid #2a3f34;
-            transition: all 0.3s;
-        }
-
-        .photo-card:hover {
-            border-color: #5fa777;
-            transform: translateY(-5px);
-        }
-
-        .photo-image {
-            width: 100%;
-            height: 250px;
-            object-fit: cover;
-        }
-
-        .photo-caption {
-            padding: 1rem;
-            color: #e8e8e8;
-            font-weight: 600;
-        }
-
-        .photo-tags {
-            padding: 0 1rem 1rem 1rem;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.5rem;
-        }
-
-        .photo-tag {
-            font-size: 0.75rem;
-            background-color: #5fa777;
-            color: #0c1310;
-            padding: 0.3rem 0.6rem;
-            border-radius: 3px;
-        }
-
-        /* Videos Gallery */
-        .videos-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 2rem;
-        }
-
-        .video-card {
-            background-color: #15231a;
-            border-radius: 4px;
-            overflow: hidden;
-            border: 1px solid #2a3f34;
-            transition: all 0.3s;
-        }
-
-        .video-card:hover {
-            border-color: #5fa777;
-            transform: translateY(-5px);
-        }
-
-        .video-thumbnail {
-            position: relative;
-            width: 100%;
-            padding-bottom: 56.25%;
-            overflow: hidden;
-            background-color: #0c1310;
-        }
-
-        .video-thumbnail img {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .video-play-button {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 60px;
-            height: 60px;
-            background-color: #e0922f;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            opacity: 0.9;
-            transition: all 0.3s;
-            z-index: 10;
-        }
-
-        .video-card:hover .video-play-button {
-            background-color: #f5a938;
-            transform: translate(-50%, -50%) scale(1.1);
-        }
-
-        .video-play-button::after {
-            content: '▶';
-            color: #0c1310;
-            font-size: 24px;
-            margin-left: 4px;
-        }
-
-        .video-content {
-            padding: 1.5rem;
-        }
+        .container { width: 100%; max-width: 500px; padding: 0 10px 20px 10px; }
 
-        .video-title {
-            color: #e0922f;
-            font-family: 'Fraunces', serif;
-            font-weight: bold;
-            margin-bottom: 0.5rem;
-            font-size: 1.1rem;
+        .card {
+            background: var(--card-bg); padding: 25px; border-radius: 0 0 25px 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5); text-align: center;
+            border: 2px solid var(--celtic-green);
         }
 
-        .video-description {
-            color: #a8c8b2;
-            font-size: 0.9rem;
-            margin-bottom: 1rem;
-        }
-
-        .video-tags {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.5rem;
-        }
-
-        .video-tag {
-            font-size: 0.75rem;
-            background-color: #5fa777;
-            color: #0c1310;
-            padding: 0.3rem 0.6rem;
-            border-radius: 3px;
-        }
-
-        /* Contact Section */
-        .contact-container {
-            max-width: 600px;
-            margin: 0 auto;
-        }
-
-        .form-group {
-            margin-bottom: 1.5rem;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 0.5rem;
-            color: #7cc096;
-            font-weight: 600;
-        }
-
-        input[type="text"],
-        input[type="email"],
-        input[type="tel"],
-        textarea {
-            width: 100%;
-            padding: 0.8rem;
-            background-color: #15231a;
-            border: 1px solid #2a3f34;
-            color: #e8e8e8;
-            border-radius: 4px;
-            font-family: inherit;
-            transition: border-color 0.3s;
-        }
-
-        input[type="text"]:focus,
-        input[type="email"]:focus,
-        input[type="tel"]:focus,
-        textarea:focus {
-            outline: none;
-            border-color: #5fa777;
-            box-shadow: 0 0 8px rgba(95, 167, 119, 0.2);
-        }
-
-        textarea {
-            resize: vertical;
-            min-height: 120px;
-        }
-
-        .submit-btn {
-            width: 100%;
-            padding: 1rem;
-            background-color: #e0922f;
-            color: #0c1310;
-            border: none;
-            border-radius: 4px;
-            font-weight: 600;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-
-        .submit-btn:hover {
-            background-color: #f5a938;
-        }
-
-        /* Footer */
-        footer {
-            background-color: #0a0f0d;
-            border-top: 2px solid #5fa777;
-            padding: 2rem;
-            text-align: center;
-            color: #a8c8b2;
-        }
-
-        footer p {
-            margin-bottom: 0.5rem;
-        }
-
-        .social-links {
-            margin-top: 1rem;
-            display: flex;
-            justify-content: center;
-            gap: 1.5rem;
-        }
-
-        .social-links a {
-            color: #7cc096;
-            text-decoration: none;
-            transition: color 0.3s;
-        }
-
-        .social-links a:hover {
-            color: #e0922f;
-        }
-
-        /* Modal voor lyrics */
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.8);
-        }
-
-        .modal-content {
-            background-color: #15231a;
-            margin: 5% auto;
-            padding: 2rem;
-            border: 1px solid #5fa777;
-            border-radius: 4px;
-            width: 90%;
-            max-width: 600px;
-            max-height: 80vh;
-            overflow-y: auto;
-            color: #e8e8e8;
-        }
+        .tool-content { display: none; }
+        .tool-content.active { display: block; }
 
-        .close {
-            color: #e0922f;
-            float: right;
-            font-size: 2rem;
-            font-weight: bold;
-            cursor: pointer;
-            transition: color 0.3s;
+        select, input[type=range] {
+            width: 100%; padding: 12px; margin: 10px 0 20px 0;
+            border-radius: 8px; background: #111; color: white; border: 1px solid var(--celtic-green); font-size: 16px;
         }
 
-        .close:hover {
-            color: #f5a938;
+        button {
+            width: 100%; padding: 18px; border: none; border-radius: 15px;
+            font-size: 18px; font-weight: bold; color: white;
+            background: var(--celtic-green); cursor: pointer; transition: 0.1s;
         }
 
-        /* Responsive */
-        @media (max-width: 768px) {
-            .hero h1 {
-                font-size: 2.2rem;
-            }
+        button.active-btn { background: var(--griffin-red); }
 
-            nav .container {
-                flex-direction: column;
-                gap: 1rem;
-            }
-
-            .nav-center {
-                width: 100%;
-                flex-direction: column;
-                gap: 1rem;
-            }
-
-            nav ul {
-                gap: 1rem;
-                font-size: 0.85rem;
-                width: 100%;
-                flex-direction: column;
-            }
-
-            section h2 {
-                font-size: 1.8rem;
-            }
-
-            .gigs-grid,
-            .lyrics-grid,
-            .blog-grid,
-            .photos-grid,
-            .videos-grid {
-                grid-template-columns: 1fr;
-            }
-        }
+        .display-container { background: var(--lcd-bg); border-radius: 15px; padding: 20px; margin-bottom: 15px; border: 1px solid var(--celtic-green); }
+        .display { font-family: 'Courier New', monospace; font-size: 60px; font-weight: bold; color: var(--celtic-green); }
+        .vu-meter { position: relative; width: 100%; height: 80px; background: #050705; border-radius: 12px; border: 1px solid var(--celtic-green); overflow: hidden; }
+        .needle { position: absolute; bottom: 0; left: 50%; width: 2px; height: 60px; background: var(--griffin-red); transform-origin: bottom center; transition: transform 0.05s ease-out; }
+        .in-tune-zone { position: absolute; top: 20px; left: 50%; width: 40px; height: 10px; background: rgba(74, 124, 44, 0.2); transform: translateX(-50%); }
+        .active-tune { background: #2ecc71; box-shadow: 0 0 10px #2ecc71; }
+        .bpm-display { font-size: 4rem; font-weight: bold; color: var(--celtic-green); }
+        .beat-indicator { display: flex; justify-content: center; gap: 6px; margin-top: 20px; flex-wrap: wrap; }
+        .dot { width: 14px; height: 14px; background: #333; border-radius: 50%; }
+        .dot.lit { background: var(--celtic-green); transform: scale(1.3); }
+        .dot.accent-mark { border: 2px solid var(--griffin-orange); }
+        .hints { font-size: 13px; color: var(--griffin-orange); margin-top: 10px; font-weight: bold; min-height: 18px; }
     </style>
 </head>
 <body>
-    <!-- Navigation -->
-    <nav>
-        <div class="container">
-            <a href="#home" class="logo">🍀 The Doggy Few</a>
-            <div class="nav-center">
-                <ul>
-                    <li><a href="#gigs" data-i18n="nav.gigs">Agenda</a></li>
-                    <li><a href="#lyrics" data-i18n="nav.lyrics">Liedjes</a></li>
-                    <li><a href="#blog" data-i18n="nav.blog">Blog</a></li>
-                    <li><a href="#photos" data-i18n="nav.photos">Foto's</a></li>
-                    <li><a href="#videos" data-i18n="nav.videos">Video's</a></li>
-                    <li><a href="#contact" data-i18n="nav.contact">Contact</a></li>
-                </ul>
-                <div class="language-switcher">
-                    <button class="lang-btn active" onclick="changeLanguage('nl')">NL</button>
-                    <button class="lang-btn" onclick="changeLanguage('en')">EN</button>
-                    <button class="lang-btn" onclick="changeLanguage('de')">DE</button>
+
+    <div class="header">
+        <img src="data:image/png;base64,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" alt="TDF Logo" class="logo" id="mainLogo">
+        <h1>TDF Music Toolset</h1>
+    </div>
+
+    <div class="tabs">
+        <div id="tab-tuner" class="tab active" onclick="switchTab('tuner')">TUNER</div>
+        <div id="tab-metronome" class="tab" onclick="switchTab('metronome')">METRONOOM</div>
+    </div>
+
+    <div class="container">
+        <div class="card">
+            <div id="tuner" class="tool-content active">
+                <select id="instrumentSelect">
+                    <option value="chromatic">Chromatisch</option>
+                    <option value="violin">Viool (G-D-A-E)</option>
+                    <option value="guitar_standard">Gitaar (Standaard)</option>
+                    <option value="guitar_dadgad">Gitaar (DADGAD)</option>
+                    <option value="ukulele">Ukelele (G-C-E-A)</option>
+                </select>
+                <div class="display-container">
+                    <div id="noteDisplay" class="display">--</div>
+                    <div id="freqDisplay" style="color: #4a7c2c;">0.00 Hz</div>
                 </div>
+                <div class="vu-meter"><div id="tuneZone" class="in-tune-zone"></div><div id="needle" class="needle"></div></div>
+                <div id="tunerHints" class="hints">Kies instrument & start...</div>
+                <button id="tunerBtn">START MICROFOON</button>
             </div>
-        </div>
-    </nav>
 
-    <!-- Hero Section -->
-    <section id="home" class="hero">
-        <div class="hero-content">
-            <h1>The Doggy Few</h1>
-            <p data-i18n="hero.subtitle">Authentieke Celtic Folk muziek uit Nederland</p>
-            <a href="#contact" class="cta-button" data-i18n="hero.cta">Boeken</a>
-        </div>
-    </section>
-
-    <!-- Gigs Section -->
-    <section id="gigs">
-        <div class="container">
-            <h2 data-i18n="gigs.title">Komende Optredens</h2>
-            <div class="gigs-grid" id="gigsContainer">
-                <div class="loading-placeholder" data-i18n="gigs.loading">Optredens laden...</div>
+            <div id="metronome" class="tool-content">
+                <div id="bpmText" class="bpm-display">120</div>
+                <input type="range" id="tempoSlider" min="40" max="240" value="120">
+                <select id="timeSig">
+                    <option value="4">4/4 Maat</option>
+                    <option value="3">3/4 Maat</option>
+                    <option value="6">6/8 Maat</option>
+                    <option value="9">9/8 Maat (Compound)</option>
+                </select>
+                <button id="metroBtn">START METRONOOM</button>
+                <div id="dotsContainer" class="beat-indicator"></div>
             </div>
-        </div>
-    </section>
-
-    <!-- Lyrics Section -->
-    <section id="lyrics">
-        <div class="container">
-            <h2 data-i18n="lyrics.title">Ons Repertoire</h2>
-            <div class="lyrics-grid">
-                <div class="lyrics-item" onclick="openLyrics('Whiskey in the Morning', 'Verse 1:\nWhen the sun comes up on the morning dew...\n\nChorus:\nWhiskey in the morning, troubles fade away...')" role="button" tabindex="0" aria-label="Whiskey in the Morning">
-                    <h3>Whiskey in the Morning</h3>
-                    <p data-i18n="lyrics.traditional">Traditionele Ierse ballade</p>
-                    <p style="margin-top: 0.5rem; font-size: 0.8rem;" data-i18n="lyrics.clickText">Klik voor tekst →</p>
-                </div>
-                <div class="lyrics-item" onclick="openLyrics('Green Fields Home', 'Verse 1:\nI left my home in County Clare...\n\nChorus:\nGreen fields home, where the shamrock grows so free...')" role="button" tabindex="0" aria-label="Green Fields Home">
-                    <h3>Green Fields Home</h3>
-                    <p data-i18n="lyrics.original">Origineel nummer</p>
-                    <p style="margin-top: 0.5rem; font-size: 0.8rem;" data-i18n="lyrics.clickText">Klik voor tekst →</p>
-                </div>
-                <div class="lyrics-item" onclick="openLyrics('The Wanderer\\'s Tale', 'Verse 1:\nThey say I\\'ve traveled roads untold...\n\nChorus:\nWandering, wandering, never settling down...')" role="button" tabindex="0" aria-label="The Wanderer's Tale">
-                    <h3>The Wanderer's Tale</h3>
-                    <p data-i18n="lyrics.arrangement">Arrangering van klassieke tune</p>
-                    <p style="margin-top: 0.5rem; font-size: 0.8rem;" data-i18n="lyrics.clickText">Klik voor tekst →</p>
-                </div>
-                <div class="lyrics-item" onclick="openLyrics('Dancing at the Crossroads', 'Verse 1:\nFiddles and bodhráns echo through the night...\n\nChorus:\nDancing, dancing at the crossroads we meet...')" role="button" tabindex="0" aria-label="Dancing at the Crossroads">
-                    <h3>Dancing at the Crossroads</h3>
-                    <p data-i18n="lyrics.uptempo">Uptempo jig</p>
-                    <p style="margin-top: 0.5rem; font-size: 0.8rem;" data-i18n="lyrics.clickText">Klik voor tekst →</p>
-                </div>
-                <div class="lyrics-item" onclick="openLyrics('Stormy Seas', 'Verse 1:\nThe waves crash hard against the shore...\n\nChorus:\nThrough stormy seas we sail back home...')" role="button" tabindex="0" aria-label="Stormy Seas">
-                    <h3>Stormy Seas</h3>
-                    <p data-i18n="lyrics.shanty">Aangrijpend shanty</p>
-                    <p style="margin-top: 0.5rem; font-size: 0.8rem;" data-i18n="lyrics.clickText">Klik voor tekst →</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Blog Section -->
-    <section id="blog">
-        <div class="container">
-            <h2 data-i18n="blog.title">Blog</h2>
-            <div class="blog-grid" id="blogContainer">
-                <div class="loading-placeholder" data-i18n="blog.loading">Blog posts laden...</div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Photos Gallery Section -->
-    <section id="photos">
-        <div class="container">
-            <h2 data-i18n="photos.title">Fotogalerie</h2>
-            <div class="photos-grid" id="photosContainer">
-                <div class="loading-placeholder" data-i18n="photos.loading">Foto's laden...</div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Videos Gallery Section -->
-    <section id="videos">
-        <div class="container">
-            <h2 data-i18n="videos.title">Video's</h2>
-            <div class="videos-grid" id="videosContainer">
-                <div class="loading-placeholder" data-i18n="videos.loading">Video's laden...</div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Contact Section -->
-    <section id="contact">
-        <div class="container contact-container">
-            <h2 data-i18n="contact.title">Contact – Boek The Doggy Few</h2>
-            <p style="text-align: center; color: #a8c8b2; margin-bottom: 2rem;" data-i18n="contact.intro">Wil je The Doggy Few voor jouw evenement boeken? Neem contact met ons op via het formulier hieronder.</p>
-            <form id="contactForm">
-                <div class="form-group">
-                    <label for="name" data-i18n="contact.name">Naam</label>
-                    <input type="text" id="name" name="name" required aria-label="Uw naam">
-                </div>
-                <div class="form-group">
-                    <label for="email" data-i18n="contact.email">E-mailadres</label>
-                    <input type="email" id="email" name="email" required aria-label="Uw e-mailadres">
-                </div>
-                <div class="form-group">
-                    <label for="phone" data-i18n="contact.phone">Telefoonnummer</label>
-                    <input type="tel" id="phone" name="phone" aria-label="Uw telefoonnummer">
-                </div>
-                <div class="form-group">
-                    <label for="eventType" data-i18n="contact.eventType">Type Evenement</label>
-                    <input type="text" id="eventType" name="eventType" aria-label="Type evenement" data-i18n-placeholder="contact.eventTypePlaceholder">
-                </div>
-                <div class="form-group">
-                    <label for="message" data-i18n="contact.message">Bericht</label>
-                    <textarea id="message" name="message" required aria-label="Uw bericht"></textarea>
-                </div>
-                
-                <!-- Honeypot field -->
-                <div style="position: absolute; left: -9999px; opacity: 0; pointer-events: none;" aria-hidden="true">
-                    <label for="website">Website</label>
-                    <input type="text" id="website" name="website" tabindex="-1" autocomplete="off" value="">
-                </div>
-                
-                <button type="submit" class="submit-btn" data-i18n="contact.submit">Verstuur Boeking</button>
-            </form>
-        </div>
-    </section>
-
-    <!-- Footer with SEO -->
-    <footer id="footerContent">
-        <div class="container">
-            <p>&copy; 2024 The Doggy Few. <span data-i18n="footer.copyright">Alle rechten voorbehouden</span>.</p>
-            <p data-i18n="footer.tagline">Authentieke Celtic Folk muziek uit Nederland</p>
-            <p style="font-size: 0.9rem; margin-top: 1rem; color: #7cc096;">
-                <span data-i18n="footer.location">Gesitueerd in Rijnsburg</span> | 
-                <a href="mailto:info@doggyfew.com" style="color: #7cc096; text-decoration: none;" id="contactEmail">info@doggyfew.com</a>
-            </p>
-            <div class="social-links" id="socialLinks">
-                <!-- Socials laden via Firebase -->
-            </div>
-        </div>
-    </footer>
-
-    <!-- Lyrics Modal -->
-    <div id="lyricsModal" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="closeLyrics()" aria-label="Sluit">&times;</span>
-            <h2 id="modalTitle" style="color: #e0922f; margin-bottom: 1rem;"></h2>
-            <p id="modalLyrics" style="white-space: pre-wrap; line-height: 1.8;"></p>
         </div>
     </div>
 
-    <!-- Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore-compat.js"></script>
-
-    <!-- Translation Data -->
     <script>
-        const translations = {
-            nl: {
-                nav: {
-                    gigs: 'Agenda',
-                    lyrics: 'Liedjes',
-                    blog: 'Blog',
-                    photos: 'Foto\'s',
-                    videos: 'Video\'s',
-                    contact: 'Contact'
-                },
-                hero: {
-                    subtitle: 'Irish Party Music',
-                    cta: 'Boeken'
-                },
-                gigs: {
-                    title: 'Komende Optredens',
-                    loading: 'Optredens laden...',
-                    confirmed: 'Bevestigd',
-                    option: 'Optie',
-                    cancelled: 'Afgezegd'
-                },
-                lyrics: {
-                    title: 'Ons Repertoire',
-                    traditional: 'Traditionele Ierse ballade',
-                    original: 'Origineel nummer',
-                    arrangement: 'Arrangering van klassieke tune',
-                    uptempo: 'Uptempo jig',
-                    shanty: 'Aangrijpend shanty',
-                    clickText: 'Klik voor tekst →'
-                },
-                blog: {
-                    title: 'Blog',
-                    loading: 'Blog posts laden...'
-                },
-                photos: {
-                    title: 'Fotogalerie',
-                    loading: 'Foto\'s laden...'
-                },
-                videos: {
-                    title: 'Video\'s',
-                    loading: 'Video\'s laden...'
-                },
-                contact: {
-                    title: 'Contact – Boek The Doggy Few',
-                    intro: 'Wil je The Doggy Few voor jouw evenement boeken? Neem contact met ons op via het formulier hieronder.',
-                    name: 'Naam',
-                    email: 'E-mailadres',
-                    phone: 'Telefoonnummer',
-                    eventType: 'Type Evenement',
-                    eventTypePlaceholder: 'Bijv. bruiloft, bedrijfsfeest, festival, kroeg, verjaardagsfeest',
-                    message: 'Bericht',
-                    submit: 'Verstuur Aanvraag',
-                    success: 'Dank je wel! We nemen snel contact met je op.'
-                },
-                footer: {
-                    copyright: 'Alle rechten voorbehouden',
-                    tagline: 'Irish Party Music',
-                    location: 'Gesitueerd in Rijnsburg'
-                }
-            },
-            en: {
-                nav: {
-                    gigs: 'Schedule',
-                    lyrics: 'Songs',
-                    blog: 'Blog',
-                    photos: 'Photos',
-                    videos: 'Videos',
-                    contact: 'Contact'
-                },
-                hero: {
-                    subtitle: 'Irish Party Music',
-                    cta: 'Book Us'
-                },
-                gigs: {
-                    title: 'Upcoming Performances',
-                    loading: 'Loading performances...',
-                    confirmed: 'Confirmed',
-                    option: 'Option',
-                    cancelled: 'Cancelled'
-                },
-                lyrics: {
-                    title: 'Our Repertoire',
-                    traditional: 'Traditional Irish ballad',
-                    original: 'Original song',
-                    arrangement: 'Arrangement of classic tune',
-                    uptempo: 'Uptempo jig',
-                    shanty: 'Moving shanty',
-                    clickText: 'Click for lyrics →'
-                },
-                blog: {
-                    title: 'Blog',
-                    loading: 'Loading blog posts...'
-                },
-                photos: {
-                    title: 'Photo Gallery',
-                    loading: 'Loading photos...'
-                },
-                videos: {
-                    title: 'Videos',
-                    loading: 'Loading videos...'
-                },
-                contact: {
-                    title: 'Contact – Book The Doggy Few',
-                    intro: 'Interested in booking The Doggy Few for your event? Get in touch using the form below.',
-                    name: 'Name',
-                    email: 'Email Address',
-                    phone: 'Phone Number',
-                    eventType: 'Event Type',
-                    eventTypePlaceholder: 'E.g. wedding, corporate party, festival, pub, birthday party',
-                    message: 'Message',
-                    submit: 'Send Request',
-                    success: 'Thank you! We will contact you soon.'
-                },
-                footer: {
-                    copyright: 'All rights reserved',
-                    tagline: 'Irish Party Music',
-                    location: 'Based in Rijnsburg'
-                }
-            },
-            de: {
-                nav: {
-                    gigs: 'Termine',
-                    lyrics: 'Lieder',
-                    blog: 'Blog',
-                    photos: 'Fotos',
-                    videos: 'Videos',
-                    contact: 'Kontakt'
-                },
-                hero: {
-                    subtitle: 'Irish Party Music',
-                    cta: 'Buchen Sie uns'
-                },
-                gigs: {
-                    title: 'Kommende Auftritte',
-                    loading: 'Auftritte werden geladen...',
-                    confirmed: 'Bestätigt',
-                    option: 'Option',
-                    cancelled: 'Abgesagt'
-                },
-                lyrics: {
-                    title: 'Unser Repertoire',
-                    traditional: 'Traditionelle irische Ballade',
-                    original: 'Originalstück',
-                    arrangement: 'Arrangement eines klassischen Stücks',
-                    uptempo: 'Schnelle Jig',
-                    shanty: 'Ergreifendes Lied',
-                    clickText: 'Klicken für Text →'
-                },
-                blog: {
-                    title: 'Blog',
-                    loading: 'Blog-Beiträge werden geladen...'
-                },
-                photos: {
-                    title: 'Fotogalerie',
-                    loading: 'Fotos werden geladen...'
-                },
-                videos: {
-                    title: 'Videos',
-                    loading: 'Videos werden geladen...'
-                },
-                contact: {
-                    title: 'Kontakt – Buchen Sie The Doggy Few',
-                    intro: 'Interessiert an einer Buchung von The Doggy Few für Ihre Veranstaltung? Treten Sie über das Formular unten in Kontakt.',
-                    name: 'Name',
-                    email: 'E-Mail-Adresse',
-                    phone: 'Telefonnummer',
-                    eventType: 'Veranstaltungstyp',
-                    eventTypePlaceholder: 'Z.B. Hochzeit, Firmenevent, Festival, Kneipe, Geburtstagsfeier',
-                    message: 'Nachricht',
-                    submit: 'Anfrage Senden',
-                    success: 'Vielen Dank! Wir werden uns bald mit Ihnen in Verbindung setzen.'
-                },
-                footer: {
-                    copyright: 'Alle Rechte vorbehalten',
-                    tagline: 'Irish Party Music',
-                    location: 'Ansässig in Rijnsburg'
-                }
-            }
-        };
-
-        // Current language state
-        let currentLanguage = localStorage.getItem('language') || 'nl';
-
-        // Initialize on page load
-        window.addEventListener('load', function() {
-            initializeLanguage();
-            loadGigs();
-            loadBlogPosts();
-            loadPhotos();
-            loadVideos();
-            loadSettings();
-        });
-
-        function initializeLanguage() {
-            // Set active button
-            document.querySelectorAll('.lang-btn').forEach(btn => {
-                btn.classList.remove('active');
-            });
-            document.querySelector(`[onclick="changeLanguage('${currentLanguage}')"]`).classList.add('active');
+        // --- GLOBALE TAB LOGICA ---
+        function switchTab(tabId) {
+            document.querySelectorAll('.tool-content').forEach(c => c.classList.remove('active'));
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            document.getElementById('tab-' + tabId).classList.add('active');
             
-            // Set HTML lang attribute
-            document.documentElement.lang = currentLanguage;
-            
-            // Translate all elements
-            translatePage();
+            if (isRunningTuner) toggleTuner();
+            if (isPlayingMetro) toggleMetro();
         }
 
-        function changeLanguage(lang) {
-            currentLanguage = lang;
-            localStorage.setItem('language', lang);
-            initializeLanguage();
-        }
-
-        function translatePage() {
-            const trans = translations[currentLanguage];
-            
-            document.querySelectorAll('[data-i18n]').forEach(element => {
-                const key = element.getAttribute('data-i18n');
-                const keys = key.split('.');
-                let value = trans;
-                
-                for (let k of keys) {
-                    value = value[k];
-                }
-                
-                if (value) {
-                    element.textContent = value;
-                }
-            });
-
-            // Translate placeholders
-            document.querySelectorAll('[data-i18n-placeholder]').forEach(element => {
-                const key = element.getAttribute('data-i18n-placeholder');
-                const keys = key.split('.');
-                let value = trans;
-                
-                for (let k of keys) {
-                    value = value[k];
-                }
-                
-                if (value) {
-                    element.placeholder = value;
-                }
-            });
-        }
-
-        function t(key) {
-            const keys = key.split('.');
-            let value = translations[currentLanguage];
-            
-            for (let k of keys) {
-                value = value[k];
-            }
-            
-            return value || key;
-        }
-
-        // Firebase Configuration
-        const firebaseConfig = {
-            apiKey: 'AIzaSyD7j7nLLpLnH8vNznqiGWyBXvZrwZ6-Jjs',
-            authDomain: 'the-doggy-few.firebaseapp.com',
-            projectId: 'the-doggy-few',
-            storageBucket: 'the-doggy-few.firebasestorage.app',
-            messagingSenderId: '920453037109',
-            appId: '1:920453037109:web:74684c7f7e64a13aebc57c',
-        };
-
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore();
-
-        const DOGGY_FEW_UID = 'noLMR50T8TP8QtxbiV70r6fdNIU2';
-
-        // Load Gigs from Firestore
-        async function loadGigs() {
-            try {
-                const gigsRef = firebase.firestore().collection('gigs');
-                const snapshot = await gigsRef.orderBy('date', 'asc').get();
-                
-                const gigsContainer = document.getElementById('gigsContainer');
-                
-                if (snapshot.empty) {
-                    gigsContainer.innerHTML = `<p style="text-align: center; color: #7cc096; padding: 2rem;">${t('gigs.loading')}</p>`;
-                    return;
-                }
-
-                let html = '';
-                snapshot.forEach(doc => {
-                    const gig = doc.data();
-                    const statusClass = `status-${gig.type}`;
-                    const statusLabel = t(`gigs.${gig.type}`);
-
-                    html += `
-                        <article class="gig-card" itemscope itemtype="https://schema.org/Event">
-                            <span class="status-badge ${statusClass}">${statusLabel}</span>
-                            <h3 itemprop="name">${escapeHtml(gig.title)}</h3>
-                            <div class="gig-date" itemprop="startDate" content="${gig.date}">${formatDate(gig.date)}</div>
-                            <div class="gig-location" itemprop="location" itemscope itemtype="https://schema.org/Place">
-                                <span itemprop="name">${escapeHtml(gig.location)}</span>
-                            </div>
-                            <p itemprop="description">${escapeHtml(gig.description)}</p>
-                            ${gig.fee ? `<p style="margin-top: 1rem; color: #7cc096; font-weight: 600;">💶 €${gig.fee}</p>` : ''}
-                            <meta itemprop="url" content="https://doggyfew.com#gigs">
-                        </article>
-                    `;
-                });
-
-                gigsContainer.innerHTML = html;
-            } catch (error) {
-                console.error('Error loading gigs:', error);
-                document.getElementById('gigsContainer').innerHTML = '<p style="color: #ff6b6b;">Error loading gigs</p>';
-            }
-        }
-
-        // Load Blog Posts from Firestore
-        async function loadBlogPosts() {
-            try {
-                const blogRef = firebase.firestore().collection('blog');
-                const snapshot = await blogRef.where('status', '==', 'published').orderBy('createdAt', 'desc').get();
-                
-                const blogContainer = document.getElementById('blogContainer');
-                
-                if (snapshot.empty) {
-                    blogContainer.innerHTML = `<p style="text-align: center; color: #7cc096; padding: 2rem; grid-column: 1/-1;">${t('blog.loading')}</p>`;
-                    return;
-                }
-
-                let html = '';
-                snapshot.forEach(doc => {
-                    const post = doc.data();
-                    const imageUrl = post.imageUrl || 'https://firebasestorage.googleapis.com/v0/b/the-doggy-few.firebasestorage.app/o/doggy-few%2Fblog-default.jpg?alt=media';
-
-                    html += `
-                        <article class="blog-card" itemscope itemtype="https://schema.org/BlogPosting">
-                            <img src="${imageUrl}" alt="${escapeHtml(post.title)}" itemprop="image" loading="lazy">
-                            <div class="blog-content">
-                                <time class="blog-date" itemprop="datePublished" datetime="${post.publishedAt}">${formatDate(post.publishedAt)}</time>
-                                <h3 itemprop="headline">${escapeHtml(post.title)}</h3>
-                                <p itemprop="description">${escapeHtml(post.excerpt)}</p>
-                                <a href="#" class="read-more">${t('lyrics.clickText')}</a>
-                                <meta itemprop="author" content="The Doggy Few">
-                                <meta itemprop="url" content="https://doggyfew.com#blog">
-                            </div>
-                        </article>
-                    `;
-                });
-
-                blogContainer.innerHTML = html;
-            } catch (error) {
-                console.error('Error loading blog posts:', error);
-                document.getElementById('blogContainer').innerHTML = '<p style="color: #ff6b6b;">Error loading blog posts</p>';
-            }
-        }
-
-        // Load Photos from Firestore
-        async function loadPhotos() {
-            try {
-                const photosRef = firebase.firestore().collection('photos');
-                const snapshot = await photosRef.orderBy('uploadedAt', 'desc').get();
-                
-                const photosContainer = document.getElementById('photosContainer');
-                
-                if (snapshot.empty) {
-                    photosContainer.innerHTML = `<p style="text-align: center; color: #7cc096; padding: 2rem; grid-column: 1/-1;">${t('photos.loading')}</p>`;
-                    return;
-                }
-
-                let html = '';
-                snapshot.forEach(doc => {
-                    const photo = doc.data();
-                    let tagsHtml = '';
-                    if (photo.tags && photo.tags.length > 0) {
-                        tagsHtml = `<div class="photo-tags">${photo.tags.map(tag => `<span class="photo-tag">${escapeHtml(tag)}</span>`).join('')}</div>`;
-                    }
-
-                    html += `
-                        <div class="photo-card" itemscope itemtype="https://schema.org/Photograph">
-                            <img src="${photo.url}" alt="${escapeHtml(photo.caption || 'The Doggy Few optreden')}" class="photo-image" loading="lazy" itemprop="image">
-                            ${photo.caption ? `<div class="photo-caption" itemprop="name">${escapeHtml(photo.caption)}</div>` : '<meta itemprop="name" content="The Doggy Few fotogalerie">'}
-                            ${tagsHtml}
-                            <meta itemprop="datePublished" content="${new Date().toISOString()}">
-                            <meta itemprop="author" content="The Doggy Few">
-                        </div>
-                    `;
-                });
-
-                photosContainer.innerHTML = html;
-            } catch (error) {
-                console.error('Error loading photos:', error);
-                document.getElementById('photosContainer').innerHTML = '<p style="color: #ff6b6b;">Error loading photos</p>';
-            }
-        }
-
-        // Load Videos from Firestore
-        async function loadVideos() {
-            try {
-                const videosRef = firebase.firestore().collection('videos');
-                const snapshot = await videosRef.orderBy('createdAt', 'desc').get();
-                
-                const videosContainer = document.getElementById('videosContainer');
-                
-                if (snapshot.empty) {
-                    videosContainer.innerHTML = `<p style="text-align: center; color: #7cc096; padding: 2rem; grid-column: 1/-1;">${t('videos.loading')}</p>`;
-                    return;
-                }
-
-                let html = '';
-                snapshot.forEach(doc => {
-                    const video = doc.data();
-                    let tagsHtml = '';
-                    if (video.tags && video.tags.length > 0) {
-                        tagsHtml = `<div class="video-tags">${video.tags.map(tag => `<span class="video-tag">${escapeHtml(tag)}</span>`).join('')}</div>`;
-                    }
-
-                    html += `
-                        <div class="video-card" itemscope itemtype="https://schema.org/VideoObject">
-                            <div class="video-thumbnail">
-                                <img src="${video.thumbnail}" alt="${escapeHtml(video.title)}" loading="lazy" itemprop="thumbnailUrl">
-                                <a href="${video.youtubeUrl}" target="_blank" rel="noopener noreferrer" class="video-play-button" title="Bekijk op YouTube"></a>
-                            </div>
-                            <div class="video-content">
-                                <div class="video-title" itemprop="name">${escapeHtml(video.title)}</div>
-                                ${video.description ? `<p class="video-description" itemprop="description">${escapeHtml(video.description)}</p>` : ''}
-                                ${tagsHtml}
-                                <a href="${video.youtubeUrl}" target="_blank" rel="noopener noreferrer" class="read-more" style="display: block; margin-top: 1rem;">${t('lyrics.clickText')}</a>
-                                <meta itemprop="uploadDate" content="${new Date().toISOString()}">
-                                <meta itemprop="url" content="${video.youtubeUrl}">
-                                <meta itemprop="author" content="The Doggy Few">
-                            </div>
-                        </div>
-                    `;
-                });
-
-                videosContainer.innerHTML = html;
-            } catch (error) {
-                console.error('Error loading videos:', error);
-                document.getElementById('videosContainer').innerHTML = '<p style="color: #ff6b6b;">Error loading videos</p>';
-            }
-        }
-
-        // Load Settings (contact info, socials)
-        async function loadSettings() {
-            try {
-                const settingsRef = firebase.firestore().collection('settings').doc('hero-banner');
-                const doc = await settingsRef.get();
-
-                if (doc.exists) {
-                    const settings = doc.data();
-                    
-                    if (settings.email) {
-                        document.getElementById('contactEmail').href = `mailto:${settings.email}`;
-                        document.getElementById('contactEmail').textContent = settings.email;
-                    }
-
-                    if (settings.socialLinks) {
-                        let socialsHtml = '';
-                        if (settings.socialLinks.facebook) {
-                            socialsHtml += `<a href="${settings.socialLinks.facebook}" rel="noopener noreferrer">Facebook</a>`;
-                        }
-                        if (settings.socialLinks.instagram) {
-                            socialsHtml += `<a href="${settings.socialLinks.instagram}" rel="noopener noreferrer">Instagram</a>`;
-                        }
-                        if (settings.socialLinks.spotify) {
-                            socialsHtml += `<a href="${settings.socialLinks.spotify}" rel="noopener noreferrer">Spotify</a>`;
-                        }
-
-                        if (socialsHtml) {
-                            document.getElementById('socialLinks').innerHTML = socialsHtml;
-                        }
-                    }
-                }
-            } catch (error) {
-                console.error('Error loading settings:', error);
-            }
-        }
-
-        // Helper functions
-        function formatDate(dateStr) {
-            if (!dateStr) return '';
-            const date = new Date(dateStr);
-            return date.toLocaleDateString(currentLanguage === 'de' ? 'de-DE' : currentLanguage === 'en' ? 'en-US' : 'nl-NL', { year: 'numeric', month: 'long', day: 'numeric' });
-        }
-
-        function escapeHtml(text) {
-            const div = document.createElement('div');
-            div.textContent = text;
-            return div.innerHTML;
-        }
-
-        // Lyrics Modal Functions
-        function openLyrics(title, lyrics) {
-            document.getElementById('modalTitle').textContent = title;
-            document.getElementById('modalLyrics').textContent = lyrics;
-            document.getElementById('lyricsModal').style.display = 'block';
-        }
-
-        function closeLyrics() {
-            document.getElementById('lyricsModal').style.display = 'none';
-        }
-
-        // Close modal when clicking outside
-        window.onclick = function(event) {
-            var modal = document.getElementById('lyricsModal');
-            if (event.target == modal) {
-                modal.style.display = 'none';
-            }
-        }
-
-        // Close modal on Escape key
-        document.addEventListener('keydown', function(event) {
-            if (event.key === 'Escape') {
-                closeLyrics();
-            }
-        });
-
-        // Contact form handling (met Web3Forms + Honeypot protection)
-        document.getElementById('contactForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
-            
-            const honeypot = document.getElementById('website').value;
-            if (honeypot) {
-                console.warn('Honeypot triggered - potential bot submission blocked');
-                alert(t('contact.success'));
-                this.reset();
-                return;
-            }
-            
-            const formStartTime = this.dataset.startTime || Date.now();
-            const submissionTime = Date.now() - parseInt(formStartTime);
-            
-            if (submissionTime < 2000 && submissionTime > 0) {
-                console.warn('Submission too fast - potential bot submission blocked');
-                alert(t('contact.success'));
-                this.reset();
-                return;
-            }
-            
-            const email = document.getElementById('email').value;
-            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            if (!emailRegex.test(email)) {
-                alert(currentLanguage === 'de' ? 'Bitte geben Sie eine gültige E-Mail-Adresse ein' : currentLanguage === 'en' ? 'Please enter a valid email address' : 'Voer een geldig e-mailadres in');
-                return;
-            }
-            
-            const formData = new FormData(this);
-            formData.delete('website');
-            formData.append("access_key", "853ca8cb-b740-40d9-b90c-233705e043a4");
-            formData.append("submission_time", new Date().toISOString());
-
-            try {
-                const response = await fetch("https://api.web3forms.com/submit", {
-                    method: "POST",
-                    body: formData
-                });
-
-                if (response.ok) {
-                    alert(t('contact.success'));
-                    this.reset();
-                    delete this.dataset.startTime;
-                } else {
-                    alert(currentLanguage === 'de' ? 'Etwas ist schief gelaufen. Bitte versuchen Sie es später erneut.' : currentLanguage === 'en' ? 'Something went wrong. Please try again later.' : 'Er is iets misgegaan. Probeer het later opnieuw.');
-                }
-            } catch (error) {
-                console.error('Form submission error:', error);
-                alert(currentLanguage === 'de' ? 'Versand fehlgeschlagen. Bitte versuchen Sie es später erneut.' : currentLanguage === 'en' ? 'Submission failed. Please try again later.' : 'Verzending mislukt. Probeer het later opnieuw.');
-            }
-        });
+        // --- TUNER LOGICA ---
+        let audioCtx, analyser, isRunningTuner = false;
+        const tunerBtn = document.getElementById('tunerBtn');
+        const instrumentSelect = document.getElementById('instrumentSelect');
         
-        document.getElementById('contactForm').addEventListener('focusin', function() {
-            if (!this.dataset.startTime) {
-                this.dataset.startTime = Date.now();
+        const tunerLibrary = {
+            chromatic: { h: "Alle noten herkenning" },
+            violin: { h: "G3 - D4 - A4 - E5", s: [{n:'G', f:196.00}, {n:'D', f:293.66}, {n:'A', f:440.00}, {n:'E', f:659.25}] },
+            guitar_standard: { h: "E2-A2-D3-G3-B3-E4", s: [{n:'E', f:82.41}, {n:'A', f:110.00}, {n:'D', f:146.83}, {n:'G', f:196.00}, {n:'B', f:246.94}, {n:'E', f:329.63}] },
+            guitar_dadgad: { h: "D2-A2-D3-G3-A3-D4", s: [{n:'D', f:73.42}, {n:'A', f:110.00}, {n:'D', f:146.83}, {n:'G', f:196.00}, {n:'A', f:220.00}, {n:'D', f:293.66}] },
+            ukulele: { h: "G4-C4-E4-A4", s: [{n:'G', f:392.00}, {n:'C', f:261.63}, {n:'E', f:329.63}, {n:'A', f:440.00}] }
+        };
+
+        async function toggleTuner() {
+            if (!isRunningTuner) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                analyser = audioCtx.createAnalyser();
+                analyser.fftSize = 2048;
+                audioCtx.createMediaStreamSource(stream).connect(analyser);
+                isRunningTuner = true;
+                tunerBtn.textContent = "STOP MICROFOON";
+                tunerBtn.classList.add('active-btn');
+                updateTuner();
+            } else {
+                if(audioCtx) audioCtx.close();
+                isRunningTuner = false;
+                tunerBtn.textContent = "START MICROFOON";
+                tunerBtn.classList.remove('active-btn');
+                document.getElementById('noteDisplay').textContent = "--";
             }
-        }, { once: true });
+        }
+        tunerBtn.onclick = toggleTuner;
 
-        // Smooth scroll for anchor links
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
-                e.preventDefault();
-                const target = document.querySelector(this.getAttribute('href'));
-                if (target) {
-                    target.scrollIntoView({ behavior: 'smooth' });
+        function updateTuner() {
+            if (!isRunningTuner) return;
+            const buffer = new Float32Array(analyser.fftSize);
+            analyser.getFloatTimeDomainData(buffer);
+            const freq = autoCorrelate(buffer, audioCtx.sampleRate);
+            
+            if (freq !== -1) {
+                document.getElementById('freqDisplay').textContent = freq.toFixed(2) + " Hz";
+                let noteName, diff;
+                const mode = tunerLibrary[instrumentSelect.value];
+                
+                if (mode.s) {
+                    let closest = mode.s.reduce((p, c) => Math.abs(c.f-freq) < Math.abs(p.f-freq) ? c : p);
+                    noteName = closest.n;
+                    diff = 1200 * Math.log2(freq / closest.f);
+                } else {
+                    const pitch = 12 * Math.log2(freq / 440) + 69;
+                    noteName = ['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'][Math.round(pitch)%12];
+                    diff = (pitch - Math.round(pitch)) * 100;
                 }
-            });
-        });
+                document.getElementById('noteDisplay').textContent = noteName;
+                document.getElementById('needle').style.transform = `translateX(-50%) rotate(${Math.max(-45, Math.min(45, diff))}deg)`;
+                document.getElementById('tuneZone').classList.toggle('active-tune', Math.abs(diff) < 5);
+            }
+            requestAnimationFrame(updateTuner);
+        }
 
-        // Keyboard navigation for lyrics items
-        document.querySelectorAll('.lyrics-item').forEach(item => {
-            item.addEventListener('keypress', function(e) {
-                if (e.key === 'Enter' || e.key === ' ') {
-                    e.preventDefault();
-                    this.click();
-                }
-            });
-        });
+        function autoCorrelate(buf, sr) {
+            let rms = 0; for (let i=0; i<buf.length; i++) rms += buf[i]*buf[i];
+            if (Math.sqrt(rms/buf.length) < 0.01) return -1;
+            let c = new Float32Array(buf.length);
+            for (let i=0; i<buf.length; i++) for (let j=0; j<buf.length-i; j++) c[i] += buf[j]*buf[j+i];
+            let d = 0; while (c[d] > c[d+1]) d++;
+            let maxval = -1, maxpos = -1;
+            for (let i=d; i<buf.length; i++) { if (c[i] > maxval) { maxval = c[i]; maxpos = i; } }
+            return sr / maxpos;
+        }
+
+        // --- METRONOOM LOGIC ---
+        let metroCtx, isPlayingMetro = false, currentBeat = 0, nextNoteTime = 0.0, metroTimer;
+        const metroBtn = document.getElementById('metroBtn');
+        const timeSig = document.getElementById('timeSig');
+
+        function createDots() {
+            const container = document.getElementById('dotsContainer');
+            container.innerHTML = '';
+            const count = parseInt(timeSig.value);
+            for(let i=0; i<count; i++) {
+                const d = document.createElement('div');
+                d.className = 'dot';
+                if(count === 9 && (i===0 || i===3 || i===6)) d.classList.add('accent-mark');
+                container.appendChild(d);
+            }
+        }
+        
+        function toggleMetro() {
+            if (!isPlayingMetro) {
+                metroCtx = new (window.AudioContext || window.webkitAudioContext)();
+                currentBeat = 0;
+                nextNoteTime = metroCtx.currentTime + 0.05;
+                isPlayingMetro = true;
+                metroBtn.textContent = "STOP";
+                metroBtn.classList.add('active-btn');
+                metroScheduler();
+            } else {
+                clearTimeout(metroTimer);
+                if(metroCtx) metroCtx.close();
+                isPlayingMetro = false;
+                metroBtn.textContent = "START METRONOOM";
+                metroBtn.classList.remove('active-btn');
+            }
+        }
+
+        function metroScheduler() {
+            while (nextNoteTime < metroCtx.currentTime + 0.1) {
+                const sig = parseInt(timeSig.value);
+                const isAccent = (currentBeat === 0) || (sig === 9 && (currentBeat === 3 || currentBeat === 6));
+                
+                const osc = metroCtx.createOscillator();
+                const gain = metroCtx.createGain();
+                osc.frequency.value = isAccent ? 1000 : 600;
+                gain.gain.exponentialRampToValueAtTime(0.001, nextNoteTime + 0.1);
+                osc.connect(gain); gain.connect(metroCtx.destination);
+                osc.start(nextNoteTime); osc.stop(nextNoteTime + 0.1);
+
+                const bIdx = currentBeat;
+                setTimeout(() => {
+                    document.querySelectorAll('.dot').forEach((d, i) => d.classList.toggle('lit', i === bIdx));
+                }, (nextNoteTime - metroCtx.currentTime) * 1000);
+
+                const tempo = parseInt(document.getElementById('tempoSlider').value);
+                const secondsPerBeat = 60.0 / tempo;
+                nextNoteTime += (sig === 6 || sig === 9) ? secondsPerBeat / 2 : secondsPerBeat;
+                currentBeat = (currentBeat + 1) % sig;
+            }
+            metroTimer = setTimeout(metroScheduler, 25);
+        }
+
+        // Event Listeners
+        createDots();
+        timeSig.onchange = createDots;
+        metroBtn.onclick = toggleMetro;
+        document.getElementById('tempoSlider').oninput = (e) => document.getElementById('bpmText').textContent = e.target.value;
+        instrumentSelect.onchange = () => document.getElementById('tunerHints').textContent = tunerLibrary[instrumentSelect.value].h;
     </script>
 </body>
 </html>
