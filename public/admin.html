@@ -1772,8 +1772,16 @@
             <div class="form-group">
                 <label>Categorie</label>
                 <select id="linkCategory">
+                    <option value="bands">Bands</option>
+                    <option value="lyrics">Lyrics &amp; akkoorden</option>
+                    <option value="tunes">Tunes &amp; noten</option>
+                    <option value="ireland">Ierland</option>
+                    <option value="gitaar">Gitaar</option>
+                    <option value="fiddle">Fiddle</option>
+                    <option value="box">Accordeon &amp; box</option>
+                    <option value="bodhran">Bodhrán</option>
+                    <option value="flute">Flute &amp; whistle</option>
                     <option value="vrienden">Vrienden</option>
-                    <option value="bands">Andere bands</option>
                     <option value="kroegen">Kroegen &amp; podia</option>
                     <option value="techniek">Techniek &amp; muziek</option>
                     <option value="overig">Overig</option>
@@ -4023,12 +4031,12 @@
         }
 
         // ===== LINKS =====
-        const LINK_CAT_LABELS = { vrienden: 'Vrienden', bands: 'Andere bands', kroegen: 'Kroegen & podia', techniek: 'Techniek & muziek', overig: 'Overig' };
+        const LINK_CAT_LABELS = { bands: 'Bands', lyrics: 'Lyrics & akkoorden', tunes: 'Tunes & noten', ireland: 'Ierland', gitaar: 'Gitaar', fiddle: 'Fiddle', box: 'Accordeon & box', bodhran: 'Bodhrán', flute: 'Flute & whistle', vrienden: 'Vrienden', kroegen: 'Kroegen & podia', techniek: 'Techniek & muziek', overig: 'Overig' };
 
         function openLinkForm() {
             document.getElementById('linkModalTitle').textContent = 'Link Toevoegen';
             document.getElementById('linkId').value = '';
-            document.getElementById('linkCategory').value = 'vrienden';
+            document.getElementById('linkCategory').value = 'bands';
             document.getElementById('linkTitle').value = '';
             document.getElementById('linkUrl').value = '';
             document.getElementById('linkDescription').value = '';
