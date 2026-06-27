@@ -1,10 +1,16 @@
 {
   "hosting": {
     "public": "public",
-    "ignore": [
-      "firebase.json",
-      "**/.*",
-      "**/node_modules/**"
+    "cleanUrls": true,
+    "trailingSlash": true,
+    "ignore": ["firebase.json","**/.*","**/node_modules/**"],
+    "rewrites": [
+      { "source": "/ierse-feestband-boeken", "destination": "/ierse-feestband-boeken/index.html" },
+      { "source": "/ierse-feestband-boeken/", "destination": "/ierse-feestband-boeken/index.html" },
+      { "source": "/akoestische-ierse-folk", "destination": "/akoestische-ierse-folk/index.html" },
+      { "source": "/akoestische-ierse-folk/", "destination": "/akoestische-ierse-folk/index.html" },
+      { "source": "/links", "destination": "/links/index.html" },
+      { "source": "/links/", "destination": "/links/index.html" }
     ]
   }
 }
