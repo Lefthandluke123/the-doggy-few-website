@@ -1232,6 +1232,11 @@
                     <h3 style="color:#e0922f; margin:1.5rem 0 0.4rem;">Liedjeslijst (Liedjes-pagina)</h3>
                     <p style="color:#a8c8b2; font-size:0.8rem; margin-bottom:0.5rem;">Plak hier de <strong style="color:#d4a820;">JSON</strong> van je liedjeslijst (geëxporteerd uit je akkoorden-viewer). De site maakt er automatisch klikbare liedjes met transponeerbare akkoorden van. Dit verschijnt onder de H1/H2/beschrijving van de Liedjes-sectie.</p>
                     <p style="color:#7cc096; font-size:0.75rem; margin-bottom:0.5rem; font-style:italic;">Formaat: { "name": "...", "songs": [ { "title": "...", "content": "..." } ] }</p>
+                    <div style="display:flex; align-items:center; gap:8px; margin-bottom:6px; flex-wrap:wrap;">
+                        <button type="button" class="btn btn-secondary" onclick="document.getElementById('lyricsJsonFile').click()" style="flex:0 0 auto;">📂 JSON-bestand kiezen</button>
+                        <input type="file" id="lyricsJsonFile" accept=".json,application/json" style="display:none;" onchange="loadLyricsJsonFile(this)">
+                        <span style="color:#7cc096; font-size:0.78rem;">of plak de JSON hieronder</span>
+                    </div>
                     <textarea id="lyricsEmbed" rows="6" placeholder='{"name":"Ons repertoire","songs":[{"title":"Whiskey in the Jar","content":"As [C]I was going over..."}]}' style="width:100%; resize:vertical; font-family:monospace; font-size:12px; padding:8px;"></textarea>
                     <div id="lyricsJsonStatus" style="font-size:0.78rem; margin-top:4px; min-height:1.2em;"></div>
 
@@ -4524,6 +4529,28 @@
 
             // Ook direct koppelen als textareas al bestaan
             attachToolbarToTextareas();
+
+            // Bestand-upload voor liedjeslijst: leest een .json en zet de inhoud in de textarea
+            window.loadLyricsJsonFile = function(input) {
+                const file = input.files && input.files[0];
+                const ta = document.getElementById('lyricsEmbed');
+                const status = document.getElementById('lyricsJsonStatus');
+                if (!file || !ta) return;
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    let text = String(e.target.result || '');
+                    // Netjes formatteren als het geldige JSON is; anders de ruwe tekst plaatsen
+                    try { text = JSON.stringify(JSON.parse(text), null, 2); } catch (err) {}
+                    ta.value = text;
+                    ta.dispatchEvent(new Event('input')); // triggert de bestaande validatie
+                    if (status) { status.style.color = '#7cc096'; status.textContent = '\u2713 Bestand geladen: ' + file.name; }
+                };
+                reader.onerror = function() {
+                    if (status) { status.style.color = '#e07070'; status.textContent = '\u2717 Kon bestand niet lezen'; }
+                };
+                reader.readAsText(file);
+                input.value = ''; // reset zodat hetzelfde bestand opnieuw gekozen kan worden
+            };
 
             // Live JSON-validatie voor liedjeslijst
             const lyricsTa = document.getElementById('lyricsEmbed');
