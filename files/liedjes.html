@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Liedjes | The Doggy Few</title>
+    <meta name="description" content="Liedjes van The Doggy Few per thema: Love, Work, Ireland, Drink en War. Met teksten, transponeerbare akkoorden en video's.">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://doggyfew.com/liedjes.html">
+
+    <link rel="preconnect" href="https://www.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://firestore.googleapis.com" crossorigin>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Nunito+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&family=Lora:ital@0;1&family=Montserrat:wght@700&display=swap">
+
+    <style>
+        :root {
+            --color-bg: #3d4d35;
+            --color-accent: #da8a36;
+            --color-accent2: #6db455;
+            --font-heading: 'Cinzel', serif;
+            --font-body: 'Nunito Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            --color-link: #da8a36;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        a { color: var(--color-link); }
+        a:hover { opacity: 0.85; }
+        body {
+            font-family: var(--font-body);
+            background-color: var(--color-bg);
+            color: #e5e9e2;
+            line-height: 1.75;
+        }
+
+        /* Navigation (compact, zelfde stijl als hoofdsite) */
+        nav {
+            background-color: #3d4d35;
+            border-bottom: 2px solid var(--color-accent2);
+            padding: 1.25rem 2rem;
+            position: sticky; top: 0; z-index: 100;
+        }
+        nav .container {
+            max-width: 1200px; margin: 0 auto;
+            display: flex; justify-content: space-between; align-items: center; gap: 2rem;
+        }
+        .logo {
+            font-family: var(--font-heading); font-size: 1.5rem; font-weight: 700;
+            color: var(--color-accent); text-decoration: none;
+        }
+        .back-link {
+            font-size: 0.95rem; text-decoration: none; color: #c8dcc0;
+            border: 1px solid rgba(124,192,150,0.3); border-radius: 6px; padding: 6px 14px;
+            transition: all 0.15s;
+        }
+        .back-link:hover { border-color: #c8960a; color: #fff; opacity: 1; }
+
+        main { max-width: 900px; margin: 0 auto; padding: 2.5rem 1.25rem 4rem; }
+        h1 {
+            font-family: var(--font-heading);
+            text-align: center; color: var(--color-accent);
+            font-size: 2.2rem; margin-bottom: 0.3rem;
+        }
+        .cat-sub { text-align: center; color: #9bb38f; margin-bottom: 1.5rem; }
+
+        /* Sierlijn (zelfde als hoofdsite) */
+        .deco-line { display:flex; align-items:center; gap:10px; margin:0.4rem auto 1.6rem; max-width:200px; opacity:0.55; }
+        .deco-line span { flex:1; height:1px; }
+
+        /* Categorie-tegels (fallback-menu als er geen ?cat= is) */
+        .song-cat-grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem; max-width: 860px; margin: 1.5rem auto 0;
+        }
+        .song-cat-tile {
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            gap: 0.4rem; padding: 1.6rem 1rem; text-decoration: none;
+            background: rgba(30,53,38,0.5);
+            border: 1px solid rgba(200,150,10,0.15); border-radius: 10px;
+            transition: background 0.15s, border-color 0.15s, transform 0.15s;
+        }
+        .song-cat-tile:hover { background: rgba(45,106,48,0.25); border-color: #c8960a; transform: translateY(-2px); opacity: 1; }
+        .song-cat-tile .cat-icon { font-size: 1.9rem; line-height: 1; }
+        .song-cat-tile .cat-name { font-family: 'Cinzel', serif; font-size: 1.05rem; color: #e8e4d8; letter-spacing: 0.04em; }
+        .song-cat-tile:hover .cat-name { color: #d4a820; }
+
+        .cat-empty {
+            text-align: center; padding: 2rem; color: #9bb38f; font-style: italic;
+            border: 1px dashed rgba(200,150,10,0.3); border-radius: 12px;
+        }
+
+        /* ── Liedjeslijst (DSL) renderer — exact dezelfde stijl als de hoofdsite ── */
+        .dsl-list { max-width: 760px; margin: 0 auto; }
+        .dsl-item {
+            display: flex; align-items: center; gap: 0.75rem;
+            padding: 0.85rem 1rem; cursor: pointer;
+            background: rgba(30,53,38,0.5);
+            border: 1px solid rgba(200,150,10,0.15);
+            border-radius: 8px; margin-bottom: 6px;
+            transition: background 0.15s, border-color 0.15s;
+        }
+        .dsl-item:hover { background: rgba(45,106,48,0.25); border-color: rgba(200,150,10,0.4); }
+        .dsl-item.active { background: rgba(200,150,10,0.12); border-color: #c8960a; }
+        .dsl-num { font-family: 'Cinzel', serif; color: #c8960a; font-size: 0.85rem; min-width: 1.8rem; opacity: 0.8; }
+        .dsl-title { flex: 1; font-family: 'Cinzel', serif; color: #e8e4d8; font-size: 1rem; text-align: left; }
+        .dsl-item.active .dsl-title { color: #d4a820; }
+        .dsl-arrow { color: #7cc096; font-size: 0.7rem; transition: transform 0.2s; }
+        .dsl-item.active .dsl-arrow { transform: rotate(90deg); }
+        .dsl-content { max-height: 0; overflow: hidden; transition: max-height 0.3s ease; }
+        .dsl-content.open { max-height: none; margin: 0 0 1rem; padding: 0; }
+        .dsl-controls {
+            display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
+            padding: 0.6rem 1rem; background: rgba(20,40,26,0.7);
+            border-radius: 8px 8px 0 0; border: 1px solid rgba(200,150,10,0.15);
+        }
+        .dsl-btn {
+            background: rgba(45,106,48,0.4); border: 1px solid rgba(124,192,150,0.3);
+            color: #c8dcc0; border-radius: 5px; padding: 4px 10px;
+            font-family: 'Nunito Sans', sans-serif; font-size: 0.8rem; cursor: pointer;
+            transition: all 0.15s;
+        }
+        .dsl-btn:hover { background: rgba(200,150,10,0.3); border-color: #c8960a; color: #fff; }
+        .dsl-btn.active { background: #c8960a; color: #1a0e00; border-color: #c8960a; }
+        .dsl-tv { font-family: 'IBM Plex Mono', monospace; color: #d4a820; font-size: 0.9rem; min-width: 2rem; text-align: center; font-weight: 600; }
+        .dsl-song-body {
+            background: #faf8f4; color: #1a1714;
+            padding: 1.25rem 1.5rem; border-radius: 0 0 8px 8px;
+            border: 1px solid rgba(200,150,10,0.15); border-top: none;
+            font-family: 'Lora', Georgia, serif;
+        }
+        .dsl-meta { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: #7a7469; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.75rem; }
+        .dsl-section-label { font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.08em; color: #c94a1e; margin: 1rem 0 0.4rem; }
+        .dsl-verse { margin-bottom: 1rem; }
+        .dsl-pair { margin-bottom: 2px; }
+        .dsl-chords { font-family: 'IBM Plex Mono', monospace; font-size: 13px; color: #1a4fa0; font-weight: 500; white-space: pre; line-height: 1.3; }
+        .dsl-lyric { font-family: 'Lora', Georgia, serif; font-size: 15px; color: #1a1714; white-space: pre-wrap; line-height: 1.5; text-align: left; }
+        .dsl-info { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: #7a7469; font-style: italic; margin-bottom: 4px; }
+        @media (max-width: 600px) {
+            .dsl-song-body { padding: 1rem; }
+            .dsl-chords { font-size: 12px; }
+            .dsl-lyric { font-size: 14px; }
+        }
+
+        /* ── Video-blok: 5 YouTube-slots ── */
+        .video-section { max-width: 760px; margin: 3rem auto 0; }
+        .video-section h2 {
+            font-family: var(--font-heading); color: var(--color-accent);
+            text-align: center; font-size: 1.5rem; margin-bottom: 1.25rem;
+        }
+        .video-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1rem; }
+        .video-slot {
+            position: relative; width: 100%; aspect-ratio: 16 / 9;
+            border: 1px solid rgba(200,150,10,0.3); border-radius: 12px;
+            overflow: hidden; background: rgba(20,40,26,0.5);
+        }
+        .video-slot iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+        .video-slot.placeholder {
+            display: flex; align-items: center; justify-content: center;
+            border-style: dashed; color: #9bb38f; font-style: italic; font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="container">
+            <a href="/" class="logo">The Doggy Few</a>
+            <a href="/#lyrics" class="back-link">&#8592; Terug naar de site</a>
+        </div>
+    </nav>
+
+    <main>
+        <h1 id="catTitle">Liedjes</h1>
+        <div class="deco-line">
+            <span style="background:linear-gradient(90deg,transparent,#c8960a)"></span>
+            <svg width="20" height="14" viewBox="0 0 20 14" fill="none">
+                <path d="M10 2 C6 2 3 5 3 7 C3 9 6 12 10 7 C14 12 17 9 17 7 C17 5 14 2 10 2Z" stroke="#c8960a" stroke-width="1" fill="none"/>
+                <circle cx="10" cy="7" r="1.5" fill="#3a8a3a"/>
+            </svg>
+            <span style="background:linear-gradient(90deg,#c8960a,transparent)"></span>
+        </div>
+
+        <div id="content"></div>
+
+        <div class="video-section" id="videoSection" style="display:none;">
+            <h2>Video's</h2>
+            <div class="video-grid" id="videoGrid"></div>
+        </div>
+    </main>
+
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore-compat.js"></script>
+    <script>
+        // Firebase Configuration (zelfde project als de hoofdsite)
+        const firebaseConfig = {
+            apiKey: 'AIzaSyD7j7nLLpLnH8vNznqiGWyBXvZrwZ6-Jjs',
+            authDomain: 'the-doggy-few.firebaseapp.com',
+            projectId: 'the-doggy-few',
+            storageBucket: 'the-doggy-few.firebasestorage.app',
+            messagingSenderId: '920453037109',
+            appId: '1:920453037109:web:74684c7f7e64a13aebc57c',
+        };
+        const firebaseReady = typeof firebase !== 'undefined';
+        let db = null;
+        if (firebaseReady) {
+            firebase.initializeApp(firebaseConfig);
+            db = firebase.firestore();
+        }
+
+        /* ══════════════════════════════════════════════
+           LIEDJESLIJST RENDERER — exacte kopie van de
+           renderer op de hoofdsite (index.html)
+           ══════════════════════════════════════════════ */
+        (function(){
+            const SH=['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'];
+            const FL=['C','Db','D','Eb','E','F','Gb','G','Ab','A','Bb','B'];
+            function ni(n){let i=SH.indexOf(n);return i>=0?i:FL.indexOf(n);}
+            function transpChord(ch,st){
+                if(!ch||!st)return ch;
+                return ch.replace(/([A-G][b#]?)(m7|maj7|7sus4|sus[24]|add9|dim7|m9|m11|aug|dim|maj|m|7|9|11|13|6)?(\/.+)?/g,(m,r,q,b)=>{
+                    let idx=ni(r);if(idx<0)return m;
+                    let ni2=(idx+st+12)%12;
+                    let useFlat=FL.includes(r)&&!SH.includes(r)||['F','Bb','Eb','Ab','Db','Gb'].includes(SH[ni2]);
+                    let nr=(useFlat?FL:SH)[ni2];
+                    let nb='';
+                    if(b){let br=b.slice(1);let bi=ni(br);if(bi>=0){let nbi=(bi+st+12)%12;nb='/'+(useFlat?FL:SH)[nbi];}else nb=b;}
+                    return nr+(q||'')+nb;
+                });
+            }
+            function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+            function parseContent(content){
+                const lines=(content||'').split('\n');
+                const result=[];
+                for(let l of lines){
+                    const trimmed=l.trim();
+                    if(!trimmed){result.push({type:'empty'});continue;}
+                    if(/^\[.*\]$/.test(trimmed)&&!/\[([A-G][b#]?(m7|maj7|7sus4|sus[24]|add9|dim7|m9|m11|aug|dim|maj|m|7|9|11|13|6)?)\]/.test(trimmed)){
+                        result.push({type:'section',label:trimmed.replace(/[\[\]]/g,'')});continue;
+                    }
+                    if(/^(capo|scroll|bpm|tempo|key)\s/i.test(trimmed.toLowerCase())||/^capo\s*\d/i.test(trimmed)){
+                        result.push({type:'info',text:trimmed});continue;
+                    }
+                    const hasInline=/\[[A-G][b#]?(m7|maj7|7sus4|sus[24]|add9|dim7|m9|m11|aug|dim|maj|m|7|9|11|13|6)?\]/.test(l);
+                    const isChordLine=/^(\s*[A-G][b#]?(m7|maj7|7sus4|sus[24]|add9|dim7|m9|m11|aug|dim|maj|m|7|9|11|13|6)?\s*)+$/.test(trimmed);
+                    if(hasInline){result.push({type:'inline',raw:l});}
+                    else if(isChordLine){result.push({type:'chordline',raw:trimmed});}
+                    else{result.push({type:'lyric',text:l});}
+                }
+                return result;
+            }
+            function renderInline(raw,st){
+                const re=/\[([A-G][b#]?(m7|maj7|7sus4|sus[24]|add9|dim7|m9|m11|aug|dim|maj|m|7|9|11|13|6)?)\]/g;
+                let chordLine='',lyricLine='',lastIdx=0,m;
+                while((m=re.exec(raw))!==null){
+                    const chord=transpChord(m[1],st);
+                    const before=raw.slice(lastIdx,m.index).replace(/\[[^\]]*\]/g,'');
+                    const lyricPos=lyricLine.length+before.length;
+                    lyricLine+=before;
+                    const pad=Math.max(0,lyricPos-chordLine.length);
+                    chordLine+=' '.repeat(pad)+chord;
+                    const diff=chordLine.length-lyricLine.length;
+                    if(diff>0)lyricLine+=' '.repeat(diff);
+                    lastIdx=m.index+m[0].length;
+                }
+                lyricLine+=raw.slice(lastIdx).replace(/\[[^\]]*\]/g,'');
+                return{chords:chordLine,lyrics:lyricLine};
+            }
+            function renderSongBody(song, semi, showChords){
+                const parsed=parseContent(song.content);
+                let h='<div class="dsl-song-body">';
+                const capoMatch=(song.content||'').match(/^capo\s*(\d+)/im);
+                let capoInfo = capoMatch ? 'Capo '+capoMatch[1] : (song.capoAmount>0?'Capo '+song.capoAmount:'');
+                if(capoInfo)h+='<div class="dsl-meta">'+esc(capoInfo)+'</div>';
+                let groups=[],current=[];
+                parsed.forEach(p=>{
+                    if(p.type==='section'){ if(current.length){groups.push(current);current=[];} groups.push([p]); }
+                    else if(p.type==='empty'){ if(current.length){groups.push(current);current=[];} }
+                    else { current.push(p); }
+                });
+                if(current.length) groups.push(current);
+                groups.forEach(group=>{
+                    if(group.length===1 && group[0].type==='section'){
+                        h+='<div class="dsl-section-label">'+esc(group[0].label)+'</div>'; return;
+                    }
+                    h+='<div class="dsl-verse">';
+                    group.forEach((p,idx)=>{
+                        if(p.type==='info'){h+='<div class="dsl-info">'+esc(p.text)+'</div>';}
+                        else if(p.type==='chordline'){
+                            const next=group[idx+1];
+                            const chords=p.raw.split(/\s+/).filter(Boolean).map(c=>transpChord(c,semi)).join('   ');
+                            if(next&&next.type==='lyric'){
+                                h+='<div class="dsl-pair">';
+                                if(showChords)h+='<div class="dsl-chords">'+esc(chords)+'</div>';
+                                h+='<div class="dsl-lyric">'+esc(next.text)+'</div></div>';
+                            } else if(showChords){
+                                h+='<div class="dsl-pair"><div class="dsl-chords">'+esc(chords)+'</div></div>';
+                            }
+                        }
+                        else if(p.type==='inline'){
+                            const prev=group[idx-1];
+                            if(prev&&prev.type==='chordline') return;
+                            const{chords,lyrics}=renderInline(p.raw,semi);
+                            h+='<div class="dsl-pair">';
+                            if(showChords&&chords.trim())h+='<div class="dsl-chords">'+esc(chords)+'</div>';
+                            if(lyrics.trim())h+='<div class="dsl-lyric">'+esc(lyrics)+'</div>';
+                            h+='</div>';
+                        }
+                        else if(p.type==='lyric'){
+                            const prev=group[idx-1];
+                            if(prev&&prev.type==='chordline') return;
+                            h+='<div class="dsl-lyric">'+esc(p.text)+'</div>';
+                        }
+                    });
+                    h+='</div>';
+                });
+                h+='</div>';
+                return h;
+            }
+            // state per renderer-instance
+            window.renderSongList = function(container, data){
+                const songs = Array.isArray(data) ? data : (data.songs || [data]);
+                if(!songs.length){ container.innerHTML=''; return; }
+                const state = { open:-1, semi:0, showChords:true };
+                let html = '<div class="dsl-list">';
+                songs.forEach((sg,i)=>{
+                    html += '<div class="dsl-item" data-i="'+i+'">'+
+                        '<span class="dsl-num">'+String(i+1).padStart(2,'0')+'</span>'+
+                        '<span class="dsl-title">'+esc(sg.title||('Nummer '+(i+1)))+'</span>'+
+                        '<span class="dsl-arrow">&#9654;</span></div>'+
+                        '<div class="dsl-content" data-c="'+i+'"></div>';
+                });
+                html += '</div>';
+                container.innerHTML = html;
+
+                function renderOpen(){
+                    const c = container.querySelector('.dsl-content[data-c="'+state.open+'"]');
+                    if(c) c.innerHTML = buildControls() + renderSongBody(songs[state.open], state.semi, state.showChords);
+                }
+                function buildControls(){
+                    return '<div class="dsl-controls">'+
+                        '<button class="dsl-btn" data-act="tr-down">\u266d</button>'+
+                        '<span class="dsl-tv">'+(state.semi>0?'+':'')+state.semi+'</span>'+
+                        '<button class="dsl-btn" data-act="tr-up">\u266f</button>'+
+                        '<button class="dsl-btn" data-act="tr-reset">reset</button>'+
+                        '<button class="dsl-btn'+(state.showChords?' active':'')+'" data-act="chords">akkoorden</button>'+
+                        '</div>';
+                }
+                container.addEventListener('click', function(e){
+                    const item = e.target.closest('.dsl-item');
+                    const btn = e.target.closest('.dsl-btn');
+                    if(btn){
+                        e.stopPropagation();
+                        const act = btn.dataset.act;
+                        if(act==='tr-up'){ state.semi=Math.min(6,state.semi+1); }
+                        else if(act==='tr-down'){ state.semi=Math.max(-6,state.semi-1); }
+                        else if(act==='tr-reset'){ state.semi=0; }
+                        else if(act==='chords'){ state.showChords=!state.showChords; }
+                        renderOpen();
+                        return;
+                    }
+                    if(item){
+                        const i = parseInt(item.dataset.i);
+                        const wasOpen = state.open===i;
+                        container.querySelectorAll('.dsl-item').forEach(el=>el.classList.remove('active'));
+                        container.querySelectorAll('.dsl-content').forEach(el=>{el.classList.remove('open');el.innerHTML='';});
+                        if(wasOpen){ state.open=-1; return; }
+                        state.open=i; state.semi=0; state.showChords=true;
+                        item.classList.add('active');
+                        const c = container.querySelector('.dsl-content[data-c="'+i+'"]');
+                        c.classList.add('open');
+                        renderOpen();
+                        item.scrollIntoView({behavior:'smooth',block:'nearest'});
+                    }
+                });
+            };
+        })();
+
+        // ── Categorieën ──
+        const CATS = {
+            love:    { icon: '\u2764\uFE0F', name: 'Love' },
+            work:    { icon: '\uD83D\uDD28', name: 'Work' },
+            ireland: { icon: '\u2618\uFE0F', name: 'Ireland' },
+            drink:   { icon: '\uD83C\uDF7A', name: 'Drink' },
+            war:     { icon: '\u2694\uFE0F', name: 'War' }
+        };
+
+        function ytEmbedUrl(url) {
+            // watch?v=, youtu.be/, shorts/, embed/ → embed-URL; anders null
+            const u = (url || '').trim();
+            if (!u) return null;
+            let m = u.match(/(?:youtube\.com\/(?:watch\?(?:.*&)?v=|shorts\/|embed\/)|youtu\.be\/)([A-Za-z0-9_-]{6,20})/);
+            if (m) return 'https://www.youtube-nocookie.com/embed/' + m[1];
+            return null;
+        }
+
+        function showCatMenu(container) {
+            document.getElementById('catTitle').textContent = 'Liedjes';
+            let h = '<p class="cat-sub">Kies een thema</p><div class="song-cat-grid">';
+            Object.keys(CATS).forEach(k => {
+                h += '<a class="song-cat-tile" href="liedjes.html?cat=' + k + '">' +
+                     '<span class="cat-icon">' + CATS[k].icon + '</span>' +
+                     '<span class="cat-name">' + CATS[k].name + '</span></a>';
+            });
+            h += '</div>';
+            container.innerHTML = h;
+        }
+
+        function renderVideos(urls) {
+            const section = document.getElementById('videoSection');
+            const grid = document.getElementById('videoGrid');
+            if (!section || !grid) return;
+            grid.innerHTML = '';
+            for (let i = 0; i < 5; i++) {
+                const embed = ytEmbedUrl(urls && urls[i]);
+                const slot = document.createElement('div');
+                if (embed) {
+                    slot.className = 'video-slot';
+                    slot.innerHTML = '<iframe src="' + embed + '" title="YouTube video" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>';
+                } else {
+                    slot.className = 'video-slot placeholder';
+                    slot.textContent = '\uD83C\uDFA5 Video ' + (i + 1) + ' \u2014 binnenkort';
+                }
+                grid.appendChild(slot);
+            }
+            section.style.display = 'block';
+        }
+
+        async function init() {
+            const container = document.getElementById('content');
+            const params = new URLSearchParams(location.search);
+            const cat = (params.get('cat') || '').toLowerCase();
+
+            if (!CATS[cat]) { showCatMenu(container); return; }
+
+            document.title = CATS[cat].name + ' | Liedjes | The Doggy Few';
+            document.getElementById('catTitle').textContent = CATS[cat].icon + ' ' + CATS[cat].name;
+
+            if (!firebaseReady) {
+                container.innerHTML = '<p class="cat-empty">Kon de liedjes niet laden (geen verbinding).</p>';
+                return;
+            }
+            try {
+                const doc = await db.collection('settings').doc('song-categories').get();
+                const data = doc.exists ? doc.data() : {};
+                const raw = (typeof data[cat] === 'string') ? data[cat].trim() : '';
+                if (!raw) {
+                    container.innerHTML = '<p class="cat-empty">Nog geen liedjes in deze categorie \u2014 binnenkort meer!</p>';
+                } else {
+                    try {
+                        const json = JSON.parse(raw);
+                        renderSongList(container, json);
+                    } catch (e) {
+                        container.innerHTML = '<p class="cat-empty" style="color:#e07070;">Liedjeslijst JSON kon niet worden gelezen.</p>';
+                    }
+                }
+                renderVideos(Array.isArray(data[cat + 'Videos']) ? data[cat + 'Videos'] : []);
+            } catch (e) {
+                container.innerHTML = '<p class="cat-empty">Kon de liedjes niet laden.</p>';
+            }
+        }
+        init();
+    </script>
+</body>
+</html>

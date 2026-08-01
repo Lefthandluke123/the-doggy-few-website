@@ -1236,35 +1236,6 @@
                     <p style="color:#7cc096; font-size:0.75rem; margin-bottom:0.5rem; font-style:italic;">Formaat: { "name": "...", "songs": [ { "title": "...", "content": "..." } ] }</p>
                     <div id="songCatWrap"></div>
                     <button class="btn" onclick="saveSongCategories()" style="width:100%; margin-top:0.75rem;">Liedjes-categorieën opslaan</button>
-
-                    <h3 style="color:#e0922f; margin:1.5rem 0 0.4rem;">🎁 Verzoekjeslijsten (per boeking)</h3>
-                    <p style="color:#a8c8b2; font-size:0.8rem; margin-bottom:0.5rem;">Maak per klant/feest een eigen liedjeslijst met een <strong style="color:#d4a820;">toegangscode</strong>. Gasten openen hem via de tegel "Vind hier je verzoekjes" op de site, of direct via de deelbare link. Zelfde JSON-formaat als de categorieën hierboven.</p>
-                    <div style="border:1px solid rgba(200,150,10,0.25); border-radius:8px; padding:0.75rem; margin-bottom:0.9rem;">
-                        <h4 style="color:#d4a820; margin:0 0 0.4rem;">Tekstje boven de verzoekjes-tegel</h4>
-                        <input type="text" id="verzoekIntroNl" placeholder="🇳🇱 Heb je verzoekjes? Laat het ons weten...." style="width:100%; font-size:13px; padding:8px; margin-bottom:6px;">
-                        <input type="text" id="verzoekIntroEn" placeholder="🇬🇧 Got a song request? Let us know...." style="width:100%; font-size:13px; padding:8px; margin-bottom:6px;">
-                        <input type="text" id="verzoekIntroDe" placeholder="🇩🇪 Hast du Musikwünsche? Lass es uns wissen...." style="width:100%; font-size:13px; padding:8px; margin-bottom:6px;">
-                        <button class="btn" onclick="saveVerzoekIntro()" style="width:100%;">Tekstje opslaan</button>
-                    </div>
-                    <div id="verzoekLijstOverzicht" style="margin-bottom:0.75rem;"></div>
-                    <div style="border:1px solid rgba(200,150,10,0.25); border-radius:8px; padding:0.75rem;">
-                        <h4 style="color:#d4a820; margin:0 0 0.5rem;" id="verzoekFormTitel">Nieuwe verzoekjeslijst</h4>
-                        <div style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:6px;">
-                            <input type="text" id="verzoekCode" placeholder="toegangscode (bv. bruiloft-anna-tom)" style="flex:1 1 200px; font-size:13px; padding:8px;">
-                            <input type="text" id="verzoekTitel" placeholder="Titel (bv. Bruiloft Anna &amp; Tom)" style="flex:1 1 200px; font-size:13px; padding:8px;">
-                        </div>
-                        <div style="display:flex; align-items:center; gap:8px; margin-bottom:6px; flex-wrap:wrap;">
-                            <button type="button" class="btn btn-secondary" onclick="document.getElementById('verzoekJsonFile').click()" style="flex:0 0 auto;">📂 JSON-bestand kiezen</button>
-                            <input type="file" id="verzoekJsonFile" accept=".json,application/json" style="display:none;" onchange="loadVerzoekJsonFile(this)">
-                            <span style="color:#7cc096; font-size:0.78rem;">of plak de JSON hieronder</span>
-                        </div>
-                        <textarea id="verzoekJson" rows="5" placeholder='{"name":"...","songs":[{"title":"...","content":"..."}]}' style="width:100%; resize:vertical; font-family:monospace; font-size:12px; padding:8px;"></textarea>
-                        <div id="verzoekJsonStatus" style="font-size:0.78rem; margin-top:4px; min-height:1.2em;"></div>
-                        <div style="display:flex; gap:8px; margin-top:0.5rem; flex-wrap:wrap;">
-                            <button class="btn" onclick="saveVerzoekLijst()" style="flex:1;">Verzoekjeslijst opslaan</button>
-                            <button class="btn btn-secondary" onclick="resetVerzoekForm()" style="flex:0 0 auto;">Leegmaken</button>
-                        </div>
-                    </div>
                 </div>
 
                 <div class="two-column">
@@ -1643,21 +1614,8 @@
                 <input type="text" id="memberRole" placeholder="Zang, gitaar, fiddle...">
             </div>
             <div class="form-group">
-                <label>Bio (optioneel — korte tekst op de tegel)</label>
+                <label>Bio (optioneel)</label>
                 <textarea id="memberBio" placeholder="Korte beschrijving..."></textarea>
-            </div>
-            <div class="form-group">
-                <label>📄 Pagina-tekst 🇳🇱 Nederlands</label>
-                <textarea id="memberPageNl" rows="5" placeholder="Paragraaf op de eigen bandlid-pagina (Nederlands)..."></textarea>
-            </div>
-            <div class="form-group">
-                <label>📄 Pagina-tekst 🇬🇧 Engels</label>
-                <textarea id="memberPageEn" rows="5" placeholder="Paragraph on the member page (English)..."></textarea>
-            </div>
-            <div class="form-group">
-                <label>📄 Pagina-tekst 🇩🇪 Duits</label>
-                <textarea id="memberPageDe" rows="5" placeholder="Absatz auf der Bandmitglied-Seite (Deutsch)..."></textarea>
-                <p style="font-size:0.8rem; color:#7cc096; margin-top:0.3rem;">Deze tekst verschijnt op de eigen pagina van het bandlid (klik op de tegel op de website). Ontbreekt een taal, dan valt de site terug op Nederlands.</p>
             </div>
             <div class="form-group">
                 <label>Profielfoto (optioneel)</label>
@@ -3832,174 +3790,11 @@
                 .catch(e => alert('Error: ' + e.message));
         }
 
-        // ── Verzoekjeslijsten (collectie 'verzoekjes', document-ID = toegangscode) ──
-        function initVerzoekValidatie() {
-            const ta = document.getElementById('verzoekJson');
-            const status = document.getElementById('verzoekJsonStatus');
-            if (!ta || !status || ta.dataset.init) return;
-            ta.dataset.init = '1';
-            ta.addEventListener('input', () => {
-                const val = ta.value.trim();
-                if (!val) { status.textContent = ''; return; }
-                try {
-                    const data = JSON.parse(val);
-                    const songs = Array.isArray(data) ? data : (data.songs || []);
-                    if (Array.isArray(songs) && songs.length) {
-                        status.style.color = '#7cc096';
-                        status.textContent = '\u2713 Geldige JSON \u2014 ' + songs.length + ' nummer(s) gevonden';
-                    } else {
-                        status.style.color = '#e0922f';
-                        status.textContent = '\u26a0 Geldige JSON, maar geen nummers gevonden (verwacht: songs-array)';
-                    }
-                } catch (e) {
-                    status.style.color = '#e07070';
-                    status.textContent = '\u2717 Ongeldige JSON: ' + e.message;
-                }
-            });
-        }
-
-        window.loadVerzoekJsonFile = function(input) {
-            const file = input.files && input.files[0];
-            const ta = document.getElementById('verzoekJson');
-            const status = document.getElementById('verzoekJsonStatus');
-            if (!file || !ta) return;
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                let text = String(e.target.result || '');
-                try { text = JSON.stringify(JSON.parse(text), null, 2); } catch (err) {}
-                ta.value = text;
-                ta.dispatchEvent(new Event('input'));
-                if (status) { status.style.color = '#7cc096'; status.textContent = '\u2713 Bestand geladen: ' + file.name; }
-            };
-            reader.onerror = function() {
-                if (status) { status.style.color = '#e07070'; status.textContent = '\u2717 Kon bestand niet lezen'; }
-            };
-            reader.readAsText(file);
-            input.value = '';
-        };
-
-        function normVerzoekCode(raw) {
-            // kleine letters, spaties → streepjes, alleen letters/cijfers/streepjes
-            return (raw || '').trim().toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9\-_]/g, '');
-        }
-
-        function loadVerzoekLijsten() {
-            initVerzoekValidatie();
-            // Introtekstje (3 talen) uit settings/site-text
-            db.collection('settings').doc('site-text').get().then(doc => {
-                if (!doc.exists) return;
-                const vi = doc.data().verzoekjesIntro || {};
-                ['Nl','En','De'].forEach(l => {
-                    const el = document.getElementById('verzoekIntro' + l);
-                    if (el) el.value = vi[l.toLowerCase()] || '';
-                });
-            }).catch(()=>{});
-            const wrap = document.getElementById('verzoekLijstOverzicht');
-            if (!wrap) return;
-            db.collection('verzoekjes').get().then(snap => {
-                if (snap.empty) {
-                    wrap.innerHTML = '<p style="color:#7f9a86; font-size:0.8rem;">Nog geen verzoekjeslijsten.</p>';
-                    return;
-                }
-                let h = '';
-                snap.forEach(doc => {
-                    const d = doc.data();
-                    let count = 0;
-                    try { const j = JSON.parse(d.json || '{}'); count = (Array.isArray(j) ? j : (j.songs || [])).length; } catch (e) {}
-                    const link = 'https://doggyfew.com/liedjes.html?cat=verzoekjes&code=' + encodeURIComponent(doc.id);
-                    h += '<div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap; border:1px solid rgba(200,150,10,0.2); border-radius:6px; padding:0.5rem 0.7rem; margin-bottom:6px;">' +
-                         '<div style="flex:1 1 200px;"><strong style="color:#d4a820;">' + (d.title || '(zonder titel)') + '</strong>' +
-                         '<span style="color:#a8c8b2; font-size:0.78rem;"> \u2014 code: <code>' + doc.id + '</code> \u00b7 ' + count + ' nummer(s)</span></div>' +
-                         '<button class="btn btn-secondary" style="font-size:12px; padding:4px 10px;" onclick="kopieerVerzoekLink(\'' + link + '\', this)">🔗 Link</button>' +
-                         '<button class="btn btn-secondary" style="font-size:12px; padding:4px 10px;" onclick="editVerzoekLijst(\'' + doc.id + '\')">Bewerk</button>' +
-                         '<button class="btn btn-secondary" style="font-size:12px; padding:4px 10px; color:#e07070;" onclick="deleteVerzoekLijst(\'' + doc.id + '\')">Verwijder</button>' +
-                         '</div>';
-                });
-                wrap.innerHTML = h;
-            }).catch(e => {
-                wrap.innerHTML = '<p style="color:#e07070; font-size:0.8rem;">Kon lijsten niet laden: ' + e.message + '</p>';
-            });
-        }
-
-        window.kopieerVerzoekLink = function(link, btn) {
-            navigator.clipboard.writeText(link).then(() => {
-                const t = btn.textContent; btn.textContent = '\u2713 Gekopieerd';
-                setTimeout(() => { btn.textContent = t; }, 1500);
-            }).catch(() => prompt('Kopieer de link:', link));
-        };
-
-        window.editVerzoekLijst = function(id) {
-            db.collection('verzoekjes').doc(id).get().then(doc => {
-                if (!doc.exists) return;
-                const d = doc.data();
-                document.getElementById('verzoekCode').value = id;
-                document.getElementById('verzoekTitel').value = d.title || '';
-                const ta = document.getElementById('verzoekJson');
-                ta.value = d.json || '';
-                ta.dispatchEvent(new Event('input'));
-                document.getElementById('verzoekFormTitel').textContent = 'Verzoekjeslijst bewerken: ' + id;
-                document.getElementById('verzoekCode').scrollIntoView({ behavior: 'smooth', block: 'center' });
-            });
-        };
-
-        window.deleteVerzoekLijst = function(id) {
-            if (!confirm('Verzoekjeslijst "' + id + '" verwijderen? De code werkt daarna niet meer.')) return;
-            db.collection('verzoekjes').doc(id).delete()
-                .then(() => loadVerzoekLijsten())
-                .catch(e => alert('Error: ' + e.message));
-        };
-
-        window.resetVerzoekForm = function() {
-            document.getElementById('verzoekCode').value = '';
-            document.getElementById('verzoekTitel').value = '';
-            const ta = document.getElementById('verzoekJson');
-            ta.value = '';
-            ta.dispatchEvent(new Event('input'));
-            document.getElementById('verzoekFormTitel').textContent = 'Nieuwe verzoekjeslijst';
-        };
-
-        window.saveVerzoekIntro = function() {
-            const data = {
-                verzoekjesIntro: {
-                    nl: document.getElementById('verzoekIntroNl').value.trim(),
-                    en: document.getElementById('verzoekIntroEn').value.trim(),
-                    de: document.getElementById('verzoekIntroDe').value.trim()
-                },
-                updatedAt: new Date()
-            };
-            db.collection('settings').doc('site-text').set(data, { merge: true })
-                .then(() => alert('Tekstje opgeslagen! Ververs de website om het te zien.'))
-                .catch(e => alert('Error: ' + e.message));
-        };
-
-        window.saveVerzoekLijst = function() {
-            const rawCode = document.getElementById('verzoekCode').value;
-            const code = normVerzoekCode(rawCode);
-            if (!code || code.length < 4) {
-                alert('Kies een toegangscode van minimaal 4 tekens (letters, cijfers, streepjes).');
-                return;
-            }
-            if (code !== rawCode.trim()) document.getElementById('verzoekCode').value = code;
-            const json = document.getElementById('verzoekJson').value.trim();
-            if (json) {
-                try { JSON.parse(json); }
-                catch (e) { alert('Ongeldige JSON: ' + e.message); return; }
-            }
-            db.collection('verzoekjes').doc(code).set({
-                title: document.getElementById('verzoekTitel').value.trim(),
-                json: json,
-                updatedAt: new Date()
-            }, { merge: true })
-                .then(() => { alert('Verzoekjeslijst "' + code + '" opgeslagen!'); resetVerzoekForm(); loadVerzoekLijsten(); })
-                .catch(e => alert('Error: ' + e.message));
-        };
-
         function loadSettings() {
             initVormgevingForms();
             loadSiteStyle();
             loadSiteText();
             loadSongCategories();
-            loadVerzoekLijsten();
             db.collection('admin').doc('settings').get()
                 .then(doc => {
                     if (doc.exists) {
@@ -4635,9 +4430,6 @@
             document.getElementById('memberName').value = '';
             document.getElementById('memberRole').value = '';
             document.getElementById('memberBio').value = '';
-            document.getElementById('memberPageNl').value = '';
-            document.getElementById('memberPageEn').value = '';
-            document.getElementById('memberPageDe').value = '';
             document.getElementById('memberPhotoUrl').value = '';
             document.getElementById('memberPhotoPath').value = '';
             document.getElementById('memberPhotoFile').value = '';
@@ -4656,10 +4448,6 @@
                 document.getElementById('memberName').value = m.name || '';
                 document.getElementById('memberRole').value = m.role || '';
                 document.getElementById('memberBio').value = m.bio || '';
-                const pt = m.pageText || {};
-                document.getElementById('memberPageNl').value = pt.nl || '';
-                document.getElementById('memberPageEn').value = pt.en || '';
-                document.getElementById('memberPageDe').value = pt.de || '';
                 document.getElementById('memberPhotoUrl').value = m.photoUrl || '';
                 document.getElementById('memberPhotoPath').value = m.photoPath || '';
                 document.getElementById('memberPhotoFile').value = '';
@@ -4695,11 +4483,6 @@
                 name,
                 role: document.getElementById('memberRole').value,
                 bio: document.getElementById('memberBio').value,
-                pageText: {
-                    nl: document.getElementById('memberPageNl').value || '',
-                    en: document.getElementById('memberPageEn').value || '',
-                    de: document.getElementById('memberPageDe').value || ''
-                },
                 galleryId: document.getElementById('memberGallery').value || '',
                 photoUrl: document.getElementById('memberPhotoUrl').value || '',
                 photoPath: document.getElementById('memberPhotoPath').value || '',
@@ -4756,7 +4539,6 @@
                                 <h3>${m.name || ''}</h3>
                                 <p>${m.role || ''}</p>
                                 ${m.bio ? `<p>${m.bio}</p>` : ''}
-                                ${(() => { const pt = m.pageText || {}; const langs = ['nl','en','de'].filter(l => (pt[l]||'').trim()); return langs.length ? `<p style="font-size:0.8rem; color:#7cc096;">📄 Pagina-tekst: ${langs.map(l=>l.toUpperCase()).join(' / ')}</p>` : `<p style="font-size:0.8rem; color:#c9a15a;">📄 Nog geen pagina-tekst</p>`; })()}
                                 ${galleryName ? `<p style="font-size:0.8rem; color:#7cc096;">📁 Galerie: ${galleryName}</p>` : ''}
                             </div>
                         </div>

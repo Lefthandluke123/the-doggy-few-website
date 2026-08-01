@@ -1,0 +1,3 @@
+titan2._domainkey
+
+v=DKIM1; k=rsa; p=MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCpd/hzjVy1m77viy1BkysuSTjdNsa3qR4spQNXwGzdyacMOuw26CfuQve8GuydRzDeadMlgPRFujWxJx3VPuxcgT5bkhPiWequRL/Qm99K2zIL6G/c8ig88vzy7sSdsHX4/NicXp8q32ND6VbN+ZEyE0uDjXLgGP+P7Iw/iAzFrQIDAQAB 

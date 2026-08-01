@@ -182,6 +182,31 @@
             font-size: 1rem; cursor: pointer; font-family: inherit; transition: opacity .25s, transform .15s;
         }
         .submit-btn:hover { opacity: 0.92; transform: translateY(-1px); }
+        /* Direct contact: bellen of WhatsApp */
+        .direct-contact {
+            display: flex; gap: 0.8rem; flex-wrap: wrap;
+            margin: 1.2rem 0 1.6rem;
+        }
+        .direct-contact a {
+            flex: 1; min-width: 200px;
+            display: flex; align-items: center; justify-content: center; gap: 0.5rem;
+            padding: 0.85rem 1rem; border-radius: 8px;
+            font-weight: 700; font-size: 1rem; text-decoration: none;
+            transition: opacity .25s, transform .15s;
+        }
+        .direct-contact a:hover { opacity: 0.92; transform: translateY(-1px); }
+        .direct-contact .bel {
+            background: rgba(218,138,54,0.15);
+            border: 1px solid var(--color-accent); color: var(--color-accent);
+        }
+        .direct-contact .wapp {
+            background: rgba(37,211,102,0.15);
+            border: 1px solid #25d366; color: #4ee585;
+        }
+        .direct-contact-of {
+            text-align: center; color: #cdd6c4; font-size: 0.88rem;
+            margin: 0 0 0.4rem; opacity: 0.8;
+        }
         .submit-btn:disabled { opacity: 0.6; cursor: default; transform: none; }
         .hp { position: absolute; left: -9999px; opacity: 0; pointer-events: none; }
 
@@ -265,6 +290,11 @@
         <section class="booking">
             <h2>Beschikbaarheid opvragen</h2>
             <span class="type-pill">🎻 Akoestisch · Bruiloft &amp; Intiem</span>
+            <div class="direct-contact">
+                <a class="bel" href="tel:+31653716249">📞 Bel direct: 06-53716249</a>
+                <a class="wapp" href="https://wa.me/31653716249?text=Hoi%21%20Ik%20heb%20een%20vraag%20over%20het%20boeken%20van%20The%20Doggy%20Few." target="_blank" rel="noopener">✆ WhatsApp ons</a>
+            </div>
+            <p class="direct-contact-of">— of laat je gegevens achter, dan nemen wij contact op —</p>
             <form id="bookingForm" novalidate>
                 <div class="form-group">
                     <label for="name">Naam</label>

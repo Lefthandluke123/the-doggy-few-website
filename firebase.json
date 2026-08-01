@@ -6,6 +6,12 @@
       "**/.*",
       "**/node_modules/**"
     ],
+    "redirects": [
+      { "source": "/index.html", "destination": "/", "type": 301 },
+      { "source": "/home.php", "destination": "/", "type": 301 },
+      { "source": "/en/**", "destination": "/", "type": 301 },
+      { "source": "**/*.php", "destination": "/", "type": 301 }
+    ],
     "rewrites": [
       {
         "source": "/",

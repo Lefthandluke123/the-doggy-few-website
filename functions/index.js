@@ -7,7 +7,7 @@ const puppeteer = require("puppeteer-core");
 admin.initializeApp();
 const db = admin.firestore();
 
-const HOMEPAGE_URL = "https://the-doggy-few.web.app/index.html?live=1";
+const HOMEPAGE_URL = "https://the-doggy-few.web.app/app.html?live=1";
 const SNAPSHOT_DOC = "settings/snapshot";
 
 exports.makeSnapshot = onCall(
@@ -30,7 +30,7 @@ exports.makeSnapshot = onCall(
         () => {
           if (document.documentElement.getAttribute("data-hydrated") !== "true") return false;
           const ids = ["gigsContainer", "blogContainer", "membersContainer", "photosContainer", "videosContainer"];
-          return ids.some((id) => { const el = document.getElementById(id); return el && el.children.length > 0; });
+          return ids.every((id) => { const el = document.getElementById(id); return el && el.children.length > 0; });
         },
         { timeout: 30000 }
       ).catch(() => {});
@@ -59,7 +59,7 @@ exports.makeSnapshot = onCall(
 );
 
 exports.serveSnapshot = onRequest(
-  { memory: "256MiB", region: "europe-west1" },
+  { memory: "256MiB", region: "europe-west1", invoker: "public" },
   async (req, res) => {
     try {
       const snap = await db.doc(SNAPSHOT_DOC).get();
@@ -69,9 +69,9 @@ exports.serveSnapshot = onRequest(
         res.status(200).send(snap.data().html);
         return;
       }
-      res.redirect(302, "/index.html?live=1");
+      res.redirect(302, "/app.html?live=1");
     } catch (err) {
-      res.redirect(302, "/index.html?live=1");
+      res.redirect(302, "/app.html?live=1");
     }
   }
 );
