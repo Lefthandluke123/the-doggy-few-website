@@ -1393,7 +1393,35 @@
             </div>
             <div class="form-group">
                 <label>Inhoud</label>
-                <textarea id="blogContent" placeholder="Volledige inhoud..."></textarea>
+                <div id="blogToolbar" class="tt-toolbar">
+                    <button type="button" data-cmd="bold"><b>B</b></button>
+                    <button type="button" data-cmd="italic"><i>I</i></button>
+                    <button type="button" data-cmd="h2">H2</button>
+                    <button type="button" data-cmd="h3">H3</button>
+                    <button type="button" data-cmd="ul">&bull; Lijst</button>
+                    <button type="button" data-cmd="ol">1. Lijst</button>
+                    <button type="button" data-cmd="quote">&#10077;</button>
+                    <button type="button" data-cmd="link">&#128279; Link</button>
+                    <button type="button" data-cmd="foto">&#128247; Foto</button>
+                    <button type="button" data-cmd="video">&#127916; Video</button>
+                    <button type="button" data-cmd="imgS" title="Geselecteerde foto klein en gecentreerd">Klein</button>
+                    <button type="button" data-cmd="imgM" title="Geselecteerde foto half en gecentreerd">Half</button>
+                    <button type="button" data-cmd="imgL" title="Geselecteerde foto op volle breedte">Vol</button>
+                    <button type="button" data-cmd="clear">Opmaak wissen</button>
+                </div>
+                <div id="blogContentEditor" class="tt-editor"></div>
+                <style>
+                .tt-toolbar { display:flex; flex-wrap:wrap; gap:4px; padding:6px; background:#1f2a1f; border:1px solid #3d5a3d; border-radius:8px 8px 0 0; }
+                .tt-toolbar button { background:#2c3e2c; color:#e8d9a0; border:1px solid #3d5a3d; border-radius:5px; padding:4px 10px; cursor:pointer; font-size:13px; }
+                .tt-toolbar button:hover { background:#3d5a3d; }
+                .tt-editor { min-height:220px; background:#141c14; border:1px solid #3d5a3d; border-top:none; border-radius:0 0 8px 8px; padding:12px; }
+                .tt-editor .ProseMirror { min-height:200px; outline:none; line-height:1.7; }
+                .tt-editor h2, .tt-editor h3 { color:#d4a94e; }
+                .tt-editor blockquote { border-left:3px solid #d4a94e; margin:.5em 0; padding-left:1em; opacity:.9; }
+                .tt-editor a { color:#91c383; }
+                .tt-editor img { max-width:100%; border-radius:8px; margin:.5em 0; }
+                .tt-editor iframe, .tt-editor div[data-youtube-video] iframe { width:100%; max-width:100%; aspect-ratio:16/9; height:auto; border-radius:8px; margin:.5em 0; border:0; }
+                </style>
             </div>
             <div class="form-group">
                 <label>📷 Foto uploaden (optioneel)</label>
@@ -2109,7 +2137,7 @@
             document.getElementById('blogId').value = '';
             document.getElementById('blogTitle').value = '';
             document.getElementById('blogExcerpt').value = '';
-            document.getElementById('blogContent').value = '';
+            window.blogEditorSet?.('');
             document.getElementById('blogImage').value = '';
             document.getElementById('blogVideoUrl').value = '';
             document.getElementById('blogStatus').value = 'draft';
@@ -2127,7 +2155,7 @@
                 document.getElementById('blogId').value = id;
                 document.getElementById('blogTitle').value = p.title || '';
                 document.getElementById('blogExcerpt').value = p.excerpt || '';
-                document.getElementById('blogContent').value = p.content || '';
+                window.blogEditorSet?.(p.content || '');
                 document.getElementById('blogImage').value = p.imageUrl || '';
                 document.getElementById('blogVideoUrl').value = p.videoUrl || '';
                 document.getElementById('blogStatus').value = p.status || 'draft';
@@ -2159,7 +2187,7 @@
         function previewBlog() {
             const title = document.getElementById('blogTitle').value || '(geen titel)';
             const excerpt = document.getElementById('blogExcerpt').value || '';
-            const content = document.getElementById('blogContent').value || '';
+            const content = window.blogEditorGet ? window.blogEditorGet() : '';
             const category = document.getElementById('blogCategory').value || '';
             const videoUrl = document.getElementById('blogVideoUrl').value.trim();
             const videoId = videoUrl ? extractYouTubeId(videoUrl) : '';
@@ -2203,7 +2231,7 @@
             const post = {
                 title,
                 excerpt: document.getElementById('blogExcerpt').value,
-                content: document.getElementById('blogContent').value,
+                content: window.blogEditorGet ? window.blogEditorGet() : '',
                 imageUrl: document.getElementById('blogImage').value,
                 videoUrl: videoUrl,
                 videoId: videoId || '',
@@ -2345,6 +2373,8 @@
                 const prev = document.getElementById('memberPhotoPreview');
                 const wrap = document.getElementById('memberPhotoPreviewWrap');
                 if (prev && wrap) { prev.src = url; wrap.style.display = 'block'; }
+            } else if (photoPickerTarget === 'editor') {
+                if (window.blogEditorInsertImage) window.blogEditorInsertImage(url);
             } else if (photoPickerTarget === 'blog') {
                 document.getElementById('blogImage').value = url;
                 const f = document.getElementById('blogPhotoFile');
@@ -5234,5 +5264,51 @@ Inhoud: ${(post.content || '').slice(0, 400)}`
         }
     </script>
 
+<script type="module">
+import { Editor } from 'https://esm.sh/@tiptap/core@2.14.0';
+import StarterKit from 'https://esm.sh/@tiptap/starter-kit@2.14.0';
+import Link from 'https://esm.sh/@tiptap/extension-link@2.14.0';
+import Image from 'https://esm.sh/@tiptap/extension-image@2.14.0';
+import Youtube from 'https://esm.sh/@tiptap/extension-youtube@2.14.0';
+
+const BlogImage = Image.extend({ addAttributes() { return { ...this.parent?.(), style: { default: null, parseHTML: el => el.getAttribute('style'), renderHTML: attrs => attrs.style ? { style: attrs.style } : {} } }; } });
+const ttEditor = new Editor({
+  element: document.querySelector('#blogContentEditor'),
+  extensions: [StarterKit, Link.configure({ openOnClick: false }), BlogImage, Youtube.configure({ nocookie: true })],
+  content: ''
+});
+window.blogEditorGet = () => { const h = ttEditor.getHTML(); return h === '<p></p>' ? '' : h; };
+window.blogEditorInsertImage = (url) => { ttEditor.chain().focus().setImage({ src: url }).run(); };
+window.blogEditorSet = (val) => {
+  if (!val) { ttEditor.commands.clearContent(); return; }
+  if (!/<[a-z][\s\S]*>/i.test(val)) {
+    const esc = val.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    val = '<p>' + esc.split(/\n{2,}/).map(p => p.replace(/\n/g,'<br>')).join('</p><p>') + '</p>';
+  }
+  ttEditor.commands.setContent(val);
+};
+document.querySelectorAll('#blogToolbar [data-cmd]').forEach(btn => {
+  btn.addEventListener('click', (e) => {
+    e.preventDefault();
+    const c = ttEditor.chain().focus();
+    switch (btn.dataset.cmd) {
+      case 'bold': c.toggleBold().run(); break;
+      case 'italic': c.toggleItalic().run(); break;
+      case 'h2': c.toggleHeading({ level: 2 }).run(); break;
+      case 'h3': c.toggleHeading({ level: 3 }).run(); break;
+      case 'ul': c.toggleBulletList().run(); break;
+      case 'ol': c.toggleOrderedList().run(); break;
+      case 'quote': c.toggleBlockquote().run(); break;
+      case 'link': { const url = prompt('Link URL (leeg = link verwijderen):'); if (url) { c.setLink({ href: url }).run(); } else { c.unsetLink().run(); } break; }
+      case 'foto': window.openPhotoPicker && window.openPhotoPicker('editor'); break;
+      case 'video': { const vurl = prompt('YouTube-link (plak de URL van de video):'); if (vurl) { c.setYoutubeVideo({ src: vurl }).run(); } break; }
+      case 'imgS': c.updateAttributes('image', { style: 'width:40%; display:block; margin:.8em auto;' }).run(); break;
+      case 'imgM': c.updateAttributes('image', { style: 'width:65%; display:block; margin:.8em auto;' }).run(); break;
+      case 'imgL': c.updateAttributes('image', { style: 'width:100%; display:block; margin:.8em 0;' }).run(); break;
+      case 'clear': c.clearNodes().unsetAllMarks().run(); break;
+    }
+  });
+});
+</script>
 </body>
 </html>

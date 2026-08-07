@@ -1728,7 +1728,7 @@
             border-radius: 8px;
             margin-bottom: 1rem;
         }
-        #blogDetailContent { white-space: pre-wrap; line-height: 1.8; }
+        #blogDetailContent { white-space: pre-wrap; line-height: 1.8; } #blogDetailContent.rich { white-space: normal; } #blogDetailContent.rich p { margin: 0 0 1em; } #blogDetailContent.rich h2, #blogDetailContent.rich h3 { color: #d4a94e; margin: 1.2em 0 .5em; } #blogDetailContent.rich blockquote { border-left: 3px solid #d4a94e; padding-left: 1em; opacity: .9; } #blogDetailContent.rich a { color: #91c383; } #blogDetailContent.rich img { max-width: 100%; height: auto; border-radius: 10px; margin: 1em 0; display: block; } #blogDetailContent.rich iframe { width: 100%; max-width: 100%; aspect-ratio: 16/9; height: auto; border-radius: 10px; margin: 1em 0; display: block; border: 0; }
         /* Links-sectie */
         .links-category { margin-bottom: 2.5rem; }
         .links-category h3 {
@@ -2153,7 +2153,7 @@
             <h2 id="blogDetailTitle" style="color:var(--color-accent); font-family:'Cinzel',serif; margin:0.5rem 0 1rem;"></h2>
             <img id="blogDetailImg" src="" alt="" style="display:none;">
             <div id="blogDetailVideo"></div>
-            <p id="blogDetailContent"></p>
+            <div id="blogDetailContent"></div>
         </div>
     </div>
 
@@ -3035,7 +3035,7 @@
                 videoWrap.innerHTML = '';
             }
 
-            document.getElementById('blogDetailContent').textContent = post.content || post.excerpt || '';
+            (function(){ const raw = post.content || post.excerpt || ''; const el = document.getElementById('blogDetailContent'); if (/<[a-z][\s\S]*>/i.test(raw)) { el.innerHTML = raw; el.classList.add('rich'); } else { el.textContent = raw; el.classList.remove('rich'); } })();
             document.getElementById('blogDetailModal').style.display = 'block';
         }
 
