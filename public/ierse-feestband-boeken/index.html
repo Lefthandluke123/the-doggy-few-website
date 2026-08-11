@@ -34,10 +34,26 @@
     {
         "@context": "https://schema.org",
         "@type": "Service",
-        "serviceType": "Ierse feestband boeken voor pub, festival en feest",
+        "serviceType": "Ierse feestband met dansworkshop voor pub, festival en feest",
         "name": "Ierse Feestband – Pub &amp; Keltische Feestmuziek",
-        "description": "Energieke, volledig versterkte live Ierse folkband uit Groningen voor kroegavonden, St. Patrick's Day, festivals en feesten. Uptempo jigs, reels en Ierse meezingers.",
+        "description": "Energieke, volledig versterkte live Ierse folkband uit Groningen voor kroegavonden, St. Patrick's Day, festivals en feesten. Uptempo jigs, reels en Ierse meezingers, met optioneel een Ierse dansworkshop (ceili) voor de gasten.",
         "areaServed": ["NL", "BE", "DE"],
+        "offers": [
+            {
+                "@type": "Offer",
+                "name": "Duo",
+                "price": "550",
+                "priceCurrency": "EUR",
+                "description": "Duo-bezetting, all-in"
+            },
+            {
+                "@type": "Offer",
+                "name": "Volledige band",
+                "price": "1250",
+                "priceCurrency": "EUR",
+                "description": "Vijf muzikanten"
+            }
+        ],
         "provider": {
             "@type": ["MusicGroup", "LocalBusiness"],
             "name": "The Doggy Few",
@@ -87,7 +103,15 @@
                 "name": "Wat kost het om The Doggy Few te boeken?",
                 "acceptedAnswer": {
                     "@type": "Answer",
-                    "text": "De prijs hangt af van de datum, de reisafstand, de speelduur en of er techniek geregeld moet worden. Via het aanvraagformulier krijg je een concrete prijsindicatie."
+                    "text": "Ter indicatie: een duo € 550 all-in, de volledige band € 1.250. Reisafstand, speelduur en techniek bepalen het eindbedrag. Via het aanvraagformulier krijg je een vast bedrag."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "Kunnen onze gasten leren Ierse dansen?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Ja. The Doggy Few geeft een ceili-workshop waarin de gasten een paar basispassen leren, waarna de band er live bij speelt. Danservaring is niet nodig."
                 }
             },
             {
@@ -192,6 +216,15 @@
             font-family: var(--font-heading); color: var(--color-accent2);
             font-size: 1.5rem; margin: 2.4rem 0 0.9rem; line-height: 1.3;
         }
+        .lp-block.uitgelicht {
+            background: var(--color-bg-deep);
+            border: 1px solid #4d5645;
+            border-left: 4px solid var(--color-accent);
+            border-radius: 12px;
+            padding: 1.6rem 1.5rem 1.2rem;
+            margin: 2.4rem 0 1rem;
+        }
+        .lp-block.uitgelicht h2 { margin-top: 0; color: var(--color-accent); }
         main h3.vraag {
             font-family: var(--font-heading); color: #f0d9a8;
             font-size: 1.08rem; margin: 1.6rem 0 0.4rem; line-height: 1.35;
@@ -278,7 +311,9 @@
         <main>
             <div id="lp-intro">
                 <p>Een onvergetelijke Ierse avond organiseren begint met de juiste live muziek. The Doggy Few is een energieke Ierse folkband uit Groningen die sinds 2003 speelt op kroegavonden, festivals, dorpsfeesten en besloten feesten. Met vijf muzikanten en authentieke instrumenten brengen we de rauwe, ongepolijste sfeer van een traditionele Ierse pub direct naar jouw evenement.</p>
-                <p>Die sfeer is bij ons geen decor. Peter, onze bodhránspeler en zanger, komt uit Drumcondra aan de noordkant van Dublin en opende ooit de eerste echte Ierse pub in het noorden van Nederland — daar is deze band uit voortgekomen. Luke ruilde een rechtenstudie in voor een muzikale reis langs Ierse pubs en zingt nog altijd de liedjes die hij daar leerde.</p>
+                <p>Die sfeer is bij ons geen decor. Peter, onze bodhránspeler en zanger, komt uit <strong>Drumcondra aan de noordkant van Dublin</strong>. Voor een Dub is een goed verhaal net zo belangrijk als een pint Guinness, en toen hij in Nederland belandde vond hij zijn roeping: hij opende de eerste echte Ierse pub in het noorden van het land. Die pub werd dé plek voor wie een stukje Ierland zocht — en toen een paar vaste klanten besloten een band te vormen, hoefden ze niet lang na te denken wie erbij moest. Vijfentwintig jaar later tikt hij nog altijd op zijn geliefde "bang-it-on", zoals hij zijn bodhrán noemt.</p>
+                <p>Luke ruilde een rechtenstudie in voor een muzikale reis langs Ierse pubs en zingt nog steeds de liedjes die hij daar leerde. Wat je bij ons hoort is dus niet nagespeeld van een plaat — het komt rechtstreeks uit die kroegen.</p>
+                <p>Tussen 2016 en 2025 stonden we vier keer op <strong>Zomerfolk</strong> in het Stadspark van Groningen, en verder op festivals, in kroegen en op besloten feesten door het hele land.</p>
                 <p>Of je nu een lokaal dorpsfeest organiseert, een festival programmeert of je kroeg wilt vullen met dampende kroegmuziek: wij leveren de energie die het publiek in beweging krijgt.</p>
             </div>
 
@@ -338,13 +373,23 @@
                 </div>
             </section>
 
+            <section class="lp-block uitgelicht">
+                <h2>Laat je Gasten Meedansen: de Ierse Dansworkshop</h2>
+                <p>Naast spelen geven we een <strong>ceili-workshop</strong> — Ierse groepsdans, op live muziek. We halen mensen van hun stoel, leren ze een paar basispassen, zetten die achter elkaar tot een dans, en spelen er dan naartoe. Danservaring is niet nodig: wie een pas kan volgen in een rustig tempo, doet mee.</p>
+                <p>Op een dorpsfeest, bedrijfsfeest of bruiloft is dat het moment waarop een zaal omslaat van kijken naar meedoen. De workshop is optioneel — een kwartier tussen twee sets, of een langer blok als middelpunt van de avond.</p>
+                <p><strong>Wat het ongeveer kost:</strong> een duo komt op € 550 all-in, de volledige band op € 1.250. Reisafstand, speelduur en techniek kunnen dat bijstellen. Je krijgt vooraf een vast bedrag, geen nacalculatie.</p>
+            </section>
+
             <section class="lp-block">
                 <h2>Veelgestelde Vragen over het Boeken van een Ierse Feestband</h2>
                 <h3 class="vraag">Hoeveel ruimte hebben jullie nodig?</h3>
                 <p>Dat hangt af van de bezetting en de zaal. We spelen met vijf muzikanten en zijn gewend ons aan te passen aan de ruimte die er is — van een hoek in een café tot een volwaardig podium. Vertel ons wat je hebt, dan zeggen we eerlijk of het past.</p>
 
                 <h3 class="vraag">Wat kost het om The Doggy Few te boeken?</h3>
-                <p>De prijs hangt af van de datum, de reisafstand, de speelduur en of er techniek geregeld moet worden. Vraag via het formulier hieronder een prijsindicatie aan; je krijgt een concreet antwoord, geen vaag verhaal.</p>
+                <p>Ter indicatie: een duo € 550 all-in, de volledige band € 1.250. Reisafstand, speelduur en of er techniek geregeld moet worden bepalen het eindbedrag. Vraag via het formulier hieronder een prijs aan; je krijgt een vast bedrag terug, geen vaag verhaal.</p>
+
+                <h3 class="vraag">Kunnen onze gasten leren Ierse dansen?</h3>
+                <p>Ja. We geven een ceili-workshop waarin we een paar basispassen leren en er live bij spelen. Geen danservaring nodig. Geef bij je aanvraag door wat voor gezelschap er komt, dan stemmen we het daarop af.</p>
 
                 <h3 class="vraag">Kunnen we zelf nummers aanvragen?</h3>
                 <p>Ja. Je kunt vooraf verzoeknummers doorgeven, en via onze site kun je bij elk optreden een verzoekje insturen. Staat een nummer niet op ons repertoire, dan horen we het graag op tijd.</p>
