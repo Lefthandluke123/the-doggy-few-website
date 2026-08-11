@@ -68,6 +68,48 @@
     }
     </script>
 
+    <!-- Structured Data: veelgestelde vragen (moet gelijk blijven aan de tekst op de pagina) -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        "mainEntity": [
+            {
+                "@type": "Question",
+                "name": "Kunnen jullie spelen zonder geluidsinstallatie?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Ja. In een huiskamer, een kleine zaal of buiten bij een ceremonie met een beperkt gezelschap speelt The Doggy Few volledig akoestisch. Bij een grotere groep of veel omgevingsgeluid gebruiken we lichte versterking."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "Spelen jullie een nummer dat wij zelf uitkiezen?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Vaak wel. Als het binnen onze stijl past en we het op tijd horen, leren we het graag. Vraag het bij de aanvraag."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "Hoe lang spelen jullie tijdens een ceremonie?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Meestal gaat het om een paar losse momenten in plaats van aaneengesloten sets. Het draaiboek stemmen we vooraf af met het bruidspaar of de ceremoniemeester."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "Komen jullie ook buiten de provincie Groningen?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "The Doggy Few speelt in heel Nederland; België en Duitsland in overleg. De reisafstand wordt verwerkt in de prijsindicatie."
+                }
+            }
+        ]
+    }
+    </script>
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Nunito+Sans:wght@400;500;600&display=swap" rel="stylesheet">
@@ -137,6 +179,10 @@
         main h2 {
             font-family: var(--font-heading); color: var(--color-accent2);
             font-size: 1.5rem; margin: 2.4rem 0 0.9rem; line-height: 1.3;
+        }
+        main h3.vraag {
+            font-family: var(--font-heading); color: #f0d9a8;
+            font-size: 1.08rem; margin: 1.6rem 0 0.4rem; line-height: 1.35;
         }
         main p { margin-bottom: 1.1rem; color: #dde3d8; }
         main ul { list-style: none; margin: 0 0 1.4rem; }
@@ -245,6 +291,7 @@
             <div id="lp-intro">
                 <p>Voor momenten die vragen om sfeer en verdieping, biedt The Doggy Few pure, akoestische Ierse muziek. In een ingetogen, (semi-)akoestische bezetting brengen we de authentieke Keltische traditie tot leven. Deze warme luisterliedjes zijn perfect inzetbaar als achtergrondmuziek op maat of als centraal luisterconcert.</p>
                 <p>Of het nu gaat om een receptie, een cultureel evenement of een theaterzaaltje, de muziek past zich naadloos aan de intieme setting aan.</p>
+                <p>The Doggy Few komt uit Groningen en speelt sinds 2003 Ierse en Keltische muziek. Dezelfde band die een kroeg op zijn kop zet, speelt ook zacht — dat is een bewuste keuze, geen afgeslankte versie. Ierse muziek kent net zoveel stille liedjes als snelle; juist in de trage ballads zit het verhaal.</p>
             </div>
 
             <section class="lp-block" id="lp-block1">
@@ -256,6 +303,7 @@
                         <li><strong>Traditionele Ierse ballads:</strong> prachtige, verhalende luisterliedjes en harmonieuze zang.</li>
                         <li><strong>Traditioneel instrumentarium:</strong> de warme en herkenbare klanken van de akoestische gitaar, tin whistle, bodhrán en mandoline.</li>
                     </ul>
+                    <p>In de praktijk verdelen we een trouwdag vaak in drie momenten: zachte muziek terwijl de gasten binnenkomen, één lied op het moment dat het ertoe doet — bij het binnenlopen, bij de ringen, bij het weggaan — en daarna losser spel tijdens de borrel. Welke liedjes dat worden, spreken we vooraf met jullie door. Een nummer dat voor jullie betekenis heeft, leren we graag; laat het ons dan wel op tijd weten.</p>
                 </div>
             </section>
 
@@ -263,20 +311,55 @@
                 <h2 id="lp-block2-h">Huiskamerconcert door een Ierse Folkmuzikant</h2>
                 <div id="lp-block2-b">
                     <p>Breng de Ierse muzikale traditie letterlijk dichtbij met een huiskamerconcert door een folkmuzikant. Dit is de ultieme manier om de muziek in de puurste vorm te ervaren. Ongedwongen, met volop ruimte voor de verhalen achter de eeuwenoude liedjes en helemaal passend bij een gezellige huiskamersfeer.</p>
+                    <p>Een huiskamerconcert vraagt weinig: een kamer waar mensen kunnen zitten en stroom voor het geval we iets willen versterken. Meestal is dat laatste niet eens nodig. Er hoeft niets opgebouwd te worden, er is geen geluidsman bij, en na afloop blijft iedereen gewoon zitten praten — dat hoort erbij.</p>
                 </div>
             </section>
 
-            <section class="lp-block" id="lp-block3" style="display:none;">
-                <h2 id="lp-block3-h"></h2>
-                <div id="lp-block3-b"></div>
+            <section class="lp-block" id="lp-block3">
+                <h2 id="lp-block3-h">De Ballads: Waar de Verhalen Zitten</h2>
+                <div id="lp-block3-b">
+                    <p>Akoestisch spelen we vooral uit de Ierse en Schotse balladtraditie: liedjes over vertrek, verlangen, zee en thuiskomen. Uit ons repertoire komen dan onder meer voorbij:</p>
+                    <ul>
+                        <li><em>Spancil Hill</em> — de droom van een emigrant die 's nachts terugkeert naar Clare.</li>
+                        <li><em>Black is the Colour</em> — een van de mooiste liefdesliederen uit de traditie.</li>
+                        <li><em>Will Ye Go, Lassie, Go?</em> (Wild Mountain Thyme) — het meezingliedje dat iedereen kent zonder te weten waarvan.</li>
+                        <li><em>Fiddler's Green</em>, <em>Caledonia</em>, <em>Loch Lomond</em> en <em>Clare to Here</em> — liedjes over weggaan en missen.</li>
+                        <li><em>The Foggy Dew</em> en <em>Back Home in Derry</em> — de Ierse geschiedenis, gezongen.</li>
+                    </ul>
+                    <p>Het volledige repertoire, met teksten en akkoorden, staat op onze <a href="/liedjes.html" class="cross-link">liedjespagina</a>.</p>
+                </div>
             </section>
 
-            <section class="lp-block" id="lp-block4" style="display:none;">
-                <h2 id="lp-block4-h"></h2>
-                <div id="lp-block4-b"></div>
+            <section class="lp-block" id="lp-block4">
+                <h2 id="lp-block4-h">Bezetting op Maat: Van Duo tot Vijf Muzikanten</h2>
+                <div id="lp-block4-b">
+                    <p>Niet elke ruimte vraagt om vijf muzikanten. We stemmen de bezetting af op de plek en de gelegenheid:</p>
+                    <ul>
+                        <li><strong>Duo:</strong> zang en gitaar met viool of Ierse dwarsfluit. Geschikt voor een ceremonie, een receptie of een kleine huiskamer.</li>
+                        <li><strong>Trio of kwartet:</strong> daar komt de bodhrán bij, en de melodeon voor wie ook wat vrolijks wil horen.</li>
+                        <li><strong>Volledige bezetting:</strong> vijf muzikanten — zang en gitaar, Ierse dwarsfluit, melodeon, viool en bodhrán — ook akoestisch te spelen als de zaal het toelaat.</li>
+                    </ul>
+                    <p>Weet je niet welke bezetting past? Beschrijf de ruimte en het moment in je aanvraag, dan adviseren we je eerlijk — ook als dat betekent dat een kleinere bezetting beter is.</p>
+                </div>
             </section>
 
-            <p>Liever een knallende kroegavond of festivaloptreden vol jigs en meezingers? Bekijk dan onze pagina over de <a href="/ierse-feestband-boeken/" class="cross-link">Ierse feestband</a>.</p>
+            <section class="lp-block">
+                <h2>Veelgestelde Vragen over Akoestische Ierse Muziek</h2>
+
+                <h3 class="vraag">Kunnen jullie spelen zonder geluidsinstallatie?</h3>
+                <p>Ja. In een huiskamer, een kleine zaal of buiten bij een ceremonie met een beperkt gezelschap spelen we volledig akoestisch. Bij een grotere groep of veel omgevingsgeluid gebruiken we lichte versterking.</p>
+
+                <h3 class="vraag">Spelen jullie een nummer dat wij zelf uitkiezen?</h3>
+                <p>Vaak wel. Als het binnen onze stijl past en we het op tijd horen, leren we het graag. Vraag het bij de aanvraag, dan zeggen we eerlijk of het lukt.</p>
+
+                <h3 class="vraag">Hoe lang spelen jullie tijdens een ceremonie?</h3>
+                <p>Dat bepaalt de dag, niet de band. Meestal gaat het om een paar losse momenten in plaats van aaneengesloten sets. We stemmen het draaiboek vooraf af met jullie of met de ceremoniemeester.</p>
+
+                <h3 class="vraag">Komen jullie ook buiten de provincie Groningen?</h3>
+                <p>We spelen in heel Nederland; België en Duitsland in overleg. De reisafstand verwerken we in de prijsindicatie, zodat je vooraf weet waar je aan toe bent.</p>
+            </section>
+
+            <p>Liever een knallende kroegavond of festivaloptreden vol jigs en meezingers? Bekijk dan onze pagina over de <a href="/ierse-feestband-boeken/" class="cross-link">Ierse feestband</a>. Wil je ons eerst live zien? Onze <a href="/#gigs" class="cross-link">agenda</a> staat op de voorpagina.</p>
 
             <section id="lp-cta">
                 <h2 id="lp-cta-h">Repertoire Doorspreken en Beschikbaarheid</h2>
@@ -393,16 +476,15 @@
             lpText('lp-eyebrow', data.eyebrow);
             lpText('lp-h1', data.h1);
             if (data.intro) document.getElementById('lp-intro').innerHTML = lpParseBody(data.intro);
+            // Een leeg veld in het beheer betekent "niet gewijzigd", niet "weghalen".
+            // Anders zou één keer opslaan met een leeg veld de tekst van de pagina wissen.
             [1,2,3,4].forEach(function(i){
                 var sec = document.getElementById('lp-block' + i);
                 var h = (data['block' + i + 'Heading'] || '').trim();
-                if (h) {
-                    document.getElementById('lp-block' + i + '-h').textContent = h;
-                    document.getElementById('lp-block' + i + '-b').innerHTML = lpParseBody(data['block' + i + 'Body'] || '');
-                    sec.style.display = '';
-                } else {
-                    sec.style.display = 'none';
-                }
+                if (!h) return;
+                document.getElementById('lp-block' + i + '-h').textContent = h;
+                document.getElementById('lp-block' + i + '-b').innerHTML = lpParseBody(data['block' + i + 'Body'] || '');
+                sec.style.display = '';
             });
             lpText('lp-cta-h', data.ctaHeading);
             if (data.ctaBody) document.getElementById('lp-cta-b').innerHTML = lpParseBody(data.ctaBody);

@@ -68,6 +68,56 @@
     }
     </script>
 
+    <!-- Structured Data: veelgestelde vragen (moet gelijk blijven aan de tekst op de pagina) -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        "mainEntity": [
+            {
+                "@type": "Question",
+                "name": "Hoeveel ruimte hebben jullie nodig?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Dat hangt af van de bezetting en de zaal. We spelen met vijf muzikanten en zijn gewend ons aan te passen aan de ruimte die er is — van een hoek in een café tot een volwaardig podium."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "Wat kost het om The Doggy Few te boeken?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "De prijs hangt af van de datum, de reisafstand, de speelduur en of er techniek geregeld moet worden. Via het aanvraagformulier krijg je een concrete prijsindicatie."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "Kunnen we zelf nummers aanvragen?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Ja. Je kunt vooraf verzoeknummers doorgeven, en via de site kun je bij elk optreden een verzoekje insturen."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "Spelen jullie ook akoestisch?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Ja. Voor een bruiloft, huiskamerconcert of ceremonie speelt The Doggy Few in kleinere, akoestische bezetting."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "In welk gebied treden jullie op?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "The Doggy Few komt uit Groningen en speelt in heel Nederland. België en Duitsland kan in overleg."
+                }
+            }
+        ]
+    }
+    </script>
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Nunito+Sans:wght@400;500;600&display=swap" rel="stylesheet">
@@ -141,6 +191,10 @@
         main h2 {
             font-family: var(--font-heading); color: var(--color-accent2);
             font-size: 1.5rem; margin: 2.4rem 0 0.9rem; line-height: 1.3;
+        }
+        main h3.vraag {
+            font-family: var(--font-heading); color: #f0d9a8;
+            font-size: 1.08rem; margin: 1.6rem 0 0.4rem; line-height: 1.35;
         }
         main p { margin-bottom: 1.1rem; color: #dde3d8; }
         main ul { list-style: none; margin: 0 0 1.4rem; }
@@ -223,19 +277,22 @@
     <div class="container">
         <main>
             <div id="lp-intro">
-                <p>Een onvergetelijke Ierse avond organiseren begint met de juiste live muziek. The Doggy Few is een energieke Ierse folkband uit Groningen met jarenlange ervaring in het bouwen van een feest. Met een volledige bezetting en authentieke instrumenten brengen we de rauwe, ongepolijste sfeer van een traditionele Ierse pub direct naar jouw evenement.</p>
-                <p>Of je nu een lokaal dorpsfeest organiseert, een festival programmeert of je kroeg wilt vullen met dampende kroegmuziek, wij leveren de energie die het publiek in beweging krijgt.</p>
+                <p>Een onvergetelijke Ierse avond organiseren begint met de juiste live muziek. The Doggy Few is een energieke Ierse folkband uit Groningen die sinds 2003 speelt op kroegavonden, festivals, dorpsfeesten en besloten feesten. Met vijf muzikanten en authentieke instrumenten brengen we de rauwe, ongepolijste sfeer van een traditionele Ierse pub direct naar jouw evenement.</p>
+                <p>Die sfeer is bij ons geen decor. Peter, onze bodhránspeler en zanger, komt uit Drumcondra aan de noordkant van Dublin en opende ooit de eerste echte Ierse pub in het noorden van Nederland — daar is deze band uit voortgekomen. Luke ruilde een rechtenstudie in voor een muzikale reis langs Ierse pubs en zingt nog altijd de liedjes die hij daar leerde.</p>
+                <p>Of je nu een lokaal dorpsfeest organiseert, een festival programmeert of je kroeg wilt vullen met dampende kroegmuziek: wij leveren de energie die het publiek in beweging krijgt.</p>
             </div>
 
             <section class="lp-block" id="lp-block1">
                 <h2 id="lp-block1-h">St. Patrick's Day Live Muziek &amp; Keltische Feestmuziek</h2>
                 <div id="lp-block1-b">
-                    <p>Wanneer de Guinness vloeit, mag de Keltische feestmuziek niet ontbreken. Ons repertoire is speciaal opgebouwd voor maximale interactie en gezelligheid. We spelen een snelle, opzwepende mix van stijlen, waaronder:</p>
+                    <p>Wanneer de Guinness vloeit, mag de Keltische feestmuziek niet ontbreken. Ons repertoire is opgebouwd voor maximale interactie en gezelligheid. We spelen een opzwepende mix van stijlen, waaronder:</p>
                     <ul>
-                        <li><strong>Uptempo jigs en reels:</strong> instrumentale, razendsnelle Keltische dansmuziek.</li>
-                        <li><strong>Ierse meezingers:</strong> bekende klassiekers in de stijl van The Pogues en The Dubliners.</li>
-                        <li><strong>Stevige pub-songs:</strong> nummers waarbij stilstaan geen optie is.</li>
+                        <li><strong>Uptempo jigs en reels:</strong> instrumentale, razendsnelle Keltische dansmuziek, met daarnaast slides en polka's.</li>
+                        <li><strong>Ierse meezingers:</strong> klassiekers die iedereen kent uit het repertoire van The Dubliners en The Pogues — <em>Whiskey in the Jar</em>, <em>The Wild Rover</em>, <em>I'll Tell Me Ma</em>, <em>The Foggy Dew</em> en <em>Streams of Whiskey</em>.</li>
+                        <li><strong>Ballads met een verhaal:</strong> <em>Spancil Hill</em>, <em>Fiddler's Green</em>, <em>Black is the Colour</em> en <em>Will Ye Go, Lassie, Go?</em> — de momenten waarop een volle zaal stil wordt.</li>
+                        <li><strong>Stevige pub-songs:</strong> <em>All for Me Grog</em>, <em>The Hills of Connemara</em>, <em>South Australia</em> en <em>Drunken Sailor</em>, waarbij stilstaan geen optie is.</li>
                     </ul>
+                    <p>Voor St. Patrick's Day, een Irish Night of een Keltisch themafeest stemmen we de setlist af op jouw publiek. Verzoeknummers zijn welkom: je kunt ze vooraf doorgeven, dan zorgen wij dat ze erin zitten.</p>
                 </div>
             </section>
 
@@ -247,21 +304,59 @@
                         <li><strong>100% live &amp; versterkt:</strong> een krachtig geluid, afgestemd op de grootte van de zaal of feesttent.</li>
                         <li><strong>Gezelligheid en interactie:</strong> we bouwen het optreden op van meeslepende verhalen naar een knallend feest.</li>
                         <li><strong>Lokaal &amp; flexibel:</strong> als Ierse folkband uit Groningen spelen we door het hele land, met duidelijke afspraken over opbouw en techniek.</li>
+                        <li><strong>Verhalen tussen de nummers:</strong> waar een lied vandaan komt, waarom het geschreven is — dat hoort bij Ierse muziek net zo goed als de melodie.</li>
                     </ul>
                 </div>
             </section>
 
-            <section class="lp-block" id="lp-block3" style="display:none;">
-                <h2 id="lp-block3-h"></h2>
-                <div id="lp-block3-b"></div>
+            <section class="lp-block" id="lp-block3">
+                <h2 id="lp-block3-h">De Bezetting: Vijf Muzikanten, Echte Ierse Instrumenten</h2>
+                <div id="lp-block3-b">
+                    <p>Ierse feestmuziek leeft van de instrumenten waarop ze geschreven is. Bij The Doggy Few hoor je ze allemaal, live gespeeld:</p>
+                    <ul>
+                        <li><strong>Zang en gitaar</strong> — Luke, die de liedjes leerde tijdens zijn reis door Ierland.</li>
+                        <li><strong>Ierse dwarsfluit</strong> — Annemarie, die als kind op het festival Interceltique de Lorient verkocht was aan Ierse muziek en later klassiek dwarsfluit studeerde.</li>
+                        <li><strong>Melodeon (de "box")</strong> — Eoghain, die na omzwervingen door Canada, Frankrijk en India in Groningen belandde en de wildste jigs, reels, slides en polka's speelt.</li>
+                        <li><strong>Viool en zang</strong> — Ietsje, opgegroeid in Friesland, met een basis in zowel klassieke als Ierse muziek.</li>
+                        <li><strong>Bodhrán en zang</strong> — Peter uit Dublin, het ritme en de verhalen van de band.</li>
+                    </ul>
+                </div>
             </section>
 
-            <section class="lp-block" id="lp-block4" style="display:none;">
-                <h2 id="lp-block4-h"></h2>
-                <div id="lp-block4-b"></div>
+            <section class="lp-block" id="lp-block4">
+                <h2 id="lp-block4-h">Voor Welke Gelegenheden Wij Spelen</h2>
+                <div id="lp-block4-b">
+                    <p>We spelen door heel Nederland, en op aanvraag ook in België en Duitsland. De meeste boekingen komen uit deze hoek:</p>
+                    <ul>
+                        <li><strong>Kroegen en Irish pubs:</strong> een avond live Ierse muziek waarbij de zaak vol blijft tot sluitingstijd.</li>
+                        <li><strong>St. Patrick's Day:</strong> 17 maart is onze drukste dag van het jaar — wees er op tijd bij.</li>
+                        <li><strong>Festivals en dorpsfeesten:</strong> van een podium in de openlucht tot een feesttent.</li>
+                        <li><strong>Bedrijfsfeesten en jubilea:</strong> muziek waar iedereen bij aanhaakt, ongeacht leeftijd.</li>
+                        <li><strong>Celtic dinner nights en themavonden:</strong> een programma dat meebeweegt met het eten en het tempo van de avond.</li>
+                    </ul>
+                    <p>Wil je zien waar we binnenkort staan? Op onze <a href="/#gigs" class="cross-link">agenda</a> vind je alle aankomende optredens. Kom gerust een keer kijken voordat je boekt — dat vinden we alleen maar leuk.</p>
+                </div>
             </section>
 
-            <p>Liever een intieme, akoestische sfeer voor een bruiloft of huiskamerconcert? Bekijk dan onze pagina over <a href="/akoestische-ierse-folk/" class="cross-link">akoestische Ierse muziek</a>.</p>
+            <section class="lp-block">
+                <h2>Veelgestelde Vragen over het Boeken van een Ierse Feestband</h2>
+                <h3 class="vraag">Hoeveel ruimte hebben jullie nodig?</h3>
+                <p>Dat hangt af van de bezetting en de zaal. We spelen met vijf muzikanten en zijn gewend ons aan te passen aan de ruimte die er is — van een hoek in een café tot een volwaardig podium. Vertel ons wat je hebt, dan zeggen we eerlijk of het past.</p>
+
+                <h3 class="vraag">Wat kost het om The Doggy Few te boeken?</h3>
+                <p>De prijs hangt af van de datum, de reisafstand, de speelduur en of er techniek geregeld moet worden. Vraag via het formulier hieronder een prijsindicatie aan; je krijgt een concreet antwoord, geen vaag verhaal.</p>
+
+                <h3 class="vraag">Kunnen we zelf nummers aanvragen?</h3>
+                <p>Ja. Je kunt vooraf verzoeknummers doorgeven, en via onze site kun je bij elk optreden een verzoekje insturen. Staat een nummer niet op ons repertoire, dan horen we het graag op tijd.</p>
+
+                <h3 class="vraag">Spelen jullie ook akoestisch?</h3>
+                <p>Zeker. Voor een bruiloft, huiskamerconcert of ceremonie spelen we in kleinere, akoestische bezetting. Lees meer op onze pagina over <a href="/akoestische-ierse-folk/" class="cross-link">akoestische Ierse muziek</a>.</p>
+
+                <h3 class="vraag">In welk gebied treden jullie op?</h3>
+                <p>We komen uit Groningen en spelen in heel Nederland. België en Duitsland kan ook, in overleg over reistijd.</p>
+            </section>
+
+            <p>Liever een intieme, akoestische sfeer voor een bruiloft of huiskamerconcert? Bekijk dan onze pagina over <a href="/akoestische-ierse-folk/" class="cross-link">akoestische Ierse muziek</a>. Benieuwd naar het volledige repertoire met teksten en akkoorden? Dat staat op onze <a href="/liedjes.html" class="cross-link">liedjespagina</a>.</p>
 
             <section id="lp-cta">
                 <h2 id="lp-cta-h">Beschikbaarheid en Gage Aanvragen</h2>
@@ -373,16 +468,15 @@
             lpText('lp-eyebrow', data.eyebrow);
             lpText('lp-h1', data.h1);
             if (data.intro) document.getElementById('lp-intro').innerHTML = lpParseBody(data.intro);
+            // Een leeg veld in het beheer betekent "niet gewijzigd", niet "weghalen".
+            // Anders zou één keer opslaan met een leeg veld de tekst van de pagina wissen.
             [1,2,3,4].forEach(function(i){
                 var sec = document.getElementById('lp-block' + i);
                 var h = (data['block' + i + 'Heading'] || '').trim();
-                if (h) {
-                    document.getElementById('lp-block' + i + '-h').textContent = h;
-                    document.getElementById('lp-block' + i + '-b').innerHTML = lpParseBody(data['block' + i + 'Body'] || '');
-                    sec.style.display = '';
-                } else {
-                    sec.style.display = 'none';
-                }
+                if (!h) return;
+                document.getElementById('lp-block' + i + '-h').textContent = h;
+                document.getElementById('lp-block' + i + '-b').innerHTML = lpParseBody(data['block' + i + 'Body'] || '');
+                sec.style.display = '';
             });
             lpText('lp-cta-h', data.ctaHeading);
             if (data.ctaBody) document.getElementById('lp-cta-b').innerHTML = lpParseBody(data.ctaBody);

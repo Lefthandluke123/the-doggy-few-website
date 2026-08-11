@@ -43,6 +43,10 @@
         html { scroll-behavior: smooth; }
         body { font-family: var(--font-body); background: var(--color-bg); color: #e5e9e2; line-height: 1.75; }
         .container { max-width: 900px; margin: 0 auto; padding: 0 1.5rem; }
+        .uitleg { max-width: 720px; margin: 0 auto 0.5rem; padding: 1.6rem 0 0.4rem; }
+        .uitleg p { margin-bottom: 1rem; color: #dde3d8; line-height: 1.75; }
+        .uitleg a { color: var(--color-accent2); }
+        .uitleg strong { color: #fff; }
 
         nav {
             background: var(--color-bg-deep); border-bottom: 2px solid var(--color-accent2);
@@ -97,9 +101,17 @@
 
     <header class="hero">
         <div class="eyebrow">Ierse Folk · Muziek · Cultuur</div>
-        <h1>Links</h1>
+        <h1>Links over Ierse Folk en Keltische Muziek</h1>
         <p>Handige links over Ierse folk — bands, tunes, instrumenten en cultuur.</p>
     </header>
+
+    <div class="container">
+        <section class="uitleg">
+            <p>Deze pagina is een verzameling van plekken waar wij zelf terechtkomen: bands die we bewonderen, verzamelingen bladmuziek en tunes, websites over instrumenten, en mensen uit de Nederlandse folkscene met wie we optrekken. Ze is met de hand samengesteld door The Doggy Few in Groningen, en groeit gestaag aan.</p>
+            <p>Ierse muziek leer je zelden uit een boek. Ze wordt doorgegeven in sessies, in pubs en op festivals, van speler op speler. Wie zelf begint met <strong>bodhrán</strong>, <strong>Ierse dwarsfluit</strong>, <strong>tin whistle</strong>, <strong>viool</strong> of <strong>melodeon</strong>, komt daarom vroeg of laat bij dezelfde bronnen uit: verzamelingen met <em>jigs</em> en <em>reels</em>, teksten van de ballads, en opnames van de bands die de traditie levend hebben gehouden — van The Dubliners en Planxty tot The Bothy Band.</p>
+            <p>Mis je hier iets, of heb je zelf een website die hier thuishoort? Laat het ons weten via <a href="mailto:info@doggyfew.com">info@doggyfew.com</a>. Wil je weten wat wij spelen, kijk dan op onze <a href="/liedjes.html">liedjespagina</a> met teksten en akkoorden, of bekijk onze <a href="/#gigs">agenda</a>.</p>
+        </section>
+    </div>
 
     <div class="filter-bar" id="filterBar">
         <button class="filter-pill active" data-cat="all" onclick="filterLinks('all', this)">Alle categorieën</button>
