@@ -25,11 +25,21 @@ const WIJZIGING_DOC = "settings/snapshot-status";
 
 // Collecties waarvan de inhoud op de homepage staat. Een wijziging hierin
 // betekent dat de opgeslagen kopie van de homepage verouderd is.
-// LET OP: "settings" staat hier met opzet NIET bij. De snapshot wordt zelf in
-// settings opgeslagen; die zou zichzelf anders eindeloos blijven vernieuwen.
 const HOMEPAGE_COLLECTIES = [
   "gigs", "blog", "photos", "galleries", "videos",
   "members", "pages", "links", "lyrics",
+  "settings",   // hierin zitten ook de beheerde teksten en de vormgeving
+  "admin",      // hierin zit de hero-afbeelding
+];
+
+// Uitzonderingen binnen settings: de kopieën zelf en het statusvlaggetje.
+// Zonder deze uitzondering zou het maken van een kopie een nieuwe wijziging
+// melden, en zou het systeem zichzelf eindeloos blijven vernieuwen.
+const NIET_MELDEN = [
+  "settings/snapshot",
+  "settings/snapshot-en",
+  "settings/snapshot-de",
+  "settings/snapshot-status",
 ];
 
 // Zo lang wachten na de laatste wijziging voordat de site wordt bijgewerkt.
@@ -138,6 +148,7 @@ exports.merkWijzigingOp = onDocumentWritten(
   async (event) => {
     const collectie = event.params.collectie;
     if (!HOMEPAGE_COLLECTIES.includes(collectie)) return;
+    if (NIET_MELDEN.includes(collectie + "/" + event.params.document)) return;
     await db.doc(WIJZIGING_DOC).set({
       openstaandeWijzigingSinds: admin.firestore.FieldValue.serverTimestamp(),
       laatsteCollectie: collectie,
