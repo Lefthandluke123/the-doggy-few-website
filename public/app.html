@@ -2785,6 +2785,7 @@
 
                 const todayStr = new Date().toISOString().slice(0, 10);
                 let html = '';
+                const agendaVoorGoogle = [];
                 snapshot.forEach(doc => {
                     const gig = doc.data();
                     // Velden komen uit de admin (status/venue/gage) of oude data (type/title/fee)
@@ -2793,8 +2794,6 @@
                     if (gig.date && gig.date < todayStr) return; // voorbije optredens niet tonen
 
                     const title = gig.venue || gig.title || '';
-                    const fee = (gig.gage !== undefined && gig.gage !== null && gig.gage !== '') ? gig.gage
-                              : (gig.fee !== undefined && gig.fee !== null && gig.fee !== '') ? gig.fee : '';
                     const statusLabel = t(`gigs.${status}`);
                     const location = gig.location || '';
                     const address = gig.address || '';
@@ -2817,35 +2816,119 @@
                     const mapId = 'map-' + doc.id;
                     const mapQuery = encodeURIComponent(address || location);
                     const addressHtml = address ? `
-                            <div class="gig-address" itemprop="address">📍 ${escapeHtml(address)}</div>
+                            <div class="gig-address">📍 ${escapeHtml(address)}</div>
                             <div class="gig-map-actions">
                                 <button class="gig-map-toggle" onclick="toggleGigMap('${mapId}', '${mapQuery}')">${t('gigs.showMap')}</button>
                                 <a class="gig-map-link" href="https://www.google.com/maps/search/?api=1&query=${mapQuery}" target="_blank" rel="noopener noreferrer">${t('gigs.openMaps')}</a>
                             </div>
                             <div class="gig-map" id="${mapId}"></div>` : '';
 
+                    // Gegevens voor de evenement-markering van Google.
+                    // Bewust niet meegestuurd:
+                    // - de gage (intern bedrag);
+                    // - besloten feesten (geen publiek evenement, en het adres is privé);
+                    // - opties (nog niet zeker; als publiek evenement zou dat onjuist zijn).
+                    const besloten = /\(?\s*(private|besloten|priv[ée])\s*\)?/i.test(title + ' ' + description);
+                    if (title && gig.date && status === 'confirmed' && !besloten) {
+                        agendaVoorGoogle.push({
+                            title: title.replace(/\s+/g, ' ').trim(),
+                            date: gig.date, startTime, endTime,
+                            location: location.trim(),
+                            address: address.trim(),
+                            description: description.trim()
+                        });
+                    }
+
                     html += `
-                        <article class="gig-card" itemscope itemtype="https://schema.org/Event">
+                        <article class="gig-card">
                             <span class="status-badge status-${status}">${statusLabel}</span>
-                            <h3 itemprop="name">${escapeHtml(title)}</h3>
-                            <div class="gig-date" itemprop="startDate" content="${gig.date || ''}${startTime ? 'T' + startTime : ''}">${gig.date ? formatDate(gig.date) : ''}</div>
+                            <h3>${escapeHtml(title)}</h3>
+                            <div class="gig-date">${gig.date ? formatDate(gig.date) : ''}</div>
                             ${timeStr ? `<div class="gig-time">🕐 ${escapeHtml(timeStr)}</div>` : ''}
-                            ${location ? `<div class="gig-location" itemprop="location" itemscope itemtype="https://schema.org/Place"><span itemprop="name">${escapeHtml(location)}</span></div>` : ''}
+                            ${location ? `<div class="gig-location">${escapeHtml(location)}</div>` : ''}
                             ${addressHtml}
-                            ${description ? `<p itemprop="description">${escapeHtml(description)}</p>` : ''}
-                            ${fee ? `<p style="margin-top: 1rem; color: #91c383; font-weight: 600;">💶 €${escapeHtml(String(fee))}</p>` : ''}
+                            ${description ? `<p>${escapeHtml(description)}</p>` : ''}
                             ${setlistHtml}
                             <button class="gig-request-btn" onclick="openRequestModal('${doc.id}', '${escapeHtml(title).replace(/'/g, "\\'")}', '${gig.date || ''}')">${t('gigs.requestBtn')}</button>
-                            <meta itemprop="url" content="https://doggyfew.com#gigs">
                         </article>
                     `;
                 });
 
                 gigsContainer.innerHTML = html || `<p style="text-align: center; color: #91c383; padding: 2rem;">${t('gigs.loading')}</p>`;
+                zetAgendaMarkeringVoorGoogle(agendaVoorGoogle);
             } catch (error) {
                 console.error('Error loading gigs:', error);
                 document.getElementById('gigsContainer').innerHTML = '<p style="color: #ff6b6b;">Error loading gigs</p>';
             }
+        }
+
+        // Zoekt de tijdzone-afwijking van Nederland op voor een bepaalde datum
+        // (+02:00 in de zomer, +01:00 in de winter). Zonder dit weet Google niet
+        // hoe laat een optreden echt begint.
+        function nederlandseTijdzone(datum) {
+            try {
+                const opmaak = new Intl.DateTimeFormat('en-US', {
+                    timeZone: 'Europe/Amsterdam',
+                    timeZoneName: 'longOffset'
+                });
+                const naam = opmaak.formatToParts(datum).find(d => d.type === 'timeZoneName');
+                const gevonden = naam && naam.value.match(/GMT([+-]\d{2}:\d{2})/);
+                if (gevonden) return gevonden[1];
+            } catch (e) { /* oudere browser: val terug op wintertijd */ }
+            return '+01:00';
+        }
+
+        // Zet de optredens om in de markering die Google nodig heeft om ze als
+        // evenement te tonen in de zoekresultaten.
+        function zetAgendaMarkeringVoorGoogle(optredens) {
+            const bestaand = document.getElementById('agendaMarkering');
+            if (bestaand) bestaand.remove();
+            if (!optredens || !optredens.length) return;
+
+            const evenementen = optredens.map(o => {
+                const zone = nederlandseTijdzone(new Date(o.date + 'T12:00:00Z'));
+                const start = o.startTime ? `${o.date}T${o.startTime}:00${zone}` : o.date;
+
+                const evenement = {
+                    "@type": "MusicEvent",
+                    "name": `The Doggy Few — ${o.title}`,
+                    "startDate": start,
+                    "eventStatus": "https://schema.org/EventScheduled",
+                    "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
+                    "url": "https://doggyfew.com/#gigs",
+                    "image": "https://doggyfew.com/hero.webp",
+                    "performer": { "@type": "MusicGroup", "name": "The Doggy Few" },
+                    "organizer": { "@type": "MusicGroup", "name": "The Doggy Few", "url": "https://doggyfew.com" }
+                };
+
+                if (o.startTime && o.endTime) {
+                    evenement.endDate = `${o.date}T${o.endTime}:00${zone}`;
+                }
+                if (o.description) {
+                    evenement.description = o.description;
+                }
+
+                const plaats = { "@type": "Place", "name": o.title || o.location || 'Locatie' };
+                if (o.address || o.location) {
+                    plaats.address = {
+                        "@type": "PostalAddress",
+                        "streetAddress": o.address || undefined,
+                        "addressLocality": o.location || undefined,
+                        "addressCountry": "NL"
+                    };
+                }
+                evenement.location = plaats;
+                return evenement;
+            });
+
+            const script = document.createElement('script');
+            script.type = 'application/ld+json';
+            script.id = 'agendaMarkering';
+            script.textContent = JSON.stringify({
+                "@context": "https://schema.org",
+                "@graph": evenementen
+            }, null, 2);
+            document.head.appendChild(script);
         }
 
         function toggleSetlist(id) {
