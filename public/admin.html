@@ -712,6 +712,49 @@
     }
 
     /* Keltische textarea grow stijl al aanwezig */
+
+    /* ── Meldingen bij opslaan ── */
+    #meldingen {
+        position: fixed; right: 1rem; bottom: 1rem; z-index: 99999;
+        display: flex; flex-direction: column; gap: 0.6rem;
+        max-width: min(420px, calc(100vw - 2rem));
+    }
+    .melding {
+        display: flex; align-items: flex-start; gap: 0.75rem;
+        padding: 0.9rem 1rem; border-radius: 10px;
+        font-size: 0.94rem; line-height: 1.45;
+        box-shadow: 0 8px 24px rgba(0,0,0,0.35);
+        border-left: 5px solid;
+        animation: meldingIn .22s ease-out;
+    }
+    @keyframes meldingIn { from { opacity:0; transform: translateY(8px); } to { opacity:1; transform:none; } }
+    .melding-goed   { background:#24361f; border-color:#6db455; color:#e6f2e0; }
+    .melding-fout   { background:#3d1f1f; border-color:#ff6b6b; color:#ffe4e4; font-weight:600; }
+    .melding-let-op { background:#3a3320; border-color:#da8a36; color:#f7ead7; }
+    .melding-tekst { flex:1; }
+    .melding-weg {
+        background:none; border:none; color:inherit; opacity:0.65;
+        cursor:pointer; font-size:1rem; line-height:1; padding:0 0 0 0.25rem;
+    }
+    .melding-weg:hover { opacity:1; }
+
+    /* Knop die net is aangeklikt: zichtbaar bezig, niet nogmaals te klikken */
+    .knop-bezig { opacity:0.55; pointer-events:none; }
+
+    /* ── Balk: wijzigingen staan nog niet op de website ── */
+    #wijzigingsbalk {
+        display: none; position: fixed; left: 0; right: 0; bottom: 0; z-index: 99998;
+        align-items: center; justify-content: center; gap: 1rem; flex-wrap: wrap;
+        padding: 0.85rem 1.2rem;
+        background: #4a3a17; border-top: 3px solid #da8a36; color: #f7ead7;
+        font-size: 0.95rem;
+    }
+    #wijzigingsbalk button {
+        background:#da8a36; color:#30362b; border:none; border-radius:8px;
+        padding:0.5rem 1rem; font-weight:700; cursor:pointer; font-family:inherit;
+    }
+    #wijzigingsbalk button:hover { opacity:0.9; }
+    #wijzigingsbalk .sluit { background:none; color:#f7ead7; font-weight:400; text-decoration:underline; padding:0.5rem; }
     </style>
     <!-- Cropper.js (crop / uitsnede tool) -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.css">
@@ -2127,8 +2170,8 @@
         }
 
         function deleteGig(id) {
-            if (confirm('Weet je zeker dat je dit optreden wilt verwijderen?')) {
-                db.collection('gigs').doc(id).delete();
+            if (confirm('Weet je zeker dat je dit optreden wilt verwijderen?\n\nDit kan niet ongedaan worden gemaakt.')) {
+                veiligSchrijven(db.collection('gigs').doc(id).delete(), 'Optreden verwijderen');
             }
         }
 
@@ -2303,8 +2346,8 @@
         }
 
         function deleteBlog(id) {
-            if (confirm('Blog post verwijderen?')) {
-                db.collection('blog').doc(id).delete();
+            if (confirm('Blog post verwijderen?\n\nDit kan niet ongedaan worden gemaakt.')) {
+                veiligSchrijven(db.collection('blog').doc(id).delete(), 'Blogbericht verwijderen');
             }
         }
 
@@ -3041,8 +3084,8 @@
         }
 
         function deleteVideo(id) {
-            if (confirm('Video verwijderen?')) {
-                db.collection('videos').doc(id).delete();
+            if (confirm('Video verwijderen?\n\nDit kan niet ongedaan worden gemaakt.')) {
+                veiligSchrijven(db.collection('videos').doc(id).delete(), 'Video verwijderen');
             }
         }
 
@@ -3385,8 +3428,8 @@
         }
 
         function deleteSocial(id) {
-            if (confirm('Social media content verwijderen?')) {
-                db.collection('socials').doc(id).delete();
+            if (confirm('Social media content verwijderen?\n\nDit kan niet ongedaan worden gemaakt.')) {
+                veiligSchrijven(db.collection('socials').doc(id).delete(), 'Social media-bericht verwijderen');
             }
         }
 
@@ -3488,17 +3531,19 @@
                                 document.getElementById('heroProgress').style.display = 'none';
                             },
                             () => {
-                                uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
-                                    db.collection('admin').doc('settings')
-                                        .set({ heroImage: downloadURL, updatedAt: new Date() }, { merge: true })
-                                        .then(() => {
-                                            alert(`✅ Hero banner geupload (${width}×${height}px)! Ververs de website om het te zien.`);
-                                            document.getElementById('heroProgress').style.display = 'none';
-                                            document.getElementById('heroPreviewWrap').style.display = 'none';
-                                            document.getElementById('heroFile').value = '';
-                                            document.getElementById('heroUploadBtn').disabled = false;
-                                            loadSettings();
-                                        });
+                                veiligSchrijven(
+                                    uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) =>
+                                        db.collection('admin').doc('settings')
+                                            .set({ heroImage: downloadURL, updatedAt: new Date() }, { merge: true })
+                                    ),
+                                    `Hero banner opslaan (${width}×${height}px)`
+                                ).then(() => {
+                                    document.getElementById('heroPreviewWrap').style.display = 'none';
+                                    document.getElementById('heroFile').value = '';
+                                    loadSettings();
+                                }).catch(function(){}).then(() => {
+                                    document.getElementById('heroProgress').style.display = 'none';
+                                    document.getElementById('heroUploadBtn').disabled = false;
                                 });
                             }
                         );
@@ -3509,13 +3554,13 @@
 
         function removeHero() {
             if (!confirm('Hero banner verwijderen? De homepage gebruikt dan weer de standaard gekleurde achtergrond.')) return;
-            db.collection('admin').doc('settings')
-                .set({ heroImage: '' }, { merge: true })
-                .then(() => {
-                    alert('Hero banner verwijderd.');
-                    document.getElementById('heroCurrentWrap').style.display = 'none';
-                    loadSettings();
-                });
+            veiligSchrijven(
+                db.collection('admin').doc('settings').set({ heroImage: '' }, { merge: true }),
+                'Hero banner verwijderen'
+            ).then(() => {
+                document.getElementById('heroCurrentWrap').style.display = 'none';
+                loadSettings();
+            }).catch(function(){});
         }
 
         // ===== Vormgeving & teksten =====
@@ -4519,21 +4564,29 @@
         }
 
         function markMessageRead(id) {
-            db.collection('contact_messages').doc(id).set({ read: true }, { merge: true });
+            veiligSchrijven(
+                db.collection('contact_messages').doc(id).set({ read: true }, { merge: true }),
+                'Bericht als gelezen markeren', false
+            ).catch(function(){});
         }
 
         function deleteMessage(id) {
-            if (!confirm('Bericht verwijderen?')) return;
-            db.collection('contact_messages').doc(id).delete();
+            if (!confirm('Bericht verwijderen?\n\nDit kan niet ongedaan worden gemaakt.')) return;
+            veiligSchrijven(db.collection('contact_messages').doc(id).delete(), 'Bericht verwijderen')
+                .catch(function(){});
         }
 
         function deleteReadMessages() {
-            if (!confirm('Alle gelezen berichten verwijderen?')) return;
-            db.collection('contact_messages').where('read', '==', true).get().then(snap => {
-                const batch = db.batch();
-                snap.docs.forEach(d => batch.delete(d.ref));
-                return batch.commit();
-            }).then(() => alert('Gelezen berichten verwijderd.'));
+            if (!confirm('Alle gelezen berichten verwijderen?\n\nDit kan niet ongedaan worden gemaakt.')) return;
+            veiligSchrijven(
+                db.collection('contact_messages').where('read', '==', true).get().then(snap => {
+                    if (snap.empty) { meld('Er waren geen gelezen berichten om te verwijderen.', 'let-op'); return null; }
+                    const batch = db.batch();
+                    snap.docs.forEach(d => batch.delete(d.ref));
+                    return batch.commit();
+                }),
+                'Gelezen berichten verwijderen'
+            ).catch(function(){});
         }
 
         // ===== VERZOEKJES =====
@@ -4572,21 +4625,29 @@
         }
 
         function markRequestRead(id) {
-            db.collection('song_requests').doc(id).set({ read: true }, { merge: true });
+            veiligSchrijven(
+                db.collection('song_requests').doc(id).set({ read: true }, { merge: true }),
+                'Verzoekje als gelezen markeren', false
+            ).catch(function(){});
         }
 
         function deleteRequest(id) {
-            if (!confirm('Verzoekje verwijderen?')) return;
-            db.collection('song_requests').doc(id).delete();
+            if (!confirm('Verzoekje verwijderen?\n\nDit kan niet ongedaan worden gemaakt.')) return;
+            veiligSchrijven(db.collection('song_requests').doc(id).delete(), 'Verzoekje verwijderen')
+                .catch(function(){});
         }
 
         function deleteReadRequests() {
-            if (!confirm('Alle gelezen verzoekjes verwijderen?')) return;
-            db.collection('song_requests').where('read', '==', true).get().then(snap => {
-                const batch = db.batch();
-                snap.docs.forEach(d => batch.delete(d.ref));
-                return batch.commit();
-            }).then(() => alert('Gelezen verzoekjes verwijderd.'));
+            if (!confirm('Alle gelezen verzoekjes verwijderen?\n\nDit kan niet ongedaan worden gemaakt.')) return;
+            veiligSchrijven(
+                db.collection('song_requests').where('read', '==', true).get().then(snap => {
+                    if (snap.empty) { meld('Er waren geen gelezen verzoekjes om te verwijderen.', 'let-op'); return null; }
+                    const batch = db.batch();
+                    snap.docs.forEach(d => batch.delete(d.ref));
+                    return batch.commit();
+                }),
+                'Gelezen verzoekjes verwijderen'
+            ).catch(function(){});
         }
 
         // ===== NIEUWSBRIEF =====
@@ -4622,8 +4683,9 @@
         }
 
         function deleteSubscriber(id) {
-            if (!confirm('Abonnee verwijderen?')) return;
-            db.collection('newsletter_subscribers').doc(id).delete();
+            if (!confirm('Abonnee verwijderen?\n\nDit kan niet ongedaan worden gemaakt.')) return;
+            veiligSchrijven(db.collection('newsletter_subscribers').doc(id).delete(), 'Abonnee verwijderen')
+                .catch(function(){});
         }
 
         function exportNewsletter() {
@@ -4975,6 +5037,7 @@
                 if (data.success) {
                     const kb = data.sizeKb ? (' (' + data.sizeKb + ' KB)') : '';
                     setStatus('✅ Snapshot gemaakt' + kb + ' en direct live gezet! De homepage toont nu de nieuwe statische versie.<br>Controleer eventueel op <a href="https://doggyfew.com" target="_blank" style="color:#da8a36;">doggyfew.com</a>.', '#91c383');
+                    wijzigingenVerwerkt();
                 } else {
                     setStatus('⚠️ Snapshot afgerond, maar geen bevestiging ontvangen. Controleer de site.', '#ff9d5c');
                 }
@@ -4986,6 +5049,109 @@
                 btn.style.opacity = '1';
             }
         }
+
+        // ══════════════════════════════════════════════════════════════════
+        //  Duidelijk en veilig opslaan
+        //  1. meldingen die blijven staan tot je ze leest
+        //  2. geen dubbele opslag door dubbelklikken
+        //  3. geen enkele opslag- of verwijderactie die stil mislukt
+        //  4. een balk die eraan herinnert dat de website nog bijgewerkt moet
+        // ══════════════════════════════════════════════════════════════════
+
+        // ── 1. Meldingen ──────────────────────────────────────────────────
+        function meld(tekst, soort) {
+            var bak = document.getElementById('meldingen');
+            if (!bak) {
+                bak = document.createElement('div');
+                bak.id = 'meldingen';
+                document.body.appendChild(bak);
+            }
+            var m = document.createElement('div');
+            m.className = 'melding melding-' + (soort || 'goed');
+            m.innerHTML = '<span class="melding-tekst"></span><button class="melding-weg" title="Sluiten">✕</button>';
+            m.querySelector('.melding-tekst').textContent = tekst;
+            m.querySelector('.melding-weg').onclick = function(){ m.remove(); };
+            bak.appendChild(m);
+            // Een goed bericht verdwijnt vanzelf; een foutmelding blijft staan,
+            // zodat je nooit mist dat er iets níét is opgeslagen.
+            if (soort !== 'fout') setTimeout(function(){ m.remove(); }, 4500);
+        }
+
+        // ── 3. Veilig schrijven ───────────────────────────────────────────
+        // Elke schrijfactie naar de database gaat hier doorheen. Mislukt hij,
+        // dan zie je dat — in plaats van dat het stilletjes niet gebeurt.
+        function veiligSchrijven(belofte, omschrijving, bijSucces) {
+            return Promise.resolve(belofte)
+                .then(function(r){
+                    if (bijSucces !== false) meld(omschrijving + ' — gelukt.', 'goed');
+                    wijzigingenGemaakt();
+                    return r;
+                })
+                .catch(function(err){
+                    var reden = (err && err.message) ? err.message : String(err);
+                    if (/permission|insufficient/i.test(reden)) {
+                        reden = 'je hebt hier geen rechten voor (opnieuw inloggen helpt meestal)';
+                    } else if (/offline|unavailable|network/i.test(reden)) {
+                        reden = 'geen verbinding met de database — controleer je internet';
+                    }
+                    meld('MISLUKT: ' + omschrijving + ' is NIET opgeslagen. Reden: ' + reden, 'fout');
+                    console.error(omschrijving, err);
+                    throw err;
+                });
+        }
+
+        // ── 4. Herinnering: website nog bijwerken ─────────────────────────
+        var WIJZIGING_SLEUTEL = 'tdf_wijzigingen_open';
+
+        function wijzigingenGemaakt() {
+            try { localStorage.setItem(WIJZIGING_SLEUTEL, '1'); } catch (e) {}
+            toonWijzigingsbalk();
+        }
+        function wijzigingenVerwerkt() {
+            try { localStorage.removeItem(WIJZIGING_SLEUTEL); } catch (e) {}
+            var balk = document.getElementById('wijzigingsbalk');
+            if (balk) balk.style.display = 'none';
+        }
+        function toonWijzigingsbalk() {
+            var balk = document.getElementById('wijzigingsbalk');
+            if (balk) balk.style.display = 'flex';
+        }
+        function balkNaarSnapshot() {
+            var knop = document.getElementById('snapshotBtn');
+            if (!knop) { meld('De snapshot-knop staat op het tabblad Instellingen.', 'let-op'); return; }
+            knop.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            knop.style.outline = '3px solid #da8a36';
+            setTimeout(function(){ knop.style.outline = ''; }, 4000);
+        }
+
+        // ── 2. Geen dubbele opslag ────────────────────────────────────────
+        // Een tweede klik binnen drie seconden op dezelfde opslaan-knop wordt
+        // genegeerd. Zonder dit levert dubbelklikken twee identieke items op.
+        document.addEventListener('click', function(e){
+            var knop = e.target.closest ? e.target.closest('button') : null;
+            if (!knop) return;
+            var actie = knop.getAttribute('onclick') || '';
+            if (!/^\s*(save|publish)[A-Za-z]*\s*\(/.test(actie)) return;
+
+            if (knop.dataset.bezig === '1') {
+                e.preventDefault();
+                e.stopImmediatePropagation();
+                meld('Even geduld — de vorige opslagpoging loopt nog.', 'let-op');
+                return;
+            }
+            knop.dataset.bezig = '1';
+            knop.classList.add('knop-bezig');
+            setTimeout(function(){
+                knop.dataset.bezig = '';
+                knop.classList.remove('knop-bezig');
+            }, 3000);
+        }, true);
+
+        document.addEventListener('DOMContentLoaded', function(){
+            try {
+                if (localStorage.getItem(WIJZIGING_SLEUTEL) === '1') toonWijzigingsbalk();
+            } catch (e) {}
+        });
 
     </script>
 
@@ -5310,5 +5476,12 @@ document.querySelectorAll('#blogToolbar [data-cmd]').forEach(btn => {
   });
 });
 </script>
+
+<!-- Herinnering: opgeslagen wijzigingen staan pas op de website na een snapshot -->
+<div id="wijzigingsbalk">
+    <span>📌 Je wijzigingen zijn <strong>opgeslagen</strong>, maar staan nog niet op de website. Werk de website bij om ze zichtbaar te maken voor bezoekers en Google.</span>
+    <button onclick="balkNaarSnapshot()">Website bijwerken →</button>
+    <button class="sluit" onclick="wijzigingenVerwerkt()">Later</button>
+</div>
 </body>
 </html>
