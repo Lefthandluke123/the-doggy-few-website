@@ -3,6 +3,7 @@ const { onRequest } = require("firebase-functions/v2/https");
 const admin = require("firebase-admin");
 const chromium = require("@sparticuz/chromium");
 const puppeteer = require("puppeteer-core");
+const zlib = require("zlib");
 
 admin.initializeApp();
 const db = admin.firestore();
@@ -58,15 +59,39 @@ exports.makeSnapshot = onCall(
   }
 );
 
+// Onthoudt de ingepakte versie zolang deze instantie leeft, zodat dezelfde
+// snapshot niet bij elk bezoek opnieuw ingepakt hoeft te worden.
+let ingepakteCache = { bron: null, gzip: null };
+
+function pakIn(html) {
+  if (ingepakteCache.bron === html && ingepakteCache.gzip) return ingepakteCache.gzip;
+  const gzip = zlib.gzipSync(Buffer.from(html, "utf8"), { level: 6 });
+  ingepakteCache = { bron: html, gzip };
+  return gzip;
+}
+
 exports.serveSnapshot = onRequest(
   { memory: "256MiB", region: "europe-west1", invoker: "public" },
   async (req, res) => {
     try {
       const snap = await db.doc(SNAPSHOT_DOC).get();
       if (snap.exists && snap.data().html) {
+        const html = snap.data().html;
         res.set("Content-Type", "text/html; charset=utf-8");
         res.set("Cache-Control", "public, max-age=300, s-maxage=300");
-        res.status(200).send(snap.data().html);
+        res.set("Vary", "Accept-Encoding");
+
+        // De homepage is ongeveer 270 kB aan tekst. Firebase Hosting pakt
+        // gewone bestanden vanzelf in, maar niet wat via een functie komt.
+        // Zonder dit downloadt elke bezoeker die 270 kB helemaal; ingepakt
+        // is het ruwweg een zesde daarvan.
+        const accepteert = String(req.headers["accept-encoding"] || "");
+        if (/\bgzip\b/.test(accepteert)) {
+          res.set("Content-Encoding", "gzip");
+          res.status(200).send(pakIn(html));
+        } else {
+          res.status(200).send(html);
+        }
         return;
       }
       res.redirect(302, "/app.html?live=1");
