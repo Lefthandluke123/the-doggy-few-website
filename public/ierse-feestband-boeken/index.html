@@ -38,22 +38,14 @@
         "name": "Ierse Feestband – Pub &amp; Keltische Feestmuziek",
         "description": "Energieke, volledig versterkte live Ierse folkband uit Groningen voor kroegavonden, St. Patrick's Day, festivals en feesten. Uptempo jigs, reels en Ierse meezingers, met optioneel een Ierse dansworkshop (ceili) voor de gasten.",
         "areaServed": ["NL", "BE", "DE"],
-        "offers": [
-            {
-                "@type": "Offer",
-                "name": "Duo",
-                "price": "550",
-                "priceCurrency": "EUR",
-                "description": "Duo-bezetting, all-in"
-            },
-            {
-                "@type": "Offer",
-                "name": "Volledige band",
-                "price": "1250",
-                "priceCurrency": "EUR",
-                "description": "Vijf muzikanten"
-            }
-        ],
+        "offers": {
+            "@type": "AggregateOffer",
+            "priceCurrency": "EUR",
+            "lowPrice": "550",
+            "highPrice": "1250",
+            "offerCount": 2,
+            "description": "Duo vanaf € 550, volledige band vanaf € 1.250. Reiskosten, geluid en btw komen daar nog bij."
+        },
         "provider": {
             "@type": ["MusicGroup", "LocalBusiness"],
             "name": "The Doggy Few",
@@ -103,7 +95,7 @@
                 "name": "Wat kost het om The Doggy Few te boeken?",
                 "acceptedAnswer": {
                     "@type": "Answer",
-                    "text": "Ter indicatie: een duo € 550 all-in, de volledige band € 1.250. Reisafstand, speelduur en techniek bepalen het eindbedrag. Via het aanvraagformulier krijg je een vast bedrag."
+                    "text": "Een duo begint bij € 550, de volledige band bij € 1.250. Reiskosten, geluid en btw komen daar nog bij, afhankelijk van de afstand. Via het aanvraagformulier krijg je één compleet bedrag."
                 }
             },
             {
@@ -377,7 +369,7 @@
                 <h2>Laat je Gasten Meedansen: de Ierse Dansworkshop</h2>
                 <p>Naast spelen geven we een <strong>ceili-workshop</strong> — Ierse groepsdans, op live muziek. We halen mensen van hun stoel, leren ze een paar basispassen, zetten die achter elkaar tot een dans, en spelen er dan naartoe. Danservaring is niet nodig: wie een pas kan volgen in een rustig tempo, doet mee.</p>
                 <p>Op een dorpsfeest, bedrijfsfeest of bruiloft is dat het moment waarop een zaal omslaat van kijken naar meedoen. De workshop is optioneel — een kwartier tussen twee sets, of een langer blok als middelpunt van de avond.</p>
-                <p><strong>Wat het ongeveer kost:</strong> een duo komt op € 550 all-in, de volledige band op € 1.250. Reisafstand, speelduur en techniek kunnen dat bijstellen. Je krijgt vooraf een vast bedrag, geen nacalculatie.</p>
+                <p><strong>Wat het ongeveer kost:</strong> een duo begint bij € 550, de volledige band bij € 1.250. Wat het precies wordt hangt af van de reisafstand, de speelduur en of wij het geluid verzorgen; die rekenen we apart. Vraag een prijs aan voor jouw datum, dan krijg je één compleet bedrag te zien.</p>
             </section>
 
             <section class="lp-block">
@@ -386,7 +378,7 @@
                 <p>Dat hangt af van de bezetting en de zaal. We spelen met vijf muzikanten en zijn gewend ons aan te passen aan de ruimte die er is — van een hoek in een café tot een volwaardig podium. Vertel ons wat je hebt, dan zeggen we eerlijk of het past.</p>
 
                 <h3 class="vraag">Wat kost het om The Doggy Few te boeken?</h3>
-                <p>Ter indicatie: een duo € 550 all-in, de volledige band € 1.250. Reisafstand, speelduur en of er techniek geregeld moet worden bepalen het eindbedrag. Vraag via het formulier hieronder een prijs aan; je krijgt een vast bedrag terug, geen vaag verhaal.</p>
+                <p>Een duo begint bij € 550, de volledige band bij € 1.250. Reiskosten, geluid en btw komen daar nog bij, afhankelijk van de afstand en wat er geregeld moet worden. Vraag via het formulier hieronder een prijs aan voor jouw datum, dan reken je met één compleet bedrag.</p>
 
                 <h3 class="vraag">Kunnen onze gasten leren Ierse dansen?</h3>
                 <p>Ja. We geven een ceili-workshop waarin we een paar basispassen leren en er live bij spelen. Geen danservaring nodig. Geef bij je aanvraag door wat voor gezelschap er komt, dan stemmen we het daarop af.</p>
