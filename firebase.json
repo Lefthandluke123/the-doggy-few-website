@@ -7,10 +7,751 @@
       "**/node_modules/**"
     ],
     "redirects": [
-      { "source": "/index.html", "destination": "/", "type": 301 },
-      { "source": "/home.php", "destination": "/", "type": 301 },
-      { "source": "/en/**", "destination": "/", "type": 301 },
-      { "source": "**/*.php", "destination": "/", "type": 301 }
+      {
+        "source": "/agenda",
+        "destination": "/#gigs",
+        "type": 301
+      },
+      {
+        "source": "/agenda/",
+        "destination": "/#gigs",
+        "type": 301
+      },
+      {
+        "source": "/agenda-2",
+        "destination": "/#gigs",
+        "type": 301
+      },
+      {
+        "source": "/agenda-2/",
+        "destination": "/#gigs",
+        "type": 301
+      },
+      {
+        "source": "/all-events",
+        "destination": "/#gigs",
+        "type": 301
+      },
+      {
+        "source": "/all-events/",
+        "destination": "/#gigs",
+        "type": 301
+      },
+      {
+        "source": "/annemarie",
+        "destination": "/#band",
+        "type": 301
+      },
+      {
+        "source": "/annemarie/",
+        "destination": "/#band",
+        "type": 301
+      },
+      {
+        "source": "/annemarie-ierse-fluit",
+        "destination": "/#band",
+        "type": 301
+      },
+      {
+        "source": "/annemarie-ierse-fluit/",
+        "destination": "/#band",
+        "type": 301
+      },
+      {
+        "source": "/band-bios",
+        "destination": "/#band",
+        "type": 301
+      },
+      {
+        "source": "/band-bios/",
+        "destination": "/#band",
+        "type": 301
+      },
+      {
+        "source": "/blog",
+        "destination": "/#blog",
+        "type": 301
+      },
+      {
+        "source": "/blog/",
+        "destination": "/#blog",
+        "type": 301
+      },
+      {
+        "source": "/blog-ierse-muziek",
+        "destination": "/#blog",
+        "type": 301
+      },
+      {
+        "source": "/blog-ierse-muziek/",
+        "destination": "/#blog",
+        "type": 301
+      },
+      {
+        "source": "/blog-post",
+        "destination": "/#blog",
+        "type": 301
+      },
+      {
+        "source": "/blog-post/",
+        "destination": "/#blog",
+        "type": 301
+      },
+      {
+        "source": "/blog-post1",
+        "destination": "/#blog",
+        "type": 301
+      },
+      {
+        "source": "/blog-post1/",
+        "destination": "/#blog",
+        "type": 301
+      },
+      {
+        "source": "/blog-post2",
+        "destination": "/#blog",
+        "type": 301
+      },
+      {
+        "source": "/blog-post2/",
+        "destination": "/#blog",
+        "type": 301
+      },
+      {
+        "source": "/blog-post3",
+        "destination": "/#blog",
+        "type": 301
+      },
+      {
+        "source": "/blog-post3/",
+        "destination": "/#blog",
+        "type": 301
+      },
+      {
+        "source": "/blog-post4",
+        "destination": "/#blog",
+        "type": 301
+      },
+      {
+        "source": "/blog-post4/",
+        "destination": "/#blog",
+        "type": 301
+      },
+      {
+        "source": "/blog-the-doggy-few-clancy-brothers",
+        "destination": "/#blog",
+        "type": 301
+      },
+      {
+        "source": "/blog-the-doggy-few-clancy-brothers/",
+        "destination": "/#blog",
+        "type": 301
+      },
+      {
+        "source": "/category/geschiedenis",
+        "destination": "/#blog",
+        "type": 301
+      },
+      {
+        "source": "/category/geschiedenis/",
+        "destination": "/#blog",
+        "type": 301
+      },
+      {
+        "source": "/category/music-we-love",
+        "destination": "/#blog",
+        "type": 301
+      },
+      {
+        "source": "/category/music-we-love/",
+        "destination": "/#blog",
+        "type": 301
+      },
+      {
+        "source": "/contact",
+        "destination": "/#contact",
+        "type": 301
+      },
+      {
+        "source": "/contact/",
+        "destination": "/#contact",
+        "type": 301
+      },
+      {
+        "source": "/contact-ierse-muziek",
+        "destination": "/#contact",
+        "type": 301
+      },
+      {
+        "source": "/contact-ierse-muziek/",
+        "destination": "/#contact",
+        "type": 301
+      },
+      {
+        "source": "/de",
+        "destination": "/",
+        "type": 301
+      },
+      {
+        "source": "/de/",
+        "destination": "/",
+        "type": 301
+      },
+      {
+        "source": "/de-band",
+        "destination": "/#band",
+        "type": 301
+      },
+      {
+        "source": "/de-band/",
+        "destination": "/#band",
+        "type": 301
+      },
+      {
+        "source": "/de-paasopstand",
+        "destination": "/#blog",
+        "type": 301
+      },
+      {
+        "source": "/de-paasopstand/",
+        "destination": "/#blog",
+        "type": 301
+      },
+      {
+        "source": "/en",
+        "destination": "/",
+        "type": 301
+      },
+      {
+        "source": "/en/",
+        "destination": "/",
+        "type": 301
+      },
+      {
+        "source": "/english",
+        "destination": "/",
+        "type": 301
+      },
+      {
+        "source": "/english/",
+        "destination": "/",
+        "type": 301
+      },
+      {
+        "source": "/eoghain",
+        "destination": "/#band",
+        "type": 301
+      },
+      {
+        "source": "/eoghain/",
+        "destination": "/#band",
+        "type": 301
+      },
+      {
+        "source": "/eoghan-irish-party-music",
+        "destination": "/#band",
+        "type": 301
+      },
+      {
+        "source": "/eoghan-irish-party-music/",
+        "destination": "/#band",
+        "type": 301
+      },
+      {
+        "source": "/erik",
+        "destination": "/#band",
+        "type": 301
+      },
+      {
+        "source": "/erik/",
+        "destination": "/#band",
+        "type": 301
+      },
+      {
+        "source": "/event-organizers",
+        "destination": "/#gigs",
+        "type": 301
+      },
+      {
+        "source": "/event-organizers/",
+        "destination": "/#gigs",
+        "type": 301
+      },
+      {
+        "source": "/event-types",
+        "destination": "/#gigs",
+        "type": 301
+      },
+      {
+        "source": "/event-types/",
+        "destination": "/#gigs",
+        "type": 301
+      },
+      {
+        "source": "/fiddlers-green-a-seafarers-heaven",
+        "destination": "/#blog",
+        "type": 301
+      },
+      {
+        "source": "/fiddlers-green-a-seafarers-heaven/",
+        "destination": "/#blog",
+        "type": 301
+      },
+      {
+        "source": "/fotos-the-doggy-few-live-optredens-ierse-feestband",
+        "destination": "/#photos",
+        "type": 301
+      },
+      {
+        "source": "/fotos-the-doggy-few-live-optredens-ierse-feestband/",
+        "destination": "/#photos",
+        "type": 301
+      },
+      {
+        "source": "/fr",
+        "destination": "/",
+        "type": 301
+      },
+      {
+        "source": "/fr/",
+        "destination": "/",
+        "type": 301
+      },
+      {
+        "source": "/frjemdfolk-festival",
+        "destination": "/#gigs",
+        "type": 301
+      },
+      {
+        "source": "/frjemdfolk-festival/",
+        "destination": "/#gigs",
+        "type": 301
+      },
+      {
+        "source": "/ietsje",
+        "destination": "/#band",
+        "type": 301
+      },
+      {
+        "source": "/ietsje/",
+        "destination": "/#band",
+        "type": 301
+      },
+      {
+        "source": "/ietsje-violiste",
+        "destination": "/#band",
+        "type": 301
+      },
+      {
+        "source": "/ietsje-violiste/",
+        "destination": "/#band",
+        "type": 301
+      },
+      {
+        "source": "/leukste-videos-clips-ierse-muziek-the-doggy-few",
+        "destination": "/#videos",
+        "type": 301
+      },
+      {
+        "source": "/leukste-videos-clips-ierse-muziek-the-doggy-few/",
+        "destination": "/#videos",
+        "type": 301
+      },
+      {
+        "source": "/luke",
+        "destination": "/#band",
+        "type": 301
+      },
+      {
+        "source": "/luke/",
+        "destination": "/#band",
+        "type": 301
+      },
+      {
+        "source": "/luke-verhalenverteller-ierse-liedjes",
+        "destination": "/#band",
+        "type": 301
+      },
+      {
+        "source": "/luke-verhalenverteller-ierse-liedjes/",
+        "destination": "/#band",
+        "type": 301
+      },
+      {
+        "source": "/media",
+        "destination": "/#contact",
+        "type": 301
+      },
+      {
+        "source": "/media/",
+        "destination": "/#contact",
+        "type": 301
+      },
+      {
+        "source": "/music-we-like",
+        "destination": "/#blog",
+        "type": 301
+      },
+      {
+        "source": "/music-we-like/",
+        "destination": "/#blog",
+        "type": 301
+      },
+      {
+        "source": "/muziek",
+        "destination": "/liedjes.html",
+        "type": 301
+      },
+      {
+        "source": "/muziek/",
+        "destination": "/liedjes.html",
+        "type": 301
+      },
+      {
+        "source": "/muziek-the-doggy-few-live-ierse-feestmuziek",
+        "destination": "/ierse-feestband-boeken/",
+        "type": 301
+      },
+      {
+        "source": "/muziek-the-doggy-few-live-ierse-feestmuziek/",
+        "destination": "/ierse-feestband-boeken/",
+        "type": 301
+      },
+      {
+        "source": "/nieuwbrief",
+        "destination": "/#contact",
+        "type": 301
+      },
+      {
+        "source": "/nieuwbrief/",
+        "destination": "/#contact",
+        "type": 301
+      },
+      {
+        "source": "/nieuwsbrief",
+        "destination": "/#contact",
+        "type": 301
+      },
+      {
+        "source": "/nieuwsbrief/",
+        "destination": "/#contact",
+        "type": 301
+      },
+      {
+        "source": "/ons-gratis-tuneboek",
+        "destination": "/liedjes.html",
+        "type": 301
+      },
+      {
+        "source": "/ons-gratis-tuneboek/",
+        "destination": "/liedjes.html",
+        "type": 301
+      },
+      {
+        "source": "/ons-gratis-tuneboekje",
+        "destination": "/liedjes.html",
+        "type": 301
+      },
+      {
+        "source": "/ons-gratis-tuneboekje/",
+        "destination": "/liedjes.html",
+        "type": 301
+      },
+      {
+        "source": "/ons-gratis-tuneboekje-irish-tunebook",
+        "destination": "/liedjes.html",
+        "type": 301
+      },
+      {
+        "source": "/ons-gratis-tuneboekje-irish-tunebook/",
+        "destination": "/liedjes.html",
+        "type": 301
+      },
+      {
+        "source": "/onze-andere-projecten",
+        "destination": "/links/",
+        "type": 301
+      },
+      {
+        "source": "/onze-andere-projecten/",
+        "destination": "/links/",
+        "type": 301
+      },
+      {
+        "source": "/our-free-tunebook",
+        "destination": "/liedjes.html",
+        "type": 301
+      },
+      {
+        "source": "/our-free-tunebook/",
+        "destination": "/liedjes.html",
+        "type": 301
+      },
+      {
+        "source": "/peter",
+        "destination": "/#band",
+        "type": 301
+      },
+      {
+        "source": "/peter/",
+        "destination": "/#band",
+        "type": 301
+      },
+      {
+        "source": "/peter-bodhran-ierse-muziek",
+        "destination": "/#band",
+        "type": 301
+      },
+      {
+        "source": "/peter-bodhran-ierse-muziek/",
+        "destination": "/#band",
+        "type": 301
+      },
+      {
+        "source": "/pictures",
+        "destination": "/#photos",
+        "type": 301
+      },
+      {
+        "source": "/pictures/",
+        "destination": "/#photos",
+        "type": 301
+      },
+      {
+        "source": "/pictures-2",
+        "destination": "/#photos",
+        "type": 301
+      },
+      {
+        "source": "/pictures-2/",
+        "destination": "/#photos",
+        "type": 301
+      },
+      {
+        "source": "/planxty-2",
+        "destination": "/#blog",
+        "type": 301
+      },
+      {
+        "source": "/planxty-2/",
+        "destination": "/#blog",
+        "type": 301
+      },
+      {
+        "source": "/pub-shows",
+        "destination": "/ierse-feestband-boeken/",
+        "type": 301
+      },
+      {
+        "source": "/pub-shows/",
+        "destination": "/ierse-feestband-boeken/",
+        "type": 301
+      },
+      {
+        "source": "/saint-patrick-shows",
+        "destination": "/ierse-feestband-boeken/",
+        "type": 301
+      },
+      {
+        "source": "/saint-patrick-shows/",
+        "destination": "/ierse-feestband-boeken/",
+        "type": 301
+      },
+      {
+        "source": "/show/celtic-dinner",
+        "destination": "/#gigs",
+        "type": 301
+      },
+      {
+        "source": "/show/celtic-dinner/",
+        "destination": "/#gigs",
+        "type": 301
+      },
+      {
+        "source": "/show/doetinchem",
+        "destination": "/#gigs",
+        "type": 301
+      },
+      {
+        "source": "/show/doetinchem/",
+        "destination": "/#gigs",
+        "type": 301
+      },
+      {
+        "source": "/show/doosje",
+        "destination": "/#gigs",
+        "type": 301
+      },
+      {
+        "source": "/show/doosje/",
+        "destination": "/#gigs",
+        "type": 301
+      },
+      {
+        "source": "/show/feestconcert",
+        "destination": "/#gigs",
+        "type": 301
+      },
+      {
+        "source": "/show/feestconcert/",
+        "destination": "/#gigs",
+        "type": 301
+      },
+      {
+        "source": "/show/heemskerk-private-party",
+        "destination": "/#gigs",
+        "type": 301
+      },
+      {
+        "source": "/show/heemskerk-private-party/",
+        "destination": "/#gigs",
+        "type": 301
+      },
+      {
+        "source": "/show/montfoort",
+        "destination": "/#gigs",
+        "type": 301
+      },
+      {
+        "source": "/show/montfoort/",
+        "destination": "/#gigs",
+        "type": 301
+      },
+      {
+        "source": "/show/monumentaal-usquert-middag-concert",
+        "destination": "/#gigs",
+        "type": 301
+      },
+      {
+        "source": "/show/monumentaal-usquert-middag-concert/",
+        "destination": "/#gigs",
+        "type": 301
+      },
+      {
+        "source": "/show/sessie-deventer",
+        "destination": "/#gigs",
+        "type": 301
+      },
+      {
+        "source": "/show/sessie-deventer/",
+        "destination": "/#gigs",
+        "type": 301
+      },
+      {
+        "source": "/show/usquert",
+        "destination": "/#gigs",
+        "type": 301
+      },
+      {
+        "source": "/show/usquert/",
+        "destination": "/#gigs",
+        "type": 301
+      },
+      {
+        "source": "/the-bothy-band-2",
+        "destination": "/#blog",
+        "type": 301
+      },
+      {
+        "source": "/the-bothy-band-2/",
+        "destination": "/#blog",
+        "type": 301
+      },
+      {
+        "source": "/the-doggy-few-band-foto-overzicht",
+        "destination": "/#photos",
+        "type": 301
+      },
+      {
+        "source": "/the-doggy-few-band-foto-overzicht/",
+        "destination": "/#photos",
+        "type": 301
+      },
+      {
+        "source": "/the-doggy-few-muzikale-reis-amerika-ierland-schotland",
+        "destination": "/#blog",
+        "type": 301
+      },
+      {
+        "source": "/the-doggy-few-muzikale-reis-amerika-ierland-schotland/",
+        "destination": "/#blog",
+        "type": 301
+      },
+      {
+        "source": "/the-good-life",
+        "destination": "/#blog",
+        "type": 301
+      },
+      {
+        "source": "/the-good-life/",
+        "destination": "/#blog",
+        "type": 301
+      },
+      {
+        "source": "/the-heads",
+        "destination": "/#blog",
+        "type": 301
+      },
+      {
+        "source": "/the-heads/",
+        "destination": "/#blog",
+        "type": 301
+      },
+      {
+        "source": "/video",
+        "destination": "/#videos",
+        "type": 301
+      },
+      {
+        "source": "/video/",
+        "destination": "/#videos",
+        "type": 301
+      },
+      {
+        "source": "/video-2",
+        "destination": "/#videos",
+        "type": 301
+      },
+      {
+        "source": "/video-2/",
+        "destination": "/#videos",
+        "type": 301
+      },
+      {
+        "source": "/video-2-2",
+        "destination": "/#videos",
+        "type": 301
+      },
+      {
+        "source": "/video-2-2/",
+        "destination": "/#videos",
+        "type": 301
+      },
+      {
+        "source": "/index.html",
+        "destination": "/",
+        "type": 301
+      },
+      {
+        "source": "/home.php",
+        "destination": "/",
+        "type": 301
+      },
+      {
+        "source": "/en/**",
+        "destination": "/",
+        "type": 301
+      },
+      {
+        "source": "**/*.php",
+        "destination": "/",
+        "type": 301
+      },
+      {
+        "source": "**/*.asp",
+        "destination": "/",
+        "type": 301
+      }
     ],
     "rewrites": [
       {
