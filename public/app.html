@@ -2212,12 +2212,11 @@
     </div>
 
     <!-- Firebase SDK -->
-    <!-- defer: de pagina hoeft niet te wachten tot deze twee bestanden (samen ruim
-         100 kB) binnen zijn. De teksten en foto's staan al in de opgeslagen
-         snapshot, dus de bezoeker ziet de pagina meteen; de database wordt daarna
-         geraadpleegd om de agenda en de rest te verversen. -->
-    <script defer src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
-    <script defer src="https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore-compat.js"></script>
+    <!-- De twee Firebase-bestanden (samen ruim 100 kB) staan hier met opzet NIET.
+         Ze worden pas opgehaald als ze echt nodig zijn — zie zorgVoorFirebase()
+         verderop. De teksten, foto's en de agenda staan al kant-en-klaar in de
+         opgeslagen kopie van deze pagina, en die kopie wordt sinds kort vanzelf
+         bijgewerkt. Een bezoeker die even komt kijken, downloadt ze dus nooit. -->
 
     <!-- Translation Data -->
     <script>
@@ -2859,20 +2858,53 @@
             appId: '1:920453037109:web:74684c7f7e64a13aebc57c',
         };
 
-        // De Firebase-bestanden worden met "defer" geladen en zijn dus pas klaar
-        // vlak vóór DOMContentLoaded. Daarom wordt dit niet meteen uitgevoerd,
-        // maar aangeroepen vanuit het opstartblok onderaan dit script.
+        // ── De database pas ophalen als het nodig is ──────────────────────
+        // De pagina die je ziet komt uit een opgeslagen kopie waarin alles al
+        // staat, en die kopie wordt automatisch bijgewerkt. De Firebase-
+        // bestanden (ruim 100 kB) zijn dus niet nodig om de pagina te tónen.
+        // Ze worden opgehaald zodra de browser even niets te doen heeft, of
+        // meteen zodra de bezoeker iets doet waarvoor ze wél nodig zijn.
+        const FIREBASE_BESTANDEN = [
+            'https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js',
+            'https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore-compat.js'
+        ];
+
         let firebaseReady = false;
         let db = null;
-        function startFirebase() {
-            firebaseReady = typeof firebase !== 'undefined';
-            if (firebaseReady) {
-                firebase.initializeApp(firebaseConfig);
-                db = firebase.firestore();
-            } else {
-                console.warn('Firebase-SDK niet geladen — dit is normaal in een preview zonder externe scripts. Op de live site werkt dit gewoon.');
-            }
-            return firebaseReady;
+        let firebaseBelofte = null;
+
+        function laadScript(adres) {
+            return new Promise(function (klaar, mislukt) {
+                const s = document.createElement('script');
+                s.src = adres;
+                s.async = true;
+                s.onload = klaar;
+                s.onerror = function () { mislukt(new Error('kon ' + adres + ' niet laden')); };
+                document.head.appendChild(s);
+            });
+        }
+
+        // Geeft een belofte die klaar is zodra de database bruikbaar is.
+        // Meerdere keren aanroepen is veilig: het laden gebeurt één keer.
+        function zorgVoorFirebase() {
+            if (firebaseBelofte) return firebaseBelofte;
+            // De twee bestanden moeten in deze volgorde: firestore heeft app nodig.
+            firebaseBelofte = laadScript(FIREBASE_BESTANDEN[0])
+                .then(function () { return laadScript(FIREBASE_BESTANDEN[1]); })
+                .then(function () {
+                    firebaseReady = typeof firebase !== 'undefined';
+                    if (firebaseReady) {
+                        firebase.initializeApp(firebaseConfig);
+                        db = firebase.firestore();
+                    }
+                    return firebaseReady;
+                })
+                .catch(function (err) {
+                    console.warn('Database niet bereikbaar:', err.message);
+                    firebaseReady = false;
+                    return false;
+                });
+            return firebaseBelofte;
         }
 
         const DOGGY_FEW_UID = 'noLMR50T8TP8QtxbiV70r6fdNIU2';
@@ -3106,6 +3138,7 @@
 
                 let firestoreOk = false;
                 try {
+                    await zorgVoorFirebase();
                     if (typeof db !== 'undefined' && db) {
                         await db.collection('song_requests').add(requestData);
                         firestoreOk = true;
@@ -3363,11 +3396,18 @@
 
         // Member galerie modal
         let memberGalleryPhotos = [];
-        function openMemberGallery(name, galleryId) {
+        async function openMemberGallery(name, galleryId) {
             const modal = document.getElementById('memberGalleryModal');
             const grid = document.getElementById('memberGalleryGrid');
             const title = document.getElementById('memberGalleryTitle');
             title.textContent = name;
+            // De database wordt pas opgehaald als hij nodig is; hier wachten we
+            // er zo nodig even op voordat de foto's worden gezocht.
+            const beschikbaar = await zorgVoorFirebase();
+            if (!beschikbaar) {
+                grid.innerHTML = '<p style="color:#acb7a4;">Foto\'s kunnen nu niet geladen worden.</p>';
+                return;
+            }
             // haal foto's op uit Firestore
             firebase.firestore().collection('photos').where('galleryId', '==', galleryId).get().then(snap => {
                 const photos = snap.docs.map(d => d.data());
@@ -4087,6 +4127,7 @@
 
             let firestoreOk = false;
             try {
+                await zorgVoorFirebase();
                 if (typeof db !== 'undefined' && db) {
                     await db.collection('contact_messages').add(msgData);
                     firestoreOk = true;
@@ -4154,6 +4195,7 @@
 
                     let nlFirestoreOk = false;
                     try {
+                        await zorgVoorFirebase();
                         if (typeof db !== 'undefined' && db) {
                             // use email as doc id to prevent duplicates
                             const docId = nlEmail.replace(/[^a-zA-Z0-9@._-]/g, '_');
@@ -4458,8 +4500,9 @@
         initializeLanguage();
         applyYouTubeChannel();
 
-        function startDatabaseWerk() {
-            if (startFirebase()) {
+        async function startDatabaseWerk() {
+            const gelukt = await zorgVoorFirebase();
+            if (gelukt) {
                 const alleGegevens = [
                     loadSettings(),   // hero-banner eerst
                     loadGigs(),
@@ -4483,11 +4526,39 @@
             }
         }
 
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', startDatabaseWerk);
-        } else {
-            startDatabaseWerk();
-        }
+        // Wanneer halen we de database op?
+        //  - bij het maken van de opgeslagen kopie (?live=1): meteen, want die
+        //    kopie moet juist de verse gegevens bevatten;
+        //  - bij een gewone bezoeker: zodra de browser even niets te doen heeft,
+        //    of eerder als hij scrolt, klikt of typt. Zo staat de pagina eerst
+        //    in beeld en pas daarna wordt er nog iets gedownload.
+        (function planDatabaseWerk() {
+            const kopieMaken = location.search.indexOf('live=1') !== -1;
+            if (kopieMaken) {
+                if (document.readyState === 'loading') {
+                    document.addEventListener('DOMContentLoaded', startDatabaseWerk);
+                } else {
+                    startDatabaseWerk();
+                }
+                return;
+            }
+
+            let gestart = false;
+            const signalen = ['pointerdown', 'keydown', 'touchstart', 'scroll'];
+            function start() {
+                if (gestart) return;
+                gestart = true;
+                signalen.forEach(function (s) { window.removeEventListener(s, start); });
+                startDatabaseWerk();
+            }
+            signalen.forEach(function (s) { window.addEventListener(s, start, { passive: true }); });
+
+            if ('requestIdleCallback' in window) {
+                requestIdleCallback(start, { timeout: 3000 });
+            } else {
+                setTimeout(start, 1500);
+            }
+        })();
 
     </script>
     <!-- Bandlid-pagina (fullscreen) -->
