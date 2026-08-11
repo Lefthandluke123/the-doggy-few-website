@@ -208,6 +208,32 @@ exports.serveSnapshot = onRequest(
   { memory: "256MiB", region: "europe-west1", invoker: "public" },
   async (req, res) => {
     try {
+      // Oude adressen met een vraagteken uit eerdere versies van de site.
+      // Ze leveren allemaal gewoon de voorpagina op, waardoor Google ze als
+      // dubbele pagina's ziet en dan niets meer indexeert. Firebase Hosting
+      // kan niet op een vraagteken filteren, dus dat gebeurt hier.
+      const oudeVraagtekens = {
+        band: "/#band",
+        members: "/#band",
+        links: "/links/",
+        albums: "/",
+        album_categories: "/",
+        page_id: "/",
+        p: "/",
+        feed: "/",
+      };
+      const vraag = req.query || {};
+      for (const sleutel of Object.keys(vraag)) {
+        const bestemming = oudeVraagtekens[String(sleutel).toLowerCase()];
+        if (bestemming) {
+          // Niet laten bewaren door de CDN: een bewaarde omleiding zou in het
+          // ergste geval ook voor de gewone voorpagina gebruikt worden.
+          res.set("Cache-Control", "private, no-store");
+          res.redirect(301, bestemming);
+          return;
+        }
+      }
+
       // Welke taalversie hoort bij dit adres?
       const pad = (req.path || "/").toLowerCase();
       const taal = TALEN.find((t) => t.code !== "nl" && (pad === t.pad || pad === "/" + t.code))
