@@ -2212,8 +2212,12 @@
     </div>
 
     <!-- Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore-compat.js"></script>
+    <!-- defer: de pagina hoeft niet te wachten tot deze twee bestanden (samen ruim
+         100 kB) binnen zijn. De teksten en foto's staan al in de opgeslagen
+         snapshot, dus de bezoeker ziet de pagina meteen; de database wordt daarna
+         geraadpleegd om de agenda en de rest te verversen. -->
+    <script defer src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
+    <script defer src="https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore-compat.js"></script>
 
     <!-- Translation Data -->
     <script>
@@ -2765,13 +2769,20 @@
             appId: '1:920453037109:web:74684c7f7e64a13aebc57c',
         };
 
-        const firebaseReady = typeof firebase !== 'undefined';
+        // De Firebase-bestanden worden met "defer" geladen en zijn dus pas klaar
+        // vlak vóór DOMContentLoaded. Daarom wordt dit niet meteen uitgevoerd,
+        // maar aangeroepen vanuit het opstartblok onderaan dit script.
+        let firebaseReady = false;
         let db = null;
-        if (firebaseReady) {
-            firebase.initializeApp(firebaseConfig);
-            db = firebase.firestore();
-        } else {
-            console.warn('Firebase-SDK niet geladen — dit is normaal in een preview zonder externe scripts. Op de live site werkt dit gewoon.');
+        function startFirebase() {
+            firebaseReady = typeof firebase !== 'undefined';
+            if (firebaseReady) {
+                firebase.initializeApp(firebaseConfig);
+                db = firebase.firestore();
+            } else {
+                console.warn('Firebase-SDK niet geladen — dit is normaal in een preview zonder externe scripts. Op de live site werkt dit gewoon.');
+            }
+            return firebaseReady;
         }
 
         const DOGGY_FEW_UID = 'noLMR50T8TP8QtxbiV70r6fdNIU2';
@@ -4351,26 +4362,41 @@
         })();
 
         // ===== INITIALISATIE — helemaal onderaan, ná ALLE declaraties en functies =====
-        // Het script staat onderaan de <body>, dus de DOM is klaar. Direct draaien (niet
-        // op window 'load' wachten) houdt de LCP snel, terwijl alle const/let nu bestaan.
+        // De taalinstelling draait meteen: die bepaalt zichtbare tekst en mag niet
+        // wachten. Alles wat de database nodig heeft, draait zodra de Firebase-
+        // bestanden binnen zijn (die staan op "defer", dus vlak vóór DOMContentLoaded).
         initializeLanguage();
         applyYouTubeChannel();
-        if (firebaseReady) {
-            loadSettings();   // hero-banner eerst
-            loadGigs();
-            loadBlogPosts();
-            loadMembers();
-            loadPhotos();
-            loadVideos();
-            loadLinks();
-            loadPages();
-            // Snapshot-markering voor de makeSnapshot Cloud Function: zodra alle live-data
-            // is opgevraagd is de DOM "vers". De Cloud Function wacht na deze marker zelf
-            // nog tot de containers daadwerkelijk gevuld zijn (children.length > 0),
-            // dus dit vlaggetje + die content-check vormen samen de garantie.
-            document.documentElement.setAttribute('data-hydrated', 'true');
+
+        function startDatabaseWerk() {
+            if (startFirebase()) {
+                const alleGegevens = [
+                    loadSettings(),   // hero-banner eerst
+                    loadGigs(),
+                    loadBlogPosts(),
+                    loadMembers(),
+                    loadPhotos(),
+                    loadVideos(),
+                    loadLinks(),
+                    loadPages()
+                ];
+                // Snapshot-markering voor de makeSnapshot Cloud Function.
+                // Belangrijk: dit vlaggetje gaat pas aan als de gegevens er echt
+                // zijn, niet zodra ze zijn opgevraagd. Anders kan de snapshot de
+                // tekst "Optredens laden..." vastleggen in plaats van de agenda,
+                // en dát is precies wat Google dan te zien krijgt.
+                Promise.allSettled(alleGegevens).then(function(){
+                    document.documentElement.setAttribute('data-hydrated', 'true');
+                });
+            } else {
+                showOfflineNotice();
+            }
+        }
+
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', startDatabaseWerk);
         } else {
-            showOfflineNotice();
+            startDatabaseWerk();
         }
 
     </script>
