@@ -84,6 +84,17 @@ service cloud.firestore {
       allow list, write: if isBeheerder();
     }
 
+    // Bezoekersteller. De site mag een bezoek noteren, maar uitsluitend met
+    // deze zes velden en niets anders — en alleen de beheerder mag de cijfers
+    // inzien. Wijzigen of verwijderen van een genoteerd bezoek kan niet.
+    match /bezoeken/{doc} {
+      allow create: if request.resource.data.keys().hasOnly(
+        ['datum', 'pad', 'verwijzer', 'apparaat', 'taal', 'tijdstip']
+      );
+      allow read: if isBeheerder();
+      allow update, delete: if isBeheerder();
+    }
+
     // ── Al het overige: alleen de beheerder ─────────────────────────────
     match /{document=**} {
       allow read, write: if isBeheerder();

@@ -814,6 +814,7 @@
             <button class="nav-btn" data-section="messages">✉️ Berichten</button>
             <button class="nav-btn" data-section="requests">🎶 Verzoekjes</button>
             <button class="nav-btn" data-section="newsletter">📧 Nieuwsbrief</button>
+            <button class="nav-btn" data-section="bezoekers">📊 Bezoekers</button>
             <button class="nav-btn" data-section="settings">⚙️ Instellingen</button>
             <button class="logout-btn btn" onclick="logout()">Uitloggen</button>
         </nav>
@@ -1085,6 +1086,62 @@
                 </div>
                 <p style="color: #a8c8b2; margin-bottom: 2rem;">Ingestuurde contactformulieren van de website.</p>
                 <div id="messagesList" class="list"></div>
+            </section>
+
+            <!-- BEZOEKERS -->
+            <section id="bezoekers" class="section">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.5rem; gap:1rem; flex-wrap:wrap;">
+                    <h1 style="margin:0;">Bezoekers</h1>
+                    <div>
+                        <select id="bezoekPeriode" onchange="laadBezoekers()" style="padding:0.5rem; border-radius:8px; background:#485a3e; color:#e5e9e2; border:1px solid #4d5645; font-family:inherit;">
+                            <option value="7">Laatste 7 dagen</option>
+                            <option value="30" selected>Laatste 30 dagen</option>
+                            <option value="90">Laatste 90 dagen</option>
+                        </select>
+                        <button class="btn btn-secondary" onclick="laadBezoekers()">Vernieuwen</button>
+                    </div>
+                </div>
+                <p style="color:#a8c8b2; margin-bottom:1.5rem;">
+                    Hoeveel mensen je site bekijken, waar ze vandaan komen en welke pagina's ze lezen.
+                    Er worden geen cookies gebruikt en niemand is te herleiden — er wordt alleen geteld.
+                </p>
+
+                <div id="bezoekStatus" style="color:#a8c8b2; margin-bottom:1.5rem;">Laden…</div>
+
+                <div id="bezoekCijfers" style="display:none;">
+                    <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(170px,1fr)); gap:1rem; margin-bottom:2rem;">
+                        <div class="info-box" style="text-align:center;">
+                            <div style="font-size:2.2rem; font-weight:700; color:#da8a36;" id="bezoekTotaal">–</div>
+                            <div style="color:#a8c8b2; font-size:0.9rem;">bezoeken totaal</div>
+                        </div>
+                        <div class="info-box" style="text-align:center;">
+                            <div style="font-size:2.2rem; font-weight:700; color:#6db455;" id="bezoekPerDag">–</div>
+                            <div style="color:#a8c8b2; font-size:0.9rem;">gemiddeld per dag</div>
+                        </div>
+                        <div class="info-box" style="text-align:center;">
+                            <div style="font-size:2.2rem; font-weight:700; color:#6db455;" id="bezoekTelefoon">–</div>
+                            <div style="color:#a8c8b2; font-size:0.9rem;">op een telefoon</div>
+                        </div>
+                        <div class="info-box" style="text-align:center;">
+                            <div style="font-size:2.2rem; font-weight:700; color:#da8a36;" id="bezoekDrukste">–</div>
+                            <div style="color:#a8c8b2; font-size:0.9rem;">drukste dag</div>
+                        </div>
+                    </div>
+
+                    <h2 style="margin-bottom:0.75rem;">Per dag</h2>
+                    <div id="bezoekGrafiek" style="display:flex; align-items:flex-end; gap:3px; height:150px; margin-bottom:2.5rem; padding:0.75rem; background:#30362b; border-radius:10px; overflow-x:auto;"></div>
+
+                    <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:2rem;">
+                        <div>
+                            <h2 style="margin-bottom:0.75rem;">Waar komen ze vandaan?</h2>
+                            <div id="bezoekVerwijzers"></div>
+                        </div>
+                        <div>
+                            <h2 style="margin-bottom:0.75rem;">Welke pagina's?</h2>
+                            <div id="bezoekPaginas"></div>
+                        </div>
+                    </div>
+                </div>
             </section>
 
             <!-- REQUESTS / VERZOEKJES -->
@@ -4229,6 +4286,7 @@
             loadNewsletter();
             loadRequests();
             loadActionRequired();
+            laadBezoekers();
         }
 
         // ===== ACTIE VEREIST WIDGET =====
@@ -5048,6 +5106,112 @@
             } finally {
                 btn.disabled = false;
                 btn.style.opacity = '1';
+            }
+        }
+
+        // ══════════════════════════════════════════════════════════════════
+        //  Bezoekerscijfers
+        // ══════════════════════════════════════════════════════════════════
+        function datumTekst(d) {
+            return d.getFullYear() + '-' +
+                   String(d.getMonth() + 1).padStart(2, '0') + '-' +
+                   String(d.getDate()).padStart(2, '0');
+        }
+
+        function lijstje(paren, leegTekst) {
+            if (!paren.length) return '<p style="color:#a8c8b2;">' + leegTekst + '</p>';
+            var hoogste = paren[0][1];
+            return paren.map(function (p) {
+                var breedte = Math.max(4, Math.round(100 * p[1] / hoogste));
+                var naam = String(p[0]).replace(/</g, '&lt;');
+                return '<div style="margin-bottom:0.6rem;">' +
+                       '<div style="display:flex; justify-content:space-between; font-size:0.92rem; margin-bottom:0.2rem;">' +
+                       '<span>' + naam + '</span><strong>' + p[1] + '</strong></div>' +
+                       '<div style="height:6px; background:#30362b; border-radius:3px;">' +
+                       '<div style="height:6px; width:' + breedte + '%; background:#6db455; border-radius:3px;"></div>' +
+                       '</div></div>';
+            }).join('');
+        }
+
+        async function laadBezoekers() {
+            var status = document.getElementById('bezoekStatus');
+            var blok = document.getElementById('bezoekCijfers');
+            status.style.display = '';
+            status.style.color = '#a8c8b2';
+            status.textContent = 'Laden…';
+            blok.style.display = 'none';
+
+            var dagen = parseInt(document.getElementById('bezoekPeriode').value, 10) || 30;
+            var vanaf = new Date();
+            vanaf.setDate(vanaf.getDate() - (dagen - 1));
+            var vanafTekst = datumTekst(vanaf);
+
+            try {
+                var snap = await db.collection('bezoeken')
+                    .where('datum', '>=', vanafTekst)
+                    .limit(20000)
+                    .get();
+
+                if (snap.empty) {
+                    status.innerHTML = 'Nog geen bezoeken geteld in deze periode.<br>' +
+                        '<span style="font-size:0.9rem;">De teller begint pas te werken zodra de nieuwe beveiligingsregels live staan.</span>';
+                    return;
+                }
+
+                var rijen = [];
+                snap.forEach(function (doc) { rijen.push(doc.data()); });
+                toonBezoekers(rijen, dagen, vanaf);
+            } catch (err) {
+                status.style.color = '#ff8a8a';
+                status.textContent = 'De cijfers konden niet worden opgehaald: ' + err.message;
+            }
+        }
+
+        function toonBezoekers(rijen, dagen, vanaf) {
+            var status = document.getElementById('bezoekStatus');
+            var blok = document.getElementById('bezoekCijfers');
+            {
+                var perDag = {}, perVerwijzer = {}, perPagina = {}, telefoons = 0, totaal = 0;
+                rijen.forEach(function (b) {
+                    totaal++;
+                    perDag[b.datum] = (perDag[b.datum] || 0) + 1;
+                    var v = b.verwijzer || '(rechtstreeks of onbekend)';
+                    perVerwijzer[v] = (perVerwijzer[v] || 0) + 1;
+                    var p = b.pad || '/';
+                    perPagina[p] = (perPagina[p] || 0) + 1;
+                    if (b.apparaat === 'telefoon') telefoons++;
+                });
+
+                var dagenLijst = [];
+                for (var i = 0; i < dagen; i++) {
+                    var d = new Date(vanaf); d.setDate(d.getDate() + i);
+                    var t = datumTekst(d);
+                    dagenLijst.push([t, perDag[t] || 0]);
+                }
+                var drukste = dagenLijst.slice().sort(function (a, b) { return b[1] - a[1]; })[0];
+
+                document.getElementById('bezoekTotaal').textContent = totaal;
+                document.getElementById('bezoekPerDag').textContent = Math.round(totaal / dagen * 10) / 10;
+                document.getElementById('bezoekTelefoon').textContent = Math.round(100 * telefoons / totaal) + '%';
+                document.getElementById('bezoekDrukste').textContent = drukste[1];
+
+                var maxDag = Math.max.apply(null, dagenLijst.map(function (d) { return d[1]; })) || 1;
+                document.getElementById('bezoekGrafiek').innerHTML = dagenLijst.map(function (d) {
+                    var hoogte = Math.round(100 * d[1] / maxDag);
+                    return '<div title="' + d[0] + ': ' + d[1] + ' bezoeken" style="flex:1; min-width:6px; display:flex; flex-direction:column; justify-content:flex-end; height:100%;">' +
+                           '<div style="height:' + hoogte + '%; background:' + (d[1] ? '#da8a36' : '#3d4d35') + '; border-radius:2px 2px 0 0; min-height:2px;"></div>' +
+                           '</div>';
+                }).join('');
+
+                var sorteer = function (obj) {
+                    return Object.keys(obj).map(function (k) { return [k, obj[k]]; })
+                        .sort(function (a, b) { return b[1] - a[1]; }).slice(0, 8);
+                };
+                document.getElementById('bezoekVerwijzers').innerHTML = lijstje(sorteer(perVerwijzer), 'Nog niets bekend.');
+                document.getElementById('bezoekPaginas').innerHTML = lijstje(sorteer(perPagina), 'Nog niets bekend.');
+
+                status.style.display = 'none';
+                blok.style.display = '';
             }
         }
 
