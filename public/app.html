@@ -2647,8 +2647,33 @@
             }
         };
 
-        // Current language state
-        let currentLanguage = localStorage.getItem('language') || 'nl';
+        // ── Taal ──────────────────────────────────────────────────────────
+        // De taal komt uit het webadres: doggyfew.com/ is Nederlands,
+        // doggyfew.com/en/ Engels, doggyfew.com/de/ Duits. Dat is nodig omdat
+        // Google geen browsergeheugen heeft: stond de taalkeuze alleen in
+        // localStorage, dan bestonden de Engelse en Duitse teksten voor Google
+        // domweg niet. De parameter ?taal= wordt gebruikt door de generator die
+        // de opgeslagen kopie per taal maakt.
+        const TALEN = ['nl', 'en', 'de'];
+
+        function taalUitAdres() {
+            const pad = location.pathname;
+            for (const t of TALEN) {
+                if (t !== 'nl' && new RegExp('^/' + t + '(/|$)').test(pad)) return t;
+            }
+            try {
+                const uitVraag = new URLSearchParams(location.search).get('taal');
+                if (TALEN.indexOf(uitVraag) !== -1) return uitVraag;
+            } catch (e) { /* oude browser */ }
+            if (pad === '/' || pad.indexOf('/app.html') === 0) return null;
+            return null;
+        }
+
+        function adresVoorTaal(taal) {
+            return taal === 'nl' ? '/' : '/' + taal + '/';
+        }
+
+        let currentLanguage = taalUitAdres() || localStorage.getItem('language') || 'nl';
 
         // Module-brede state / config
         const CMS_SECTION_SLOTS = ['home', 'band', 'gigs', 'lyrics', 'blog', 'photos', 'videos', 'links', 'contact'];
@@ -2693,13 +2718,78 @@
             // Beheerbare teksten opnieuw in de juiste taal tonen
             if (typeof renderCmsPages === 'function') renderCmsPages();
             if (typeof applySiteText === 'function') applySiteText();
+
+            zetTaalverwijzingen();
         }
 
         function changeLanguage(lang) {
-            currentLanguage = lang;
             localStorage.setItem('language', lang);
+
+            // Elke taal heeft een eigen webadres. Klikt iemand op EN, dan gaat
+            // hij naar /en/ — zo kan hij die pagina delen en kan Google hem
+            // vinden. Alleen op /app.html (rechtstreeks, of tijdens het maken
+            // van de kopie) wisselen we ter plekke, zonder te navigeren.
+            const rechtstreeks = location.pathname.indexOf('/app.html') === 0;
+            const doel = adresVoorTaal(lang);
+            if (!rechtstreeks && location.pathname !== doel) {
+                location.href = doel + location.hash;
+                return;
+            }
+
+            currentLanguage = lang;
             initializeLanguage();
             if (typeof applySiteText === 'function') applySiteText();
+        }
+
+        // Zet per taal het juiste canonieke adres en de verwijzingen naar de
+        // andere taalversies. Google gebruikt dit om te begrijpen dat het om
+        // dezelfde pagina in drie talen gaat, in plaats van om drie kopieën.
+        // Titel en omschrijving per taal. Zonder dit krijgen de Engelse en
+        // Duitse versie dezelfde Nederlandse titel mee, en ziet Google drie
+        // keer dezelfde pagina in plaats van drie taalversies.
+        const PAGINATITELS = {
+            nl: {
+                titel: 'The Doggy Few | Celtic Folk Band Boeken Nederland | Authentieke Ierse Muziek',
+                omschrijving: 'The Doggy Few: authentieke Celtic folk band uit Nederland. Ierse ballades, traditionele folk en originele composities. Boek ons voor je evenement!'
+            },
+            en: {
+                titel: 'The Doggy Few | Irish Folk Band from the Netherlands | Live Celtic Music',
+                omschrijving: 'The Doggy Few: authentic Irish folk band from Groningen, the Netherlands. Ballads, jigs and reels, played live. Book us for your event.'
+            },
+            de: {
+                titel: 'The Doggy Few | Irische Folkband aus den Niederlanden | Live Keltische Musik',
+                omschrijving: 'The Doggy Few: authentische irische Folkband aus Groningen. Balladen, Jigs und Reels, live gespielt. Buchen Sie uns für Ihre Veranstaltung.'
+            }
+        };
+
+        function zetTaalverwijzingen() {
+            const basis = 'https://doggyfew.com';
+
+            const tekst = PAGINATITELS[currentLanguage] || PAGINATITELS.nl;
+            document.title = tekst.titel;
+            const omschrijving = document.querySelector('meta[name="description"]');
+            if (omschrijving) omschrijving.content = tekst.omschrijving;
+            const ogTitel = document.querySelector('meta[property="og:title"]');
+            if (ogTitel) ogTitel.content = tekst.titel;
+            const ogOms = document.querySelector('meta[property="og:description"]');
+            if (ogOms) ogOms.content = tekst.omschrijving;
+            const canoniek = document.querySelector('link[rel="canonical"]');
+            if (canoniek) canoniek.href = basis + adresVoorTaal(currentLanguage);
+
+            document.querySelectorAll('link[rel="alternate"][hreflang]').forEach(el => el.remove());
+            const paren = [['nl', '/'], ['en', '/en/'], ['de', '/de/'], ['x-default', '/']];
+            paren.forEach(([code, pad]) => {
+                const el = document.createElement('link');
+                el.rel = 'alternate';
+                el.hreflang = code;
+                el.href = basis + pad;
+                document.head.appendChild(el);
+            });
+
+            const og = document.querySelector('meta[property="og:locale"]');
+            if (og) og.content = { nl: 'nl_NL', en: 'en_US', de: 'de_DE' }[currentLanguage] || 'nl_NL';
+            const ogUrl = document.querySelector('meta[property="og:url"]');
+            if (ogUrl) ogUrl.content = basis + adresVoorTaal(currentLanguage);
         }
 
         function translatePage() {

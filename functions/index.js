@@ -12,6 +12,15 @@ const db = admin.firestore();
 
 const HOMEPAGE_URL = "https://the-doggy-few.web.app/app.html?live=1";
 const SNAPSHOT_DOC = "settings/snapshot";
+
+// De site bestaat in drie talen, elk met een eigen webadres. Van elke taal
+// wordt een eigen kopie bewaard, anders kan Google de Engelse en Duitse
+// teksten niet vinden.
+const TALEN = [
+  { code: "nl", pad: "/",    doc: "settings/snapshot" },
+  { code: "en", pad: "/en/", doc: "settings/snapshot-en" },
+  { code: "de", pad: "/de/", doc: "settings/snapshot-de" },
+];
 const WIJZIGING_DOC = "settings/snapshot-status";
 
 // Collecties waarvan de inhoud op de homepage staat. Een wijziging hierin
@@ -39,40 +48,53 @@ async function maakEnBewaarSnapshot() {
       executablePath: await chromium.executablePath(),
       headless: true,
     });
-    const page = await browser.newPage();
-    await page.goto(HOMEPAGE_URL, { waitUntil: "networkidle2", timeout: 45000 });
-    await page.waitForFunction(
-      () => {
-        if (document.documentElement.getAttribute("data-hydrated") !== "true") return false;
-        const ids = ["gigsContainer", "blogContainer", "membersContainer", "photosContainer", "videosContainer"];
-        return ids.every((id) => { const el = document.getElementById(id); return el && el.children.length > 0; });
-      },
-      { timeout: 30000 }
-    ).catch(() => {});
-    await new Promise((r) => setTimeout(r, 2000));
-    const html = await page.evaluate(() => {
-      document.documentElement.setAttribute("data-snapshot", "true");
-      return "<!DOCTYPE html>\n" + document.documentElement.outerHTML;
-    });
+
+    const resultaten = [];
+    for (const taal of TALEN) {
+      const page = await browser.newPage();
+      try {
+        await page.goto(HOMEPAGE_URL + "&taal=" + taal.code, { waitUntil: "networkidle2", timeout: 45000 });
+        await page.waitForFunction(
+          () => {
+            if (document.documentElement.getAttribute("data-hydrated") !== "true") return false;
+            const ids = ["gigsContainer", "blogContainer", "membersContainer", "photosContainer", "videosContainer"];
+            return ids.every((id) => { const el = document.getElementById(id); return el && el.children.length > 0; });
+          },
+          { timeout: 30000 }
+        ).catch(() => {});
+        await new Promise((r) => setTimeout(r, 1500));
+        const html = await page.evaluate(() => {
+          document.documentElement.setAttribute("data-snapshot", "true");
+          return "<!DOCTYPE html>\n" + document.documentElement.outerHTML;
+        });
+
+        // Controles vóór opslaan. Liever de oude kopie laten staan dan een
+        // halve pagina live zetten.
+        if (!html.includes("The Doggy Few")) {
+          throw new Error("kopie lijkt niet de bandsite te zijn");
+        }
+        if (html.length < 100000) {
+          throw new Error("kopie is verdacht klein (" + Math.round(html.length / 1024) + " kB)");
+        }
+
+        await db.doc(taal.doc).set({
+          html: html,
+          taal: taal.code,
+          createdAt: admin.firestore.FieldValue.serverTimestamp(),
+          sizeKb: Math.round(html.length / 1024),
+        });
+        resultaten.push({ taal: taal.code, sizeKb: Math.round(html.length / 1024) });
+      } finally {
+        await page.close().catch(() => {});
+      }
+    }
+
     await browser.close();
     browser = null;
-
-    // Twee controles vóór opslaan: het moet echt de bandsite zijn, en de
-    // agenda mag niet blijven steken op "laden". Liever de oude snapshot
-    // laten staan dan een halve pagina live zetten.
-    if (!html.includes("Celtic Folk Band")) {
-      throw new Error("De gegenereerde snapshot lijkt niet de bandsite te zijn. Niet opgeslagen.");
-    }
-    if (html.length < 100000) {
-      throw new Error("De gegenereerde snapshot is verdacht klein (" + Math.round(html.length / 1024) + " kB). Niet opgeslagen.");
-    }
-
-    await db.doc(SNAPSHOT_DOC).set({
-      html: html,
-      createdAt: admin.firestore.FieldValue.serverTimestamp(),
-      sizeKb: Math.round(html.length / 1024),
-    });
-    return { sizeKb: Math.round(html.length / 1024) };
+    return {
+      sizeKb: resultaten.length ? resultaten[0].sizeKb : 0,
+      talen: resultaten,
+    };
   } finally {
     if (browser) { try { await browser.close(); } catch (e) {} }
   }
@@ -161,12 +183,13 @@ exports.werkWebsiteBij = onSchedule(
 
 // Onthoudt de ingepakte versie zolang deze instantie leeft, zodat dezelfde
 // snapshot niet bij elk bezoek opnieuw ingepakt hoeft te worden.
-let ingepakteCache = { bron: null, gzip: null };
+const ingepakteCache = new Map();   // taalcode -> { bron, gzip }
 
-function pakIn(html) {
-  if (ingepakteCache.bron === html && ingepakteCache.gzip) return ingepakteCache.gzip;
+function pakIn(taalcode, html) {
+  const eerder = ingepakteCache.get(taalcode);
+  if (eerder && eerder.bron === html) return eerder.gzip;
   const gzip = zlib.gzipSync(Buffer.from(html, "utf8"), { level: 6 });
-  ingepakteCache = { bron: html, gzip };
+  ingepakteCache.set(taalcode, { bron: html, gzip });
   return gzip;
 }
 
@@ -174,7 +197,12 @@ exports.serveSnapshot = onRequest(
   { memory: "256MiB", region: "europe-west1", invoker: "public" },
   async (req, res) => {
     try {
-      const snap = await db.doc(SNAPSHOT_DOC).get();
+      // Welke taalversie hoort bij dit adres?
+      const pad = (req.path || "/").toLowerCase();
+      const taal = TALEN.find((t) => t.code !== "nl" && (pad === t.pad || pad === "/" + t.code))
+                || TALEN[0];
+
+      const snap = await db.doc(taal.doc).get();
       if (snap.exists && snap.data().html) {
         const html = snap.data().html;
         res.set("Content-Type", "text/html; charset=utf-8");
@@ -188,15 +216,16 @@ exports.serveSnapshot = onRequest(
         const accepteert = String(req.headers["accept-encoding"] || "");
         if (/\bgzip\b/.test(accepteert)) {
           res.set("Content-Encoding", "gzip");
-          res.status(200).send(pakIn(html));
+          res.status(200).send(pakIn(taal.code, html));
         } else {
           res.status(200).send(html);
         }
         return;
       }
-      res.redirect(302, "/app.html?live=1");
+      // Nog geen kopie voor deze taal: toon de live pagina in die taal.
+      res.redirect(302, "/app.html?taal=" + taal.code);
     } catch (err) {
-      res.redirect(302, "/app.html?live=1");
+      res.redirect(302, "/app.html?taal=nl");
     }
   }
 );

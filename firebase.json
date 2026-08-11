@@ -188,16 +188,6 @@
         "type": 301
       },
       {
-        "source": "/de",
-        "destination": "/",
-        "type": 301
-      },
-      {
-        "source": "/de/",
-        "destination": "/",
-        "type": 301
-      },
-      {
         "source": "/de-band",
         "destination": "/#band",
         "type": 301
@@ -215,26 +205,6 @@
       {
         "source": "/de-paasopstand/",
         "destination": "/#blog",
-        "type": 301
-      },
-      {
-        "source": "/en",
-        "destination": "/",
-        "type": 301
-      },
-      {
-        "source": "/en/",
-        "destination": "/",
-        "type": 301
-      },
-      {
-        "source": "/english",
-        "destination": "/",
-        "type": 301
-      },
-      {
-        "source": "/english/",
-        "destination": "/",
         "type": 301
       },
       {
@@ -305,16 +275,6 @@
       {
         "source": "/fotos-the-doggy-few-live-optredens-ierse-feestband/",
         "destination": "/#photos",
-        "type": 301
-      },
-      {
-        "source": "/fr",
-        "destination": "/",
-        "type": 301
-      },
-      {
-        "source": "/fr/",
-        "destination": "/",
         "type": 301
       },
       {
@@ -738,11 +698,6 @@
         "type": 301
       },
       {
-        "source": "/en/**",
-        "destination": "/",
-        "type": 301
-      },
-      {
         "source": "**/*.php",
         "destination": "/",
         "type": 301
@@ -751,11 +706,59 @@
         "source": "**/*.asp",
         "destination": "/",
         "type": 301
+      },
+      {
+        "source": "/fr",
+        "destination": "/",
+        "type": 301
+      },
+      {
+        "source": "/fr/",
+        "destination": "/",
+        "type": 301
+      },
+      {
+        "source": "/english",
+        "destination": "/en/",
+        "type": 301
+      },
+      {
+        "source": "/english/",
+        "destination": "/en/",
+        "type": 301
       }
     ],
     "rewrites": [
       {
         "source": "/",
+        "function": {
+          "functionId": "serveSnapshot",
+          "region": "europe-west1"
+        }
+      },
+      {
+        "source": "/en",
+        "function": {
+          "functionId": "serveSnapshot",
+          "region": "europe-west1"
+        }
+      },
+      {
+        "source": "/en/",
+        "function": {
+          "functionId": "serveSnapshot",
+          "region": "europe-west1"
+        }
+      },
+      {
+        "source": "/de",
+        "function": {
+          "functionId": "serveSnapshot",
+          "region": "europe-west1"
+        }
+      },
+      {
+        "source": "/de/",
         "function": {
           "functionId": "serveSnapshot",
           "region": "europe-west1"
