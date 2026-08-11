@@ -876,8 +876,9 @@
                 <!-- SNAPSHOT SYSTEEM -->
                 <div class="info-box" style="margin-top:1.5rem; border-left:4px solid #da8a36;">
                     <strong>📸 Statische snapshot van de homepage</strong><br><br>
-                    Maak een statische versie van de homepage waarin alle content (optredens, blog, foto's, bandleden, video's) al in de HTML staat. Dit is beter voor Google en laadt sneller voor bezoekers.<br><br>
-                    <span style="color:#a8c8b2; font-size:0.9rem;">Maak een nieuwe snapshot telkens nadat je belangrijke wijzigingen hebt gepubliceerd. De snapshot wordt automatisch gemaakt én direct live gezet — je hoeft niets te downloaden of te deployen.</span>
+                    De homepage die bezoekers en Google te zien krijgen is een opgeslagen kopie, waarin optredens, blog, foto's, bandleden en video's al kant-en-klaar staan. Dat is beter voor Google en laadt sneller.<br><br>
+                    <span style="color:#91c383; font-size:0.92rem;"><strong>Dit gaat vanzelf.</strong> Wijzig je iets, dan wordt die kopie een paar minuten later automatisch vernieuwd. Je hoeft hier dus niets te doen.</span><br><br>
+                    <span style="color:#a8c8b2; font-size:0.9rem;">De knop hieronder is er alleen voor als je niet wilt wachten, of als je wilt controleren of alles goed staat.</span>
                     <div style="margin-top:1.25rem;">
                         <button class="btn" id="snapshotBtn" onclick="makeSnapshot()">📸 Snapshot maken van homepage</button>
                     </div>
@@ -5479,9 +5480,9 @@ document.querySelectorAll('#blogToolbar [data-cmd]').forEach(btn => {
 
 <!-- Herinnering: opgeslagen wijzigingen staan pas op de website na een snapshot -->
 <div id="wijzigingsbalk">
-    <span>📌 Je wijzigingen zijn <strong>opgeslagen</strong>, maar staan nog niet op de website. Werk de website bij om ze zichtbaar te maken voor bezoekers en Google.</span>
-    <button onclick="balkNaarSnapshot()">Website bijwerken →</button>
-    <button class="sluit" onclick="wijzigingenVerwerkt()">Later</button>
+    <span>✅ Opgeslagen. De website werkt zichzelf <strong>binnen een paar minuten</strong> vanzelf bij — je hoeft niets te doen. Wil je het meteen zien, werk hem dan zelf bij.</span>
+    <button onclick="balkNaarSnapshot()">Nu meteen bijwerken →</button>
+    <button class="sluit" onclick="wijzigingenVerwerkt()">Prima zo</button>
 </div>
 </body>
 </html>
