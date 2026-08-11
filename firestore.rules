@@ -1,0 +1,92 @@
+rules_version = '2';
+
+// ══════════════════════════════════════════════════════════════════════════
+//  Beveiligingsregels van de database van The Doggy Few
+//
+//  Uitgangspunt: alles is dicht, behalve wat de website echt nodig heeft.
+//
+//  Wat hiervoor gold, en waarom dat niet goed was:
+//
+//   1. "allow read: if true" gold voor ALLES. Iedereen op internet kon dus
+//      de nieuwsbriefadressen en de ingestuurde verzoekjes uitlezen.
+//
+//   2. "allow write: if request.auth != null" betekende: iedereen met een
+//      account. Registreren staat open in dit project, dus dat kwam neer op
+//      iedereen. Schrijven is nu beperkt tot de twee beheeraccounts hieronder.
+//
+//   3. Verzoekjes en nieuwsbriefaanmeldingen van bezoekers werden geweigerd,
+//      omdat schrijven een account vereiste. Ze kwamen daardoor nooit in het
+//      beheerscherm terecht; er ging alleen een reserve-mail uit. Dat mag nu.
+//
+//  Een nieuw beheeraccount toevoegen: zet het e-mailadres erbij in de lijst
+//  in isBeheerder() en zet de regels opnieuw live met:
+//      firebase deploy --only firestore:rules --project the-doggy-few
+// ══════════════════════════════════════════════════════════════════════════
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isBeheerder() {
+      return request.auth != null && (
+        request.auth.uid in [
+          'fCv24Ds3yvQBrwFTaNJDiIwtKFx2',   // doggyfew@gmail.com (via Google)
+          'tXV05Dmmn8OdzPR2wtzyCawCZtw2'    // info@doggyfew.com (wachtwoord)
+        ]
+        ||
+        request.auth.token.email in [
+          'doggyfew@gmail.com',
+          'info@doggyfew.com'
+        ]
+      );
+    }
+
+    // ── Inhoud die op de website getoond wordt ──────────────────────────
+    // Iedereen mag lezen (anders werkt de site niet); alleen de beheerder
+    // mag wijzigen.
+    match /gigs/{doc}          { allow read: if true; allow write: if isBeheerder(); }
+    match /blog/{doc}          { allow read: if true; allow write: if isBeheerder(); }
+    match /photos/{doc}        { allow read: if true; allow write: if isBeheerder(); }
+    match /galleries/{doc}     { allow read: if true; allow write: if isBeheerder(); }
+    match /videos/{doc}        { allow read: if true; allow write: if isBeheerder(); }
+    match /members/{doc}       { allow read: if true; allow write: if isBeheerder(); }
+    match /pages/{doc}         { allow read: if true; allow write: if isBeheerder(); }
+    match /links/{doc}         { allow read: if true; allow write: if isBeheerder(); }
+    match /lyrics/{doc}        { allow read: if true; allow write: if isBeheerder(); }
+    match /landing_pages/{doc} { allow read: if true; allow write: if isBeheerder(); }
+    match /settings/{doc}      { allow read: if true; allow write: if isBeheerder(); }
+    match /admin/{doc}         { allow read: if true; allow write: if isBeheerder(); }
+
+    // ── Post van bezoekers ──────────────────────────────────────────────
+    // Insturen mag iedereen; teruglezen mag alleen de beheerder.
+    match /contact_messages/{doc} {
+      allow create: if true;
+      allow read, update, delete: if isBeheerder();
+    }
+
+    match /song_requests/{doc} {
+      allow create: if true;
+      allow read, update, delete: if isBeheerder();
+    }
+
+    // Aanmelden gebruikt het e-mailadres als documentnaam, dus een tweede
+    // aanmelding met hetzelfde adres is technisch gezien een wijziging.
+    // Daarom mag ook update — maar uitsluitend met deze twee velden, zodat
+    // niemand er iets anders in kwijt kan.
+    match /newsletter_subscribers/{doc} {
+      allow create, update: if request.resource.data.keys().hasOnly(['email', 'subscribedAt']);
+      allow read, delete: if isBeheerder();
+    }
+
+    // Verzoeklijsten worden door bezoekers opgevraagd met een code. Eén
+    // document opvragen mag daarom; de hele lijst doorbladeren niet.
+    match /verzoekjes/{doc} {
+      allow get: if true;
+      allow list, write: if isBeheerder();
+    }
+
+    // ── Al het overige: alleen de beheerder ─────────────────────────────
+    match /{document=**} {
+      allow read, write: if isBeheerder();
+    }
+  }
+}
