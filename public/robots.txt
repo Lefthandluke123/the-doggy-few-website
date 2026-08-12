@@ -1,5 +1,6 @@
 User-agent: *
 Allow: /
 Disallow: /admin.html
+Disallow: /kantoor.html
 
 Sitemap: https://doggyfew.com/sitemap.xml

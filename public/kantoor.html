@@ -2008,7 +2008,8 @@ auth.onAuthStateChanged(user => {
     startCaptionListener();
     startPostsListener();
     startMediaListener();
-    startFinListener();
+    // startFinListener() bewust NIET hier: de financiële cijfers worden pas
+    // opgehaald nadat het extra wachtwoord is ingevuld (zie showFinUnlocked).
     startBookingsListener();
     startDocsListener();
     startWebListener();
@@ -2022,6 +2023,10 @@ auth.onAuthStateChanged(user => {
     stopPostsListener();
     stopMediaListener();
     stopFinListener();
+    // Slot weer dicht: na uitloggen moet het wachtwoord opnieuw.
+    try { sessionStorage.removeItem('kantoorFinOk'); } catch (e) {}
+    finCache = [];
+    if (finLock && finContent) { finLock.style.display = ''; finContent.style.display = 'none'; }
     stopBookingsListener();
     stopDocsListener();
     stopWebListener();
@@ -3655,6 +3660,9 @@ async function sha256Hex(str) {
 function showFinUnlocked() {
   finLock.style.display = 'none';
   finContent.style.display = 'block';
+  // Pas hier de cijfers ophalen. Stonden ze al in de browser voordat het
+  // wachtwoord was ingevuld, dan stelde dat slot niets voor.
+  startFinListener();
   if (typeof renderDashboard === 'function') renderDashboard();
 }
 async function tryFinUnlock() {
@@ -3781,7 +3789,21 @@ function vandaagISO() {
   return t.getFullYear() + '-' + pad2(t.getMonth() + 1) + '-' + pad2(t.getDate());
 }
 function autoFactuurnummer(gigDate) {
-  return (gigDate || vandaagISO()).replace(/-/g, '') + 'fac01';
+  // Het volgnummer telt door zolang er al facturen met dezelfde basis bestaan.
+  // Anders kregen twee facturen voor optredens op dezelfde dag hetzelfde
+  // nummer, en dat mag bij een factuur nooit gebeuren.
+  const basis = (gigDate || vandaagISO()).replace(/-/g, '') + 'fac';
+  let volg = 1;
+  while (docCache.some(d => d.kind === 'factuur' && d.number === basis + pad2(volg))) {
+    volg++;
+    if (volg > 99) break;
+  }
+  return basis + pad2(volg);
+}
+
+// Bestaat dit factuurnummer al bij een ándere factuur?
+function factuurnummerBestaatAl(nummer, eigenId) {
+  return docCache.some(d => d.kind === 'factuur' && d.number === nummer && d.id !== eigenId);
 }
 
 function openInvoiceDialog(doc) {
@@ -3838,6 +3860,12 @@ document.getElementById('iSave').addEventListener('click', () => {
   const gage = parseFloat(String(iGage.value).replace(',', '.'));
   if (!iNumber.value.trim()) { iNumber.focus(); return; }
   if (isNaN(gage) || gage <= 0) { alert('Vul een geldige gage in.'); iGage.focus(); return; }
+  if (factuurnummerBestaatAl(iNumber.value.trim(), editingDocId)) {
+    alert('Er bestaat al een factuur met nummer ' + iNumber.value.trim() + '.\n\n' +
+          'Twee facturen met hetzelfde nummer geeft problemen bij de boekhouding. Kies een ander nummer.');
+    iNumber.focus(); iNumber.select();
+    return;
+  }
   const data = {
     kind: 'factuur',
     number: iNumber.value.trim(),
@@ -4374,10 +4402,14 @@ function webNaarBoeking(m) {
   }).then(bookingId => {
     // 4) Direct openen om aan te vullen
     gaNaarTab('boekingen');
+    let pogingen = 0;
     const wachtOpBoeking = () => {
       const bk = bookingCache.find(x => x.id === bookingId);
-      if (bk) openBookingDialog(bk);
-      else setTimeout(wachtOpBoeking, 250);
+      if (bk) { openBookingDialog(bk); return; }
+      // Hooguit twintig keer proberen (vijf seconden). Zonder die grens blijft
+      // dit elke 250 ms doorgaan zolang het tabblad openstaat.
+      if (++pogingen < 20) setTimeout(wachtOpBoeking, 250);
+      else alert('De boeking is aangemaakt, maar kon niet automatisch geopend worden. Je vindt hem in de lijst met boekingen.');
     };
     setTimeout(wachtOpBoeking, 250);
   }).catch(err => alert('Omzetten mislukt: ' + err.message));
@@ -4477,6 +4509,34 @@ function startWebListener() {
 function stopWebListener() {
   if (webUnsub) { webUnsub(); webUnsub = null; }
 }
+
+/* ─────────────────────────────────────────────
+   GEEN DUBBELE OPSLAG
+   Een tweede klik binnen drie seconden op dezelfde opslaan-knop wordt
+   genegeerd. Zonder dit levert dubbelklikken op "Opslaan" twee facturen,
+   twee boekingen of twee contacten op — met bij een factuur ook nog eens
+   twee keer hetzelfde factuurnummer.
+   ───────────────────────────────────────────── */
+(function () {
+  var OPSLAAN_KNOPPEN = ['iSave', 'bSave', 'cbSave', 'cSave'];
+  document.addEventListener('click', function (e) {
+    var knop = e.target && e.target.closest ? e.target.closest('button') : null;
+    if (!knop || OPSLAAN_KNOPPEN.indexOf(knop.id) === -1) return;
+    if (knop.dataset.bezig === '1') {
+      e.preventDefault();
+      e.stopImmediatePropagation();
+      return;
+    }
+    knop.dataset.bezig = '1';
+    knop.style.opacity = '0.55';
+    knop.style.pointerEvents = 'none';
+    setTimeout(function () {
+      knop.dataset.bezig = '';
+      knop.style.opacity = '';
+      knop.style.pointerEvents = '';
+    }, 3000);
+  }, true);
+})();
 
 </script>
 </body>
