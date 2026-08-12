@@ -2042,12 +2042,12 @@
 
             <!-- Boekingstype keuzeknoppen -->
             <div class="booking-choice">
-                <a href="/ierse-feestband-boeken/" class="booking-choice-card">
+                <a href="/ierse-feestband-boeken/" class="booking-choice-card" data-lp="party">
                     <span class="bc-icon">🍺</span>
                     <span class="bc-title" data-i18n="contact.choicePub">Kroegfeest &amp; Irish Night</span>
                     <span class="bc-sub" data-i18n="contact.choicePubSub">Energiek, versterkt, jigs &amp; meezingers</span>
                 </a>
-                <a href="/akoestische-ierse-folk/" class="booking-choice-card">
+                <a href="/akoestische-ierse-folk/" class="booking-choice-card" data-lp="wedding">
                     <span class="bc-icon">🎻</span>
                     <span class="bc-title" data-i18n="contact.choiceAcoustic">Bruiloft &amp; Intieme Setting</span>
                     <span class="bc-sub" data-i18n="contact.choiceAcousticSub">Akoestisch, ceremonie &amp; huiskamerconcert</span>
@@ -2761,8 +2761,27 @@
             }
         };
 
+        // De landingspagina's hebben per taal een eigen adres. Zonder dit
+        // belandt een Engelse bezoeker die op "boeken" klikt midden in een
+        // Nederlandse pagina.
+        const LANDINGSPAGINAS = {
+            party:   { nl: '/ierse-feestband-boeken/', en: '/en/irish-party-band/' },
+            wedding: { nl: '/akoestische-ierse-folk/', en: '/en/irish-wedding-music/' }
+        };
+
+        function zetLandingslinks() {
+            document.querySelectorAll('[data-lp]').forEach(function (el) {
+                var paden = LANDINGSPAGINAS[el.getAttribute('data-lp')];
+                if (!paden) return;
+                // Duits heeft nog geen eigen landingspagina's; die krijgt de
+                // Engelse, want dat staat dichter bij de bezoeker dan Nederlands.
+                el.href = paden[currentLanguage] || paden.en || paden.nl;
+            });
+        }
+
         function zetTaalverwijzingen() {
             const basis = 'https://doggyfew.com';
+            zetLandingslinks();
 
             const tekst = PAGINATITELS[currentLanguage] || PAGINATITELS.nl;
             document.title = tekst.titel;
