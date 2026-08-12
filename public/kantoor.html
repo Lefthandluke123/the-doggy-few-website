@@ -2011,6 +2011,7 @@ auth.onAuthStateChanged(user => {
     // startFinListener() bewust NIET hier: de financiële cijfers worden pas
     // opgehaald nadat het extra wachtwoord is ingevuld (zie showFinUnlocked).
     startBookingsListener();
+    startGigsListener();
     startDocsListener();
     startWebListener();
   } else {
@@ -2028,6 +2029,7 @@ auth.onAuthStateChanged(user => {
     finCache = [];
     if (finLock && finContent) { finLock.style.display = ''; finContent.style.display = 'none'; }
     stopBookingsListener();
+    stopGigsListener();
     stopDocsListener();
     stopWebListener();
   }
@@ -3220,6 +3222,22 @@ function startFinListener() {
       finList.innerHTML = '<div class="empty">Fout bij laden: ' + esc(err.message) + '</div>';
     });
 }
+/* Meekijken met de agenda zoals die op de website staat. Alleen om te kunnen
+   waarschuwen voor dubbele optredens; er wordt hier niets geschreven. */
+let gigsCache = [];
+let gigsUnsub = null;
+function startGigsListener() {
+  if (gigsUnsub) return;
+  gigsUnsub = db.collection('gigs').onSnapshot(
+    snap => { gigsCache = snap.docs.map(d => ({ id: d.id, ...d.data() })); },
+    err => { console.warn('Agenda van de site niet te lezen:', err.message); }
+  );
+}
+function stopGigsListener() {
+  if (gigsUnsub) { gigsUnsub(); gigsUnsub = null; }
+  gigsCache = [];
+}
+
 function stopFinListener() {
   if (finUnsub) { finUnsub(); finUnsub = null; }
 }
@@ -3354,16 +3372,11 @@ document.getElementById('bSave').addEventListener('click', () => {
       // Publieke agenda synchroon houden
       if (wasPublic) {
         if (data.status === 'afgezegd') {
-          return db.collection('public_agenda').doc(ref.id).delete()
+          return db.collection('gigs').doc(ref.id).delete()
             .then(() => ref.set({ isPublic: false }, { merge: true }));
         }
-        return db.collection('public_agenda').doc(ref.id).set({
-          date: data.date,
-          time: data.time,
-          venue: data.venue,
-          city: data.city,
-          updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-        });
+        return db.collection('gigs').doc(ref.id)
+          .set(safePublicFields(Object.assign({ id: ref.id }, data)), { merge: true });
       }
     })
     .then(closeBookingDialog)
@@ -3376,7 +3389,7 @@ function deleteBooking(bk) {
   const done = () => db.collection('kantoor_bookings').doc(bk.id).delete()
     .catch(err => alert('Verwijderen mislukt: ' + err.message));
   if (bk.isPublic) {
-    db.collection('public_agenda').doc(bk.id).delete().then(done)
+    db.collection('gigs').doc(bk.id).delete().then(done)
       .catch(err => alert('Verwijderen uit publieke agenda mislukt: ' + err.message));
   } else {
     done();
@@ -3539,20 +3552,55 @@ function stopBookingsListener() {
 const agendaList = document.getElementById('agendaList');
 let agendaFilter = 'komend';
 
+/* De agenda op de website leest de collectie 'gigs', met andere veldnamen en
+   andere statussen dan Kantoor gebruikt. Hieronder de vertaling.
+   Bewust NIET meegestuurd: gage, contactgegevens, notities, reisinfo en de
+   bezetting. De collectie 'gigs' is publiek leesbaar. */
+function publiekeStatus(status) {
+  if (status === 'bevestigd' || status === 'gespeeld') return 'confirmed';
+  if (status === 'optie') return 'option';
+  if (status === 'afgezegd') return 'cancelled';
+  return 'option';
+}
+
 function safePublicFields(bk) {
-  // Alleen veilige velden — nooit gage, contact of notities
   return {
-    date: bk.date || '',
-    time: bk.time || '',
     venue: bk.venue || '',
-    city: bk.city || '',
+    date: bk.date || '',
+    startTime: bk.time || '',
+    location: bk.city || '',
+    address: bk.address || '',
+    status: publiekeStatus(bk.status),
     updatedAt: firebase.firestore.FieldValue.serverTimestamp()
   };
 }
 
+// Staat dit optreden misschien al in de agenda van de site, met de hand
+// ingevoerd via het beheerscherm? Dan zou publiceren een dubbele opleveren.
+function mogelijkeDubbeleAgenda(bk) {
+  if (typeof gigsCache === 'undefined' || !Array.isArray(gigsCache)) return null;
+  const zelfdeDag = gigsCache.filter(g => g.id !== bk.id && (g.date || '') === (bk.date || ''));
+  if (!zelfdeDag.length) return null;
+  const eigen = (bk.venue || '').toLowerCase().trim();
+  return zelfdeDag.find(g => {
+    const ander = String(g.venue || g.title || '').toLowerCase().trim();
+    return ander && eigen && (ander.includes(eigen) || eigen.includes(ander));
+  }) || zelfdeDag[0];
+}
+
 function publishBooking(bk) {
   if (!bk.date) { alert('Publiceren kan pas als de boeking een datum heeft.'); return; }
-  db.collection('public_agenda').doc(bk.id).set(safePublicFields(bk))
+  if (bk.status === 'webaanvraag' || bk.status === 'aanvraag') {
+    alert('Een aanvraag is nog geen boeking. Zet de status op Optie of Bevestigd voordat je hem op de site zet.');
+    return;
+  }
+  const dubbel = mogelijkeDubbeleAgenda(bk);
+  if (dubbel && !confirm(
+        'Let op: op ' + bk.date + ' staat al "' + (dubbel.venue || dubbel.title || '?') +
+        '" in de agenda van de site.\n\nToch publiceren? Dan staan er mogelijk twee.')) {
+    return;
+  }
+  db.collection('gigs').doc(bk.id).set(safePublicFields(bk), { merge: true })
     .then(() => db.collection('kantoor_bookings').doc(bk.id).set({
       isPublic: true,
       updatedAt: firebase.firestore.FieldValue.serverTimestamp()
@@ -3561,7 +3609,7 @@ function publishBooking(bk) {
 }
 
 function unpublishBooking(bk) {
-  db.collection('public_agenda').doc(bk.id).delete()
+  db.collection('gigs').doc(bk.id).delete()
     .then(() => db.collection('kantoor_bookings').doc(bk.id).set({
       isPublic: false,
       updatedAt: firebase.firestore.FieldValue.serverTimestamp()
