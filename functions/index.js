@@ -266,3 +266,9 @@ exports.serveSnapshot = onRequest(
     }
   }
 );
+
+/* ── Automatisch aankondigen op Facebook en Instagram ──────────────────── */
+const social = require("./social");
+exports.bereidAankondigingVoor = social.bereidAankondigingVoor;
+exports.plaatsAankondigingen = social.plaatsAankondigingen;
+exports.testAankondiging = social.testAankondiging;
