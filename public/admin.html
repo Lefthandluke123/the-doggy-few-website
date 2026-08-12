@@ -1463,9 +1463,12 @@
                     <option value="cancelled">Afgezegd</option>
                 </select>
             </div>
-            <div class="form-group">
-                <label>Gage (€)</label>
-                <input type="number" id="gigGage" placeholder="500">
+            <div class="info-box" style="margin-bottom:1rem; border-left:4px solid #6db455;">
+                <strong>Bedragen staan in Kantoor.</strong><br>
+                Het gage-veld stond hier eerder, maar deze agenda is voor iedereen op internet
+                leesbaar — ook de velden die niet op de site worden getoond. Vul het bedrag in
+                bij de boeking in <a href="/kantoor.html" target="_blank" style="color:#da8a36;">Kantoor</a>;
+                daar staat het afgeschermd.
             </div>
             <div class="form-group">
                 <label>🎵 Setlist (optioneel — één nummer per regel)</label>
@@ -2089,7 +2092,6 @@
             document.getElementById('gigAddress').value = '';
             document.getElementById('gigDescription').value = '';
             document.getElementById('gigStatus').value = 'option';
-            document.getElementById('gigGage').value = '';
             document.getElementById('gigSetlist').value = '';
             document.getElementById('gigModal').classList.add('active');
         }
@@ -2108,7 +2110,6 @@
                 document.getElementById('gigAddress').value = g.address || '';
                 document.getElementById('gigDescription').value = g.description || '';
                 document.getElementById('gigStatus').value = g.status || 'option';
-                document.getElementById('gigGage').value = (g.gage !== undefined && g.gage !== null) ? g.gage : '';
                 document.getElementById('gigSetlist').value = Array.isArray(g.setlist) ? g.setlist.join('\n') : (g.setlist || '');
                 document.getElementById('gigModal').classList.add('active');
             });
@@ -2127,7 +2128,6 @@
                 address: document.getElementById('gigAddress').value,
                 description: document.getElementById('gigDescription').value,
                 status: document.getElementById('gigStatus').value,
-                gage: document.getElementById('gigGage').value,
                 setlist: setlist,
                 updatedAt: new Date()
             };
@@ -2169,7 +2169,6 @@
                         const statusLabel = STATUS_LABELS[status] || status;
                         const locationLine = gig.location ? `<p>📍 ${gig.location}</p>` : '';
                         const descLine = gig.description ? `<p>${gig.description}</p>` : '';
-                        const gageLine = (gig.gage !== undefined && gig.gage !== null && gig.gage !== '') ? `<p>💶 € ${gig.gage}</p>` : '';
                         const setlistLine = (Array.isArray(gig.setlist) && gig.setlist.length) ? `<p>🎵 Setlist: ${gig.setlist.length} nummer(s)</p>` : '';
                         return `
                             <div class="list-item">
@@ -2178,7 +2177,6 @@
                                     <p>📅 ${gig.date || '—'}</p>
                                     ${locationLine}
                                     ${descLine}
-                                    ${gageLine}
                                     ${setlistLine}
                                     <span class="status-badge status-${status}">${statusLabel}</span>
                                 </div>
