@@ -690,6 +690,21 @@
             color: white;
         }
 
+        /* Besloten optreden: staat wel in de agenda (zodat je ziet dat de band
+           die dag bezet is), maar zonder zaal, adres en tijd. */
+        .status-private {
+            background-color: #ddd8cb;
+            color: #3a4231;
+        }
+
+        /* Korte uitleg op de kaart van een besloten optreden, zodat er niet
+           alleen een lege plek onder de plaatsnaam staat. */
+        .gig-private-note {
+            margin-top: 0.4rem;
+            font-style: italic;
+            opacity: 0.75;
+        }
+
         .loading-placeholder {
             background-color: #303d28;
             border-radius: 8px;
@@ -2246,6 +2261,8 @@
                     confirmed: 'Bevestigd',
                     option: 'Optie',
                     cancelled: 'Afgezegd',
+                    private: 'Besloten',
+                    privateNote: 'Geen openbaar optreden — we zijn deze dag geboekt.',
                     requestBtn: '🎶 Verzoekje insturen',
                     setlistBtn: '🎵 Setlist',
                     showMap: '🗺️ Bekijk op kaart',
@@ -2387,6 +2404,8 @@
                     confirmed: 'Confirmed',
                     option: 'Option',
                     cancelled: 'Cancelled',
+                    private: 'Private',
+                    privateNote: 'Not a public performance — we are booked on this date.',
                     requestBtn: '🎶 Send a request',
                     setlistBtn: '🎵 Setlist',
                     showMap: '🗺️ View on map',
@@ -2528,6 +2547,8 @@
                     confirmed: 'Bestätigt',
                     option: 'Option',
                     cancelled: 'Abgesagt',
+                    private: 'Geschlossene Gesellschaft',
+                    privateNote: 'Keine öffentliche Veranstaltung — wir sind an diesem Tag gebucht.',
                     requestBtn: '🎶 Wunsch einsenden',
                     setlistBtn: '🎵 Setlist',
                     showMap: '🗺️ Auf Karte ansehen',
@@ -3000,8 +3021,9 @@
                             ${location ? `<div class="gig-location">${escapeHtml(location)}</div>` : ''}
                             ${addressHtml}
                             ${description ? `<p>${escapeHtml(description)}</p>` : ''}
+                            ${status === 'private' ? `<p class="gig-private-note">${t('gigs.privateNote')}</p>` : ''}
                             ${setlistHtml}
-                            <button class="gig-request-btn" onclick="openRequestModal('${doc.id}', '${escapeHtml(title).replace(/'/g, "\\'")}', '${gig.date || ''}')">${t('gigs.requestBtn')}</button>
+                            ${status === 'private' ? '' : `<button class="gig-request-btn" onclick="openRequestModal('${doc.id}', '${escapeHtml(title).replace(/'/g, "\\'")}', '${gig.date || ''}')">${t('gigs.requestBtn')}</button>`}
                         </article>
                     `;
                 });

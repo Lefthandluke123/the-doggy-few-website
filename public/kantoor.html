@@ -1773,6 +1773,27 @@
         </div>
         <div class="field-row">
           <div class="field">
+            <label>Soort optreden</label>
+            <input type="text" id="bGigType" list="gigTypes" placeholder="Bijv. Bruiloft / Cafe / Festival">
+            <datalist id="gigTypes">
+              <option value="Bruiloft"></option>
+              <option value="Besloten feest"></option>
+              <option value="Bedrijfsfeest"></option>
+              <option value="Verjaardag"></option>
+              <option value="Cafe-optreden"></option>
+              <option value="Festival"></option>
+              <option value="Theater"></option>
+              <option value="Straatoptreden"></option>
+              <option value="Sessie"></option>
+            </datalist>
+          </div>
+          <div class="field">
+            <label>Aantal sets</label>
+            <input type="text" id="bSets" placeholder="Bijv. 3 x 45 min">
+          </div>
+        </div>
+        <div class="field-row">
+          <div class="field">
             <label>Locatie / zaal</label>
             <input type="text" id="bVenue" placeholder="Bijv. Café De Zwaan">
           </div>
@@ -1816,6 +1837,24 @@
             </div>
           </div>
         </div>
+        <div class="field-row">
+          <div class="field">
+            <label>Catering</label>
+            <input type="text" id="bCatering" placeholder="Bijv. warme maaltijd voor 5 personen">
+          </div>
+          <div class="field">
+            <label>Factuur</label>
+            <select id="bInvoice">
+              <option value="">— nog niet afgesproken —</option>
+              <option value="ja">Ja, factuur sturen</option>
+              <option value="nee">Nee, geen factuur</option>
+            </select>
+          </div>
+        </div>
+        <div class="field">
+          <label>Rider / techniek</label>
+          <input type="text" id="bRider" placeholder="Bijv. eigen PA, 4 kanalen, podium 4x3 m">
+        </div>
         <div class="field">
           <label>Status</label>
           <select id="bStatus">
@@ -1828,8 +1867,8 @@
           </select>
         </div>
         <div class="field">
-          <label>Notities (rider, techniek, afspraken)</label>
-          <textarea id="bNotes" rows="4" placeholder="Bijv. 2 sets van 45 min, eigen PA, parkeren achterom…"></textarea>
+          <label>Notities (interne afspraken, parkeren, bijzonderheden)</label>
+          <textarea id="bNotes" rows="4" placeholder="Bijv. parkeren achterom, sleutel bij de buurvrouw, eerst eten…"></textarea>
         </div>
       </div>
       <div class="dialog-foot">
@@ -3260,6 +3299,11 @@ const bArrive = document.getElementById('bArrive');
 const bTravel = document.getElementById('bTravel');
 const bAddress = document.getElementById('bAddress');
 const bLineup = document.getElementById('bLineup');
+const bGigType = document.getElementById('bGigType');
+const bSets = document.getElementById('bSets');
+const bCatering = document.getElementById('bCatering');
+const bRider = document.getElementById('bRider');
+const bInvoice = document.getElementById('bInvoice');
 const bNewContact = document.getElementById('bNewContact');
 const bNcName = document.getElementById('bNcName');
 const bNcPhone = document.getElementById('bNcPhone');
@@ -3305,12 +3349,19 @@ function openBookingDialog(bk) {
     bGage.value = bk.gage != null ? bk.gage : '';
     bStatus.value = bk.status || 'aanvraag';
     bNotes.value = bk.notes || '';
+    bGigType.value = bk.gigType || '';
+    bSets.value = bk.sets || '';
+    bCatering.value = bk.catering || '';
+    bRider.value = bk.rider || '';
+    bInvoice.value = bk.invoice || '';
   } else {
     editingBookingId = null;
     bookingDialogTitle.textContent = 'Nieuwe boeking';
     bDate.value = ''; bTime.value = ''; bArrive.value = ''; bTravel.value = '';
     bVenue.value = ''; bCity.value = ''; bAddress.value = ''; bLineup.value = '';
     bContact.value = ''; bGage.value = ''; bStatus.value = 'aanvraag'; bNotes.value = '';
+    bGigType.value = ''; bSets.value = ''; bCatering.value = '';
+    bRider.value = ''; bInvoice.value = '';
   }
   resetNewContact();
   bookingDialog.classList.add('open');
@@ -3359,6 +3410,11 @@ document.getElementById('bSave').addEventListener('click', () => {
       gage: isNaN(gage) ? 0 : Math.round(gage * 100) / 100,
       status: bStatus.value,
       notes: bNotes.value.trim(),
+      gigType: bGigType.value.trim(),
+      sets: bSets.value.trim(),
+      catering: bCatering.value.trim(),
+      rider: bRider.value.trim(),
+      invoice: bInvoice.value,
       updatedAt: firebase.firestore.FieldValue.serverTimestamp()
     };
   const ref = editingBookingId
@@ -3376,7 +3432,10 @@ document.getElementById('bSave').addEventListener('click', () => {
             .then(() => ref.set({ isPublic: false }, { merge: true }));
         }
         return db.collection('gigs').doc(ref.id)
-          .set(safePublicFields(Object.assign({ id: ref.id }, data)), { merge: true });
+          .set(safePublicFields(Object.assign(
+            { id: ref.id, isPrivate: !!(bookingCache.find(x => x.id === ref.id) || {}).isPrivate },
+            data
+          )), { merge: true });
       }
     })
     .then(closeBookingDialog)
@@ -3411,13 +3470,17 @@ function bandInfoTekst(bk) {
   const r = [];
   r.push('🎻 THE DOGGY FEW — OPTREDEN');
   r.push('');
+  if (bk.gigType) r.push('🎪 ' + bk.gigType);
   if (bk.date) r.push('📅 ' + formatWhen({ date: bk.date }));
   r.push('📍 ' + bk.venue + (bk.city ? ', ' + bk.city : ''));
   if (bk.address) r.push('🗺️ ' + bk.address);
   if (bk.travel) r.push('🚗 Reistijd: ' + bk.travel);
   if (bk.arrive) r.push('🕐 Aanwezig: ' + bk.arrive);
   if (bk.time) r.push('🎵 Aanvang: ' + bk.time);
+  if (bk.sets) r.push('⏱️ Sets: ' + bk.sets);
   if (bk.lineup) r.push('👥 Bezetting: ' + bk.lineup);
+  if (bk.catering) r.push('🍽️ Catering: ' + bk.catering);
+  if (bk.rider) r.push('🔌 Techniek: ' + bk.rider);
   if (contact) r.push('📞 Contact: ' + contact.name + (contact.phone ? ' · ' + contact.phone : ''));
   if (bk.notes) { r.push(''); r.push('ℹ️ ' + bk.notes); }
   return r.join('\n');
@@ -3425,6 +3488,64 @@ function bandInfoTekst(bk) {
 function deelMetBand(bk) {
   const tekst = bandInfoTekst(bk);
   window.open('https://wa.me/?text=' + encodeURIComponent(tekst), '_blank');
+}
+
+/* Afspraken voor de opdrachtgever — WhatsApp-tekst MET gage en factuur.
+   Bewust platte tekst zonder emoji en zonder sterretjes: dit is zakelijke
+   post, en sterretjes maakt WhatsApp vet waardoor het rommelig wordt. Alleen
+   wat is ingevuld komt in het bericht; lege velden slaan we over. */
+function opdrachtgeverTekst(bk) {
+  const contact = contactsCache.find(c => c.id === bk.contactId);
+  const r = [];
+  if (contact && contact.name) {
+    const voornaam = contact.name.trim().split(/\s+/)[0];
+    r.push('Hallo ' + voornaam + ',');
+    r.push('');
+    r.push('Even op een rij wat we hebben afgesproken:');
+  } else {
+    r.push('Even op een rij wat we hebben afgesproken:');
+  }
+  r.push('');
+  r.push('THE DOGGY FEW');
+  if (bk.gigType) r.push('Soort optreden: ' + bk.gigType);
+  if (bk.date) r.push('Datum: ' + formatWhen({ date: bk.date }));
+  const plek = [bk.venue, bk.city].filter(Boolean).join(', ');
+  if (plek) r.push('Locatie: ' + plek);
+  if (bk.address) r.push('Adres: ' + bk.address);
+  if (bk.arrive) r.push('Wij zijn aanwezig: ' + bk.arrive);
+  if (bk.time) r.push('Aanvang optreden: ' + bk.time);
+  if (bk.sets) r.push('Aantal sets: ' + bk.sets);
+  if (bk.lineup) r.push('Bezetting: ' + bk.lineup);
+  if (bk.catering) r.push('Catering: ' + bk.catering);
+  if (bk.rider) r.push('Rider / techniek: ' + bk.rider);
+  if (bk.gage) r.push('Gage: ' + euro(bk.gage));
+  if (bk.invoice === 'ja') r.push('Factuur: ja, die sturen wij na het optreden');
+  if (bk.invoice === 'nee') r.push('Factuur: nee, niet nodig');
+  r.push('');
+  r.push('Klopt dit zo? Laat het even weten, dan is het definitief.');
+  r.push('');
+  r.push('Hartelijke groet,');
+  r.push('Lucas Sterk — The Doggy Few');
+  return r.join('\n');
+}
+
+function deelMetOpdrachtgever(bk) {
+  const ontbreekt = [];
+  if (!bk.date) ontbreekt.push('datum');
+  if (!bk.gigType) ontbreekt.push('soort optreden');
+  if (!bk.venue) ontbreekt.push('locatie');
+  if (!bk.gage) ontbreekt.push('gage');
+  if (ontbreekt.length && !confirm(
+        'Nog niet ingevuld: ' + ontbreekt.join(', ') +
+        '.\n\nDie ontbreken dan ook in het bericht. Toch versturen?')) {
+    return;
+  }
+  const tekst = opdrachtgeverTekst(bk);
+  const naar = (contactsCache.find(c => c.id === bk.contactId) || {}).phone || '';
+  // Staat er een telefoonnummer bij het contact? Dan opent WhatsApp direct het
+  // juiste gesprek. Zo niet, dan kies je zelf de ontvanger.
+  const nummer = naar.replace(/[^0-9+]/g, '').replace(/^\+/, '').replace(/^06/, '316');
+  window.open('https://wa.me/' + nummer + '?text=' + encodeURIComponent(tekst), '_blank');
 }
 
 function boekGage(bk) {
@@ -3471,7 +3592,12 @@ function renderBookings() {
           <div class="pc-when ${when ? '' : 'geen'}">${when ? '◷ ' + when : 'Nog geen datum'}${bk.arrive ? ' · aanwezig ' + bk.arrive : ''}</div>
           ${bk.address ? `<div class="bk-detail"><span class="lbl">⌖</span>${esc(bk.address)}</div>` : ''}
           ${bk.travel ? `<div class="bk-detail"><span class="lbl">⛟</span>Reistijd: ${esc(bk.travel)}</div>` : ''}
+          ${bk.gigType ? `<div class="bk-detail"><span class="lbl">✧</span>${esc(bk.gigType)}${bk.isPrivate ? ' · besloten op de site' : ''}</div>` : ''}
+          ${bk.sets ? `<div class="bk-detail"><span class="lbl">◷</span>Sets: ${esc(bk.sets)}</div>` : ''}
           ${bk.lineup ? `<div class="bk-detail"><span class="lbl">♬</span>Bezetting: ${esc(bk.lineup)}</div>` : ''}
+          ${bk.catering ? `<div class="bk-detail"><span class="lbl">✚</span>Catering: ${esc(bk.catering)}</div>` : ''}
+          ${bk.rider ? `<div class="bk-detail"><span class="lbl">⌁</span>Rider: ${esc(bk.rider)}</div>` : ''}
+          ${bk.invoice ? `<div class="bk-detail"><span class="lbl">☰</span>Factuur: ${bk.invoice === 'ja' ? 'ja' : 'nee'}</div>` : ''}
           ${contact ? `<div class="bk-detail"><span class="lbl">☎</span>${esc(contact.name)}${contact.phone ? ' · ' + esc(contact.phone) : ''}${contact.email ? ' · ' + esc(contact.email) : ''}</div>` : ''}
           ${bk.notes ? `<div class="bk-detail"><span class="lbl">≡</span>${esc(bk.notes)}</div>` : ''}
           ${bk.gage ? (bk.gageBooked
@@ -3480,6 +3606,8 @@ function renderBookings() {
         </div>
         <div class="pc-actions">
           <button class="copy-btn" data-band-b="${bk.id}" style="background:rgba(37,211,102,0.15);border-color:rgba(37,211,102,0.35);color:#25d366">✆ Info voor band</button>
+          <button class="copy-btn" data-opdr-b="${bk.id}" title="Alle afspraken inclusief gage naar de opdrachtgever" style="background:rgba(37,211,102,0.15);border-color:rgba(37,211,102,0.35);color:#25d366">✆ Afspraken opdrachtgever</button>
+          ${publicatieKnoppen(bk)}
           ${BK_VOLGENDE[status] ? `<button class="btn-publish" data-adv-b="${bk.id}">${BK_KNOPTEKST[status]}</button>` : ''}
           ${(status === 'gespeeld' || status === 'bevestigd') && bk.gage && !bk.gageBooked ? `<button class="copy-btn" data-gage-b="${bk.id}">€ Naar Financiën</button>` : ''}
           <button class="icon-btn" data-edit-b="${bk.id}" title="Bewerken">✎</button>
@@ -3501,6 +3629,13 @@ function renderBookings() {
       if (bk) deelMetBand(bk);
     });
   });
+  bookingList.querySelectorAll('[data-opdr-b]').forEach(b => {
+    b.addEventListener('click', () => {
+      const bk = bookingCache.find(x => x.id === b.dataset.opdrB);
+      if (bk) deelMetOpdrachtgever(bk);
+    });
+  });
+  koppelPublicatieKnoppen(bookingList);
   bookingList.querySelectorAll('[data-gage-b]').forEach(b => {
     b.addEventListener('click', () => {
       const bk = bookingCache.find(x => x.id === b.dataset.gageB);
@@ -3563,13 +3698,38 @@ function publiekeStatus(status) {
   return 'option';
 }
 
+// Wat er van een boeking op de publieke site mag komen.
+//
+// Bij een besloten optreden gaat alleen plaats, datum en soort optreden mee.
+// Geen zaalnaam, geen adres en geen aanvangstijd: het is een privefeest, daar
+// hoeven bezoekers niet op af te kunnen komen. De velden worden expliciet leeg
+// gezet, want het bijwerken gebeurt met samenvoegen — anders zou een eerder
+// volledig gepubliceerd optreden zijn adres houden.
 function safePublicFields(bk) {
+  if (bk.isPrivate) {
+    return {
+      title: bk.gigType || 'Besloten optreden',
+      venue: '',
+      date: bk.date || '',
+      startTime: '',
+      endTime: '',
+      location: bk.city || '',
+      address: '',
+      description: '',
+      setlist: [],
+      besloten: true,
+      status: 'private',
+      updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+    };
+  }
   return {
+    title: '',
     venue: bk.venue || '',
     date: bk.date || '',
     startTime: bk.time || '',
     location: bk.city || '',
     address: bk.address || '',
+    besloten: false,
     status: publiekeStatus(bk.status),
     updatedAt: firebase.firestore.FieldValue.serverTimestamp()
   };
@@ -3588,21 +3748,32 @@ function mogelijkeDubbeleAgenda(bk) {
   }) || zelfdeDag[0];
 }
 
-function publishBooking(bk) {
+function publishBooking(bk, besloten) {
   if (!bk.date) { alert('Publiceren kan pas als de boeking een datum heeft.'); return; }
   if (bk.status === 'webaanvraag' || bk.status === 'aanvraag') {
     alert('Een aanvraag is nog geen boeking. Zet de status op Optie of Bevestigd voordat je hem op de site zet.');
     return;
   }
-  const dubbel = mogelijkeDubbeleAgenda(bk);
-  if (dubbel && !confirm(
-        'Let op: op ' + bk.date + ' staat al "' + (dubbel.venue || dubbel.title || '?') +
-        '" in de agenda van de site.\n\nToch publiceren? Dan staan er mogelijk twee.')) {
+  if (besloten && !bk.gigType && !confirm(
+        'Bij deze boeking staat nog geen soort optreden.\n\n' +
+        'Op de site komt er dan alleen "Besloten optreden" te staan. Doorgaan?')) {
     return;
   }
-  db.collection('gigs').doc(bk.id).set(safePublicFields(bk), { merge: true })
+  // Alleen waarschuwen bij een nieuwe publicatie, niet bij het omzetten van
+  // volledig naar besloten of terug.
+  if (!bk.isPublic) {
+    const dubbel = mogelijkeDubbeleAgenda(bk);
+    if (dubbel && !confirm(
+          'Let op: op ' + bk.date + ' staat al "' + (dubbel.venue || dubbel.title || '?') +
+          '" in de agenda van de site.\n\nToch publiceren? Dan staan er mogelijk twee.')) {
+      return;
+    }
+  }
+  const gegevens = safePublicFields(Object.assign({}, bk, { isPrivate: !!besloten }));
+  db.collection('gigs').doc(bk.id).set(gegevens, { merge: true })
     .then(() => db.collection('kantoor_bookings').doc(bk.id).set({
       isPublic: true,
+      isPrivate: !!besloten,
       updatedAt: firebase.firestore.FieldValue.serverTimestamp()
     }, { merge: true }))
     .catch(err => alert('Publiceren mislukt: ' + err.message));
@@ -3612,9 +3783,44 @@ function unpublishBooking(bk) {
   db.collection('gigs').doc(bk.id).delete()
     .then(() => db.collection('kantoor_bookings').doc(bk.id).set({
       isPublic: false,
+      isPrivate: false,
       updatedAt: firebase.firestore.FieldValue.serverTimestamp()
     }, { merge: true }))
     .catch(err => alert('Verwijderen van site mislukt: ' + err.message));
+}
+
+/* De publicatieknoppen staan op twee plekken (boekingen en agenda). Ze komen
+   uit een gedeelde functie, zodat ze niet uit elkaar kunnen gaan lopen. */
+function publicatieKnoppen(bk) {
+  const status = bk.status || 'aanvraag';
+  if (status !== 'bevestigd' && status !== 'gespeeld') return '';
+  const besl = 'title="Alleen plaats, datum en soort optreden op de site"';
+  if (!bk.isPublic) {
+    return `<button class="pub-btn uit" data-pub="${bk.id}">○ Publiceer op site</button>` +
+           `<button class="pub-btn uit" data-pubb="${bk.id}" ${besl}>○ Besloten op site</button>`;
+  }
+  if (bk.isPrivate) {
+    return `<button class="pub-btn aan" data-unpub="${bk.id}" title="Klik om van de site te halen">◉ Op site (besloten)</button>` +
+           `<button class="pub-btn uit" data-pub="${bk.id}" title="Alles tonen: zaal, adres en aanvangstijd">⇄ Volledig tonen</button>`;
+  }
+  return `<button class="pub-btn aan" data-unpub="${bk.id}" title="Klik om van de site te halen">◉ Op site</button>` +
+         `<button class="pub-btn uit" data-pubb="${bk.id}" ${besl}>⇄ Naar besloten</button>`;
+}
+
+function koppelPublicatieKnoppen(root) {
+  if (!root) return;
+  root.querySelectorAll('[data-pub]').forEach(b => b.addEventListener('click', () => {
+    const bk = bookingCache.find(x => x.id === b.dataset.pub);
+    if (bk) publishBooking(bk, false);
+  }));
+  root.querySelectorAll('[data-pubb]').forEach(b => b.addEventListener('click', () => {
+    const bk = bookingCache.find(x => x.id === b.dataset.pubb);
+    if (bk) publishBooking(bk, true);
+  }));
+  root.querySelectorAll('[data-unpub]').forEach(b => b.addEventListener('click', () => {
+    const bk = bookingCache.find(x => x.id === b.dataset.unpub);
+    if (bk) unpublishBooking(bk);
+  }));
 }
 
 function renderAgenda() {
@@ -3652,32 +3858,17 @@ function renderAgenda() {
       </div>
       <div class="ag-main">
         <div class="ag-venue">${esc(bk.venue)}${bk.city ? ' · ' + esc(bk.city) : ''}</div>
-        <div class="ag-sub">${bk.time ? '◷ ' + bk.time + ' · ' : ''}<span class="status-badge ${status}" style="margin-left:0">${status}</span></div>
+        <div class="ag-sub">${bk.time ? '◷ ' + bk.time + ' · ' : ''}<span class="status-badge ${status}" style="margin-left:0">${status}</span>${bk.isPublic && bk.isPrivate ? ' <span style="opacity:.65">· besloten op site</span>' : ''}</div>
       </div>
       <div class="ag-actions">
-        ${status === 'bevestigd' || status === 'gespeeld'
-          ? (bk.isPublic
-            ? `<button class="pub-btn aan" data-unpub="${bk.id}" title="Klik om van de site te halen">◉ Op site</button>`
-            : `<button class="pub-btn uit" data-pub-a="${bk.id}">○ Publiceer op site</button>`)
-          : ''}
+        ${publicatieKnoppen(bk)}
         <button class="icon-btn" data-edit-a="${bk.id}" title="Bewerken">✎</button>
       </div>
     </div>`;
   });
   agendaList.innerHTML = html;
 
-  agendaList.querySelectorAll('[data-pub-a]').forEach(b => {
-    b.addEventListener('click', () => {
-      const bk = bookingCache.find(x => x.id === b.dataset.pubA);
-      if (bk) publishBooking(bk);
-    });
-  });
-  agendaList.querySelectorAll('[data-unpub]').forEach(b => {
-    b.addEventListener('click', () => {
-      const bk = bookingCache.find(x => x.id === b.dataset.unpub);
-      if (bk) unpublishBooking(bk);
-    });
-  });
+  koppelPublicatieKnoppen(agendaList);
   agendaList.querySelectorAll('[data-edit-a]').forEach(b => {
     b.addEventListener('click', () => {
       const bk = bookingCache.find(x => x.id === b.dataset.editA);
