@@ -3297,7 +3297,12 @@ let gigsUnsub = null;
 function startGigsListener() {
   if (gigsUnsub) return;
   gigsUnsub = db.collection('gigs').onSnapshot(
-    snap => { gigsCache = snap.docs.map(d => ({ id: d.id, ...d.data() })); },
+    snap => {
+      gigsCache = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      // De agenda hier toont ook de items die alleen op de site staan, dus
+      // meteen opnieuw tekenen als daar iets verandert.
+      renderAgenda();
+    },
     err => { console.warn('Agenda van de site niet te lezen:', err.message); }
   );
 }
@@ -3475,15 +3480,45 @@ document.getElementById('bSave').addEventListener('click', () => {
 });
 
 function deleteBooking(bk) {
-  if (!confirm('Boeking "' + bk.venue + (bk.city ? ', ' + bk.city : '') + '" verwijderen?' + (bk.isPublic ? '\n\nDeze staat ook in de publieke agenda en wordt daar eveneens verwijderd.' : ''))) return;
-  const done = () => db.collection('kantoor_bookings').doc(bk.id).delete()
-    .catch(err => alert('Verwijderen mislukt: ' + err.message));
-  if (bk.isPublic) {
-    db.collection('gigs').doc(bk.id).delete().then(done)
-      .catch(err => alert('Verwijderen uit publieke agenda mislukt: ' + err.message));
-  } else {
-    done();
+  const naam = (bk.venue || bk.gigType || 'zonder naam') + (bk.city ? ', ' + bk.city : '');
+  const regels = [
+    'Optreden "' + naam + '"' + (bk.date ? ' op ' + bk.date : '') + ' helemaal verwijderen?',
+    '',
+    'Wat er weggaat:',
+    '· de boeking hier in het kantoor, met alle afspraken',
+  ];
+  if (bk.isPublic) regels.push('· het optreden in de agenda op de website');
+  if (bk.gageBooked) {
+    regels.push('');
+    regels.push('LET OP: de gage van ' + euro(bk.gage) + ' staat al als inkomst in');
+    regels.push('Financien. Die blijft staan — je boekhouding verandert niet.');
+    regels.push('Wil je die ook weg, haal hem dan zelf weg bij Financien.');
   }
+  regels.push('');
+  regels.push('Dit kan niet ongedaan gemaakt worden.');
+  if (!confirm(regels.join('\n'))) return;
+
+  // Het agenda-item op de site wordt altijd opgeruimd, ook als het vlaggetje
+  // 'isPublic' onverhoopt niet klopt. Zo kan er niets achterblijven op de
+  // website dat je hier niet meer kunt zien. Bestaat het niet, dan is deze
+  // opdracht gewoon zonder gevolg.
+  db.collection('gigs').doc(bk.id).delete()
+    .then(() => db.collection('kantoor_bookings').doc(bk.id).delete())
+    .catch(err => alert('Verwijderen mislukt: ' + err.message));
+}
+
+/* Een agenda-item dat alleen op de website staat en geen boeking heeft — met
+   de hand ingevoerd in het oude beheerscherm, of overgebleven uit vroeger.
+   Zulke items waren hier niet te zien en dus ook niet weg te krijgen. */
+function verwijderAgendaItem(g) {
+  const naam = g.venue || g.title || 'zonder naam';
+  if (!confirm(
+        'Agenda-item "' + naam + '"' + (g.date ? ' op ' + g.date : '') + ' van de website verwijderen?\n\n' +
+        'Dit item staat alleen in de agenda van de site; er hoort geen boeking bij.\n' +
+        'Er gaat hier in het kantoor dus niets verloren.\n\n' +
+        'Dit kan niet ongedaan gemaakt worden.')) return;
+  db.collection('gigs').doc(g.id).delete()
+    .catch(err => alert('Verwijderen van de site mislukt: ' + err.message));
 }
 
 function advanceBooking(bk) {
@@ -3857,7 +3892,23 @@ function koppelPublicatieKnoppen(root) {
 function renderAgenda() {
   if (!agendaList) return;
   const vandaag = new Date().toISOString().slice(0, 10);
+  // Boekingen uit het kantoor...
   let items = bookingCache.filter(b => b.date && b.status !== 'afgezegd');
+  // ...plus de agenda-items die alleen op de website staan. Die hebben geen
+  // boeking (met de hand ingevoerd, of overgebleven) en waren hier onzichtbaar.
+  const boekingIds = new Set(bookingCache.map(b => b.id));
+  const alleenOpSite = (gigsCache || [])
+    .filter(g => !boekingIds.has(g.id) && g.date)
+    .map(g => ({
+      id: g.id,
+      date: g.date,
+      time: g.startTime || '',
+      venue: g.venue || g.title || '',
+      city: g.location || '',
+      status: g.status || 'option',
+      alleenOpSite: true,
+    }));
+  items = items.concat(alleenOpSite);
   if (agendaFilter === 'komend') items = items.filter(b => b.date >= vandaag);
   if (agendaFilter === 'verleden') items = items.filter(b => b.date < vandaag);
   items.sort((a, b) => (a.date + (a.time || '')).localeCompare(b.date + (b.time || '')));
@@ -3889,11 +3940,16 @@ function renderAgenda() {
       </div>
       <div class="ag-main">
         <div class="ag-venue">${esc(bk.venue)}${bk.city ? ' · ' + esc(bk.city) : ''}</div>
-        <div class="ag-sub">${bk.time ? '◷ ' + bk.time + ' · ' : ''}<span class="status-badge ${status}" style="margin-left:0">${status}</span>${bk.isPublic && bk.isPrivate ? ' <span style="opacity:.65">· besloten op site</span>' : ''}</div>
+        <div class="ag-sub">${bk.time ? '◷ ' + bk.time + ' · ' : ''}${bk.alleenOpSite
+          ? '<span class="status-badge" style="margin-left:0;background:rgba(255,255,255,0.08);color:rgba(255,255,255,0.55)">alleen op de site</span>'
+          : `<span class="status-badge ${status}" style="margin-left:0">${status}</span>${bk.isPublic && bk.isPrivate ? ' <span style="opacity:.65">· besloten op site</span>' : ''}`}</div>
       </div>
       <div class="ag-actions">
-        ${publicatieKnoppen(bk)}
-        <button class="icon-btn" data-edit-a="${bk.id}" title="Bewerken">✎</button>
+        ${bk.alleenOpSite ? '' : publicatieKnoppen(bk)}
+        ${bk.alleenOpSite
+          ? `<button class="icon-btn danger" data-del-site="${bk.id}" title="Van de website verwijderen">🗑</button>`
+          : `<button class="icon-btn" data-edit-a="${bk.id}" title="Bewerken">✎</button>
+             <button class="icon-btn danger" data-del-a="${bk.id}" title="Optreden helemaal verwijderen">🗑</button>`}
       </div>
     </div>`;
   });
@@ -3904,6 +3960,18 @@ function renderAgenda() {
     b.addEventListener('click', () => {
       const bk = bookingCache.find(x => x.id === b.dataset.editA);
       if (bk) openBookingDialog(bk);
+    });
+  });
+  agendaList.querySelectorAll('[data-del-a]').forEach(b => {
+    b.addEventListener('click', () => {
+      const bk = bookingCache.find(x => x.id === b.dataset.delA);
+      if (bk) deleteBooking(bk);
+    });
+  });
+  agendaList.querySelectorAll('[data-del-site]').forEach(b => {
+    b.addEventListener('click', () => {
+      const g = (gigsCache || []).find(x => x.id === b.dataset.delSite);
+      if (g) verwijderAgendaItem(g);
     });
   });
 }
