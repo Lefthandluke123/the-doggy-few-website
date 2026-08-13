@@ -343,6 +343,9 @@
   }
   .cc-type.venue { background: var(--orange-dim); color: var(--orange); }
   .cc-type.boeker { background: var(--green-dim); color: #6fd99a; }
+  .cc-type.feestgever { background: rgba(147,112,219,0.18); color: #b39ddb; }
+  .cc-type.familie { background: rgba(96,165,250,0.16); color: #93c5fd; }
+  .cc-type.onbekend { background: rgba(255,255,255,0.07); color: rgba(255,255,255,0.5); }
   .contact-card .cc-actions { display: flex; gap: 6px; flex-shrink: 0; }
   .icon-btn {
     width: 32px; height: 32px;
@@ -1822,9 +1825,15 @@
           </div>
         </div>
         <div id="bNewContact" style="display:none">
-          <div class="field">
-            <label>Naam nieuw contact</label>
-            <input type="text" id="bNcName" placeholder="Bijv. Jan de Vries">
+          <div class="field-row">
+            <div class="field">
+              <label>Naam nieuw contact</label>
+              <input type="text" id="bNcName" placeholder="Bijv. Jan de Vries">
+            </div>
+            <div class="field">
+              <label>Soort contact</label>
+              <select id="bNcType"></select>
+            </div>
           </div>
           <div class="field-row">
             <div class="field">
@@ -2100,7 +2109,27 @@ const newContactBtn = document.getElementById('newContactBtn');
 let editingContactId = null;
 
 const cName = document.getElementById('cName');
+/* De vier soorten contact, op één plek.
+   Let op: 'venue' en 'boeker' zijn de waarden die er al in de gegevens staan.
+   Die laten we ongemoeid — 'venue' is de locatie/zaal. 'feestgever' en
+   'familie' zijn nieuw. Zo verandert geen enkel bestaand contact van soort. */
+const CONTACT_SOORTEN = [
+  { waarde: 'feestgever', label: 'Feestgever' },
+  { waarde: 'familie',    label: 'Familie' },
+  { waarde: 'venue',      label: 'Locatie / zaal' },
+  { waarde: 'boeker',     label: 'Boeker / agent' },
+];
+function contactSoortLabel(soort) {
+  const s = CONTACT_SOORTEN.find(x => x.waarde === soort);
+  return s ? s.label : 'Onbekend';
+}
+function contactSoortOpties() {
+  return '<option value="">— kies soort —</option>' +
+    CONTACT_SOORTEN.map(s => `<option value="${s.waarde}">${s.label}</option>`).join('');
+}
+
 const cType = document.getElementById('cType');
+if (cType) cType.innerHTML = contactSoortOpties();
 const cPhone = document.getElementById('cPhone');
 const cEmail = document.getElementById('cEmail');
 const cAddress = document.getElementById('cAddress');
@@ -2117,7 +2146,7 @@ function openContactDialog(contact) {
     editingContactId = contact.id;
     contactDialogTitle.textContent = 'Contact bewerken';
     cName.value = contact.name || '';
-    cType.value = contact.type || 'venue';
+    cType.value = contact.type || '';
     cPhone.value = contact.phone || '';
     cEmail.value = contact.email || '';
     cAddress.value = contact.address || '';
@@ -2125,7 +2154,7 @@ function openContactDialog(contact) {
   } else {
     editingContactId = null;
     contactDialogTitle.textContent = 'Nieuw contact';
-    cName.value = ''; cType.value = 'venue'; cPhone.value = '';
+    cName.value = ''; cType.value = ''; cPhone.value = '';
     cEmail.value = ''; cAddress.value = ''; cNotes.value = '';
   }
   contactDialog.classList.add('open');
@@ -2177,7 +2206,7 @@ function renderContacts(contacts) {
       <div class="cc-top">
         <div>
           <div class="cc-name">${esc(c.name)}</div>
-          <span class="cc-type ${c.type === 'boeker' ? 'boeker' : 'venue'}">${c.type === 'boeker' ? 'Boeker' : 'Venue'}</span>
+          <span class="cc-type ${c.type || 'onbekend'}">${contactSoortLabel(c.type)}</span>
         </div>
         <div class="cc-actions">
           <button class="icon-btn" data-edit="${c.id}" title="Bewerken">✎</button>
@@ -3306,6 +3335,8 @@ const bRider = document.getElementById('bRider');
 const bInvoice = document.getElementById('bInvoice');
 const bNewContact = document.getElementById('bNewContact');
 const bNcName = document.getElementById('bNcName');
+const bNcType = document.getElementById('bNcType');
+if (bNcType) bNcType.innerHTML = contactSoortOpties();
 const bNcPhone = document.getElementById('bNcPhone');
 const bNcEmail = document.getElementById('bNcEmail');
 
@@ -3318,7 +3349,7 @@ document.getElementById('bNewContactToggle').addEventListener('click', () => {
 function resetNewContact() {
   bNewContact.style.display = 'none';
   document.getElementById('bNewContactToggle').textContent = '+ Nieuw contact aanmaken';
-  bNcName.value = ''; bNcPhone.value = ''; bNcEmail.value = '';
+  bNcName.value = ''; bNcPhone.value = ''; bNcEmail.value = ''; bNcType.value = '';
 }
 let bookingCache = [];
 let bookingFilter = 'alles';
@@ -3329,7 +3360,7 @@ const BK_KNOPTEKST = { webaanvraag: '→ Aanvraag', aanvraag: '→ Optie', optie
 
 function fillContactSelect() {
   bContact.innerHTML = '<option value="">— geen —</option>' +
-    contactsCache.map(c => `<option value="${c.id}">${esc(c.name)}${c.type === 'boeker' ? ' (boeker)' : ''}</option>`).join('');
+    contactsCache.map(c => `<option value="${c.id}">${esc(c.name)}${c.type ? ' (' + contactSoortLabel(c.type).toLowerCase() + ')' : ''}</option>`).join('');
 }
 
 function openBookingDialog(bk) {
@@ -3387,7 +3418,7 @@ document.getElementById('bSave').addEventListener('click', () => {
     if (bNewContact.style.display === 'none' || !naam) return Promise.resolve(bContact.value || '');
     return db.collection('kantoor_contacts').add({
       name: naam,
-      type: 'boeker',
+      type: bNcType.value,
       phone: bNcPhone.value.trim(),
       email: bNcEmail.value.trim(),
       address: '',
@@ -4608,7 +4639,10 @@ function webNaarBoeking(m) {
   // 1) Contact aanmaken
   db.collection('kantoor_contacts').add({
     name: m.name || 'Onbekend (web)',
-    type: 'boeker',
+    // Bij een aanvraag via de site weten we niet wat voor contact het is: een
+    // feestgever, familie, een zaal of een boeker. Vroeger stond hier vast
+    // 'boeker'; dat was vaker fout dan goed. Nu kies je het zelf bij het contact.
+    type: '',
     phone: m.phone || '',
     email: m.email || '',
     address: '',
