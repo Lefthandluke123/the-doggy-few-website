@@ -245,20 +245,32 @@
         nav ul {
             list-style: none;
             display: flex;
-            gap: 0.4rem;
+            /* Krap gehouden: met negen items én de taalknoppen erbij is de balk
+               op een gewoon scherm anders te breed, en dan knipt hij het eerste
+               item eraf. */
+            gap: 0.15rem;
             align-items: center;
             flex-wrap: nowrap;
+            /* Past het niet, dan schuift de balk mee in plaats van dat er
+               stilzwijgend een item wegvalt. Dat gebeurde op schermen tussen
+               ongeveer 800 en 1150 pixels breed: "Band" viel dan buiten beeld
+               zonder dat iemand het merkte. */
+            overflow-x: auto;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
         }
+
+        nav ul::-webkit-scrollbar { display: none; }
 
         nav ul li { display: flex; }
 
         nav a {
             color: #e5e9e2;
             text-decoration: none;
-            font-size: 1rem;
+            font-size: 0.95rem;
             transition: color 0.25s, background 0.25s, border-color 0.25s;
             border: 1px solid transparent;
-            padding: 0.3rem 0.85rem;
+            padding: 0.3rem 0.6rem;
             border-radius: 999px;
             white-space: nowrap;
         }
@@ -409,6 +421,38 @@
             background: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22280%22%20height%3D%2234%22%20viewBox%3D%220%200%20280%2034%22%3E%3Cdefs%3E%3ClinearGradient%20id%3D%22l%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%221%22%20y2%3D%220%22%3E%3Cstop%20offset%3D%220%22%20stop-color%3D%22%23c8960a%22%20stop-opacity%3D%220%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23c8960a%22%20stop-opacity%3D%220.85%22%2F%3E%3C%2FlinearGradient%3E%3ClinearGradient%20id%3D%22r%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%221%22%20y2%3D%220%22%3E%3Cstop%20offset%3D%220%22%20stop-color%3D%22%23c8960a%22%20stop-opacity%3D%220.85%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23c8960a%22%20stop-opacity%3D%220%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%3Crect%20x%3D%226%22%20y%3D%2216.5%22%20width%3D%2296%22%20height%3D%221%22%20fill%3D%22url%28%23l%29%22%2F%3E%3Cg%20transform%3D%22translate%28140%2C17%29%22%20fill%3D%22none%22%20stroke%3D%22%23c8960a%22%20stroke-width%3D%221.25%22%3E%3Ccircle%20cx%3D%220%22%20cy%3D%22-6%22%20r%3D%228%22%2F%3E%3Ccircle%20cx%3D%225.2%22%20cy%3D%223%22%20r%3D%228%22%2F%3E%3Ccircle%20cx%3D%22-5.2%22%20cy%3D%223%22%20r%3D%228%22%2F%3E%3C%2Fg%3E%3Crect%20x%3D%22178%22%20y%3D%2216.5%22%20width%3D%2296%22%20height%3D%221%22%20fill%3D%22url%28%23r%29%22%2F%3E%3C%2Fsvg%3E") center / contain no-repeat;
             opacity: 0.85;
         }
+
+
+        /* Kaarten naar de landingspagina's. Vier op een rij op een groot
+           scherm, twee op een tablet, onder elkaar op een telefoon. */
+        .boek-kaarten {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+        .boek-kaart {
+            display: flex;
+            flex-direction: column;
+            gap: 0.35rem;
+            padding: 1.4rem 1.2rem;
+            border: 1px solid rgba(229,233,226,0.14);
+            border-radius: 14px;
+            background: rgba(229,233,226,0.04);
+            color: #e5e9e2;
+            text-decoration: none;
+            transition: border-color .25s, background .25s, transform .25s;
+        }
+        .boek-kaart:hover {
+            border-color: #c8960a;
+            background: rgba(200,150,10,0.08);
+            transform: translateY(-3px);
+        }
+        .boek-kaart .boek-icoon { font-size: 1.6rem; line-height: 1; }
+        .boek-kaart strong { font-size: 1.05rem; }
+        .boek-kaart span:last-child { font-size: 0.86rem; color: #acb7a4; line-height: 1.45; }
+        @media (max-width: 900px) { .boek-kaarten { grid-template-columns: repeat(2, 1fr); } }
+        @media (max-width: 520px) { .boek-kaarten { grid-template-columns: 1fr; } }
 
         section h2 {
             font-family: var(--font-heading);
@@ -1866,6 +1910,7 @@
             </a>
             <div class="nav-center">
                 <ul id="navMenu">
+                    <li><a href="#boeken" data-i18n="nav.boeken">Boeken</a></li>
                     <li><a href="#band" data-i18n="nav.band">Band</a></li>
                     <li><a href="#gigs" data-i18n="nav.gigs">Agenda</a></li>
                     <li><a href="#lyrics" data-i18n="nav.lyrics">Liedjes</a></li>
@@ -2029,6 +2074,37 @@
     </section>
 
     <!-- Links Section -->
+    <!-- Waarvoor kun je ons boeken: de landingspagina's, zichtbaar op de voorpagina.
+         Ze bestonden al, maar waren alleen te vinden via een link in de lopende tekst. -->
+    <section id="boeken">
+        <div class="container">
+            <h2 data-i18n="boeken.title">Waarvoor kun je ons boeken?</h2>
+            <p style="color:#acb7a4;text-align:center;max-width:46rem;margin:0 auto 2rem;" data-i18n="boeken.intro">Elke gelegenheid vraagt iets anders van een band. Op deze pagina's staat per soort avond wat je van ons kunt verwachten, wat het kost en hoeveel ruimte we nodig hebben.</p>
+            <div class="boek-kaarten">
+                <a class="boek-kaart" href="/st-patricks-day/">
+                    <span class="boek-icoon">☘️</span>
+                    <strong data-i18n="boeken.patrick">St. Patrick's Day</strong>
+                    <span data-i18n="boeken.patrick_sub">17 maart — boek op tijd, die avond is snel vol</span>
+                </a>
+                <a class="boek-kaart" href="/ierse-feestband-boeken/">
+                    <span class="boek-icoon">🍺</span>
+                    <strong data-i18n="boeken.feest">Kroeg, festival of feest</strong>
+                    <span data-i18n="boeken.feest_sub">Versterkt, dansbaar, met optionele dansworkshop</span>
+                </a>
+                <a class="boek-kaart" href="/akoestische-ierse-folk/">
+                    <span class="boek-icoon">🎻</span>
+                    <strong data-i18n="boeken.akoestisch">Bruiloft of besloten feest</strong>
+                    <span data-i18n="boeken.akoestisch_sub">Akoestisch en intiem, ook zonder installatie</span>
+                </a>
+                <a class="boek-kaart" href="/veelgestelde-vragen/">
+                    <span class="boek-icoon">❓</span>
+                    <strong data-i18n="boeken.vragen">Veelgestelde vragen</strong>
+                    <span data-i18n="boeken.vragen_sub">Ruimte, geluid, speelduur en wat het kost</span>
+                </a>
+            </div>
+        </div>
+    </section>
+
     <section id="links">
         <div class="container">
             <h2 data-i18n="links.title">Links</h2>
@@ -2238,6 +2314,7 @@
         const translations = {
             nl: {
                 nav: {
+                    boeken: 'Boeken',
                     band: 'Band',
                     gigs: 'Agenda',
                     lyrics: 'Liedjes',
@@ -2246,6 +2323,18 @@
                     videos: 'Video\'s',
                     links: 'Links',
                     contact: 'Contact'
+                },
+                boeken: {
+                    title: 'Waarvoor kun je ons boeken?',
+                    intro: "Elke gelegenheid vraagt iets anders van een band. Op deze pagina's staat per soort avond wat je van ons kunt verwachten, wat het kost en hoeveel ruimte we nodig hebben.",
+                    patrick: "St. Patrick's Day",
+                    patrick_sub: '17 maart — boek op tijd, die avond is snel vol',
+                    feest: 'Kroeg, festival of feest',
+                    feest_sub: 'Versterkt, dansbaar, met optionele dansworkshop',
+                    akoestisch: 'Bruiloft of besloten feest',
+                    akoestisch_sub: 'Akoestisch en intiem, ook zonder installatie',
+                    vragen: 'Veelgestelde vragen',
+                    vragen_sub: 'Ruimte, geluid, speelduur en wat het kost'
                 },
                 hero: {
                     subtitle: 'Irish Party Music',
@@ -2381,6 +2470,7 @@
             },
             en: {
                 nav: {
+                    boeken: 'Book us',
                     band: 'Band',
                     gigs: 'Schedule',
                     lyrics: 'Songs',
@@ -2389,6 +2479,18 @@
                     videos: 'Videos',
                     links: 'Links',
                     contact: 'Contact'
+                },
+                boeken: {
+                    title: 'What can you book us for?',
+                    intro: 'Every occasion asks something different of a band. These pages tell you what to expect for each kind of evening, what it costs and how much room we need.',
+                    patrick: "St. Patrick's Day",
+                    patrick_sub: '17 March — book early, that night fills up fast',
+                    feest: 'Pub, festival or party',
+                    feest_sub: 'Amplified, danceable, with an optional dance workshop',
+                    akoestisch: 'Wedding or private party',
+                    akoestisch_sub: 'Acoustic and intimate, even without a PA',
+                    vragen: 'Frequently asked questions',
+                    vragen_sub: 'Space, sound, playing time and what it costs'
                 },
                 hero: {
                     subtitle: 'Irish Party Music',
@@ -2524,6 +2626,7 @@
             },
             de: {
                 nav: {
+                    boeken: 'Buchen',
                     band: 'Band',
                     gigs: 'Termine',
                     lyrics: 'Lieder',
@@ -2532,6 +2635,18 @@
                     videos: 'Videos',
                     links: 'Links',
                     contact: 'Kontakt'
+                },
+                boeken: {
+                    title: 'Wofür können Sie uns buchen?',
+                    intro: 'Jeder Anlass verlangt etwas anderes von einer Band. Auf diesen Seiten steht je Abendtyp, was Sie erwarten können, was es kostet und wie viel Platz wir brauchen.',
+                    patrick: "St. Patrick's Day",
+                    patrick_sub: '17. März — früh buchen, dieser Abend ist schnell ausgebucht',
+                    feest: 'Kneipe, Festival oder Fest',
+                    feest_sub: 'Verstärkt, tanzbar, mit optionalem Tanzworkshop',
+                    akoestisch: 'Hochzeit oder private Feier',
+                    akoestisch_sub: 'Akustisch und intim, auch ohne Anlage',
+                    vragen: 'Häufig gestellte Fragen',
+                    vragen_sub: 'Platz, Ton, Spieldauer und was es kostet'
                 },
                 hero: {
                     subtitle: 'Irish Party Music',
