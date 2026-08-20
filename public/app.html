@@ -3712,7 +3712,12 @@
                     membersCache[doc.id] = m;
                     const jsId = doc.id.replace(/\\/g, '\\\\').replace(/'/g, "\\'");
                     const photo = m.photoUrl
-                        ? `<img src="${m.photoUrl}" alt="${escapeHtml(m.name || 'Bandlid')}" class="member-photo" loading="lazy">`
+                        // De naam staat er vlak onder als kop. Zetten we hem ook in de
+                        // alt-tekst, dan leest een schermlezer hem twee keer voor, en
+                        // laadt de foto even niet, dan staat de naam zichtbaar dubbel in
+                        // beeld. Een lege alt-tekst is hier dus juist goed; onerror
+                        // ruimt een foto op die het niet doet.
+                        ? `<img src="${m.photoUrl}" alt="" class="member-photo" loading="lazy" onerror="this.style.display='none'">`
                         : `<div class="member-photo-placeholder">📸 Foto</div>`;
 
                 let galleryHtml = '';

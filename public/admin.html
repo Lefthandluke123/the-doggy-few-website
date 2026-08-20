@@ -5340,7 +5340,7 @@
                     const galleryName = m.galleryId ? (galleryLabel(galleriesCache.find(g => g.id === m.galleryId)?.title) || m.galleryId) : '';
                     item.innerHTML = `
                         <div class="list-item-info" style="display:flex; gap:1rem; align-items:flex-start;">
-                            ${m.photoUrl ? `<img src="${m.photoUrl}" alt="${(m.name||'').replace(/"/g,'&quot;')}" style="width:64px; height:64px; object-fit:cover; border-radius:8px; border:2px solid #5fa777;">` : ''}
+                            ${m.photoUrl ? `<img src="${m.photoUrl}" alt="" onerror="this.style.display='none'" style="width:64px; height:64px; object-fit:cover; border-radius:8px; border:2px solid #5fa777;">` : ''}
                             <div>
                                 <h3>${m.name || ''}</h3>
                                 <p>${m.role || ''}</p>
