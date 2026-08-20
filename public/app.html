@@ -1070,6 +1070,12 @@
             height: 250px;
             object-fit: cover;
             object-position: center top;
+            /* Zolang de foto laadt, blijft het vak zijn vorm houden. Zonder dit
+               zakt de kaart in elkaar en staat de alt-tekst groot in beeld. */
+            background-color: #12301c;
+            display: block;
+            font-size: 0.75rem;
+            color: #6f9d7d;
         }
 
         .photo-caption {
@@ -3422,7 +3428,10 @@
             const altText = photo.alt || photo.caption || 'The Doggy Few optreden';
             let tagsHtml = '';
             if (photo.tags && photo.tags.length > 0) {
-                tagsHtml = `<div class="photo-tags">${photo.tags.map(tag => `<span class="photo-tag">${escapeHtml(tag)}</span>`).join('')}</div>`;
+                // Tags zijn er voor zoekmachines, niet voor het oog: als gekleurde
+                // blokjes onder elke foto overheersten ze de galerij volledig.
+                // Ze staan nu onzichtbaar in de pagina, waar Google ze wel leest.
+                tagsHtml = `<meta itemprop="keywords" content="${escapeHtml(photo.tags.join(', '))}">`;
             }
             const url = photo.url || '';
             const cap = photo.caption || '';
