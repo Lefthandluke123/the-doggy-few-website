@@ -930,6 +930,8 @@
                 <!-- Bulk-toolbar -->
                 <div style="display:flex; gap:0.5rem; align-items:center; margin-bottom:1rem; flex-wrap:wrap;">
                     <button class="btn btn-small btn-secondary" id="selectModeBtn" onclick="toggleSelectMode()">☑️ Selecteer</button>
+                    <button class="btn btn-small btn-secondary" id="selectAllBtn" onclick="selecteerAlleFotos()" style="display:none;">Alles in beeld selecteren</button>
+                    <button class="btn btn-small btn-secondary" id="selectNoneBtn" onclick="wisSelectie()" style="display:none;">Selectie wissen</button>
                     <button class="btn btn-small btn-danger" id="deleteSelectedBtn" onclick="deleteSelectedPhotos()" style="display:none;">🗑️ Verwijder selectie (<span id="selectedCount">0</span>)</button>
                     <button class="btn btn-small btn-secondary" id="moveSelectedBtn" onclick="moveSelectedPhotos()" style="display:none;">📁 Verplaats naar galerie…</button>
                     <span id="currentGalleryTitle" style="color:#a8c8b2; margin-left:auto;"></span>
@@ -1587,6 +1589,25 @@
                 <button class="close-btn" onclick="closeModal('blogPreviewModal')">✕</button>
             </div>
             <div id="blogPreviewContent"></div>
+        </div>
+    </div>
+
+    <!-- Foto's naar een galerie verplaatsen -->
+    <div id="verplaatsModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Foto's in een galerie zetten</h2>
+                <button class="close-btn" onclick="closeModal('verplaatsModal')">✕</button>
+            </div>
+            <p style="color:#a8c8b2; margin-bottom:1rem;"><span id="verplaatsAantal">0</span> foto's geselecteerd.</p>
+            <div class="form-group">
+                <label>📁 Naar welke galerie?</label>
+                <select id="verplaatsGallerySelect"></select>
+            </div>
+            <div style="display:flex; gap:0.5rem; margin-top:1rem;">
+                <button class="btn" id="verplaatsBtn" onclick="bevestigVerplaatsen()" style="flex:1;">Verplaatsen</button>
+                <button class="btn btn-secondary" onclick="closeModal('verplaatsModal')">Annuleren</button>
+            </div>
         </div>
     </div>
 
@@ -2883,6 +2904,10 @@
             selectMode = !selectMode;
             selectedPhotoIds.clear();
             document.getElementById('selectModeBtn').textContent = selectMode ? '✖️ Stop selecteren' : '☑️ Selecteer';
+            ['selectAllBtn', 'selectNoneBtn'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.style.display = selectMode ? 'inline-flex' : 'none';
+            });
             updateSelectedUI();
             renderPhotos();
         }
@@ -2909,21 +2934,67 @@
             updateSelectedUI();
         }
 
-        async function moveSelectedPhotos() {
+        function moveSelectedPhotos() {
+            const n = selectedPhotoIds.size;
+            if (n === 0) return;
+            document.getElementById('verplaatsAantal').textContent = n;
+            // dezelfde keuzelijst als elders; standaard de galerie waar je nu in kijkt
+            const sel = document.getElementById('verplaatsGallerySelect');
+            sel.innerHTML = ['<option value="">— Zonder galerie —</option>']
+                .concat(galleriesCache.map(g => `<option value="${g.id}">${galleryLabel(g.title) || g.id}</option>`))
+                .join('');
+            sel.value = (currentGalleryFilter !== 'all' && currentGalleryFilter !== 'none') ? currentGalleryFilter : '';
+            document.getElementById('verplaatsModal').classList.add('active');
+        }
+
+        async function bevestigVerplaatsen() {
             const ids = Array.from(selectedPhotoIds);
-            if (ids.length === 0) return;
-            const labels = galleriesCache.map((g, i) => `${i + 1}. ${galleryLabel(g.title)}`).join('\n');
-            const input = prompt('Naar welke galerie verplaatsen?\n0. Zonder galerie\n' + labels + '\n\nTyp het nummer:');
-            if (input === null) return;
-            const n = parseInt(input, 10);
-            let galleryId = '';
-            if (n >= 1 && n <= galleriesCache.length) galleryId = galleriesCache[n - 1].id;
-            else if (n !== 0) { alert('Ongeldige keuze'); return; }
-            const batch = db.batch();
-            ids.forEach(id => batch.update(db.collection('photos').doc(id), { galleryId, updatedAt: new Date() }));
-            await batch.commit();
+            if (ids.length === 0) { closeModal('verplaatsModal'); return; }
+            const galleryId = document.getElementById('verplaatsGallerySelect').value || '';
+            const knop = document.getElementById('verplaatsBtn');
+            knop.disabled = true;
+            try {
+                // Firestore neemt maximaal 500 wijzigingen tegelijk aan.
+                for (let i = 0; i < ids.length; i += 400) {
+                    const batch = db.batch();
+                    ids.slice(i, i + 400).forEach(id =>
+                        batch.update(db.collection('photos').doc(id), { galleryId, updatedAt: new Date() }));
+                    await batch.commit();
+                }
+                const naam = galleryId
+                    ? (galleryLabel((galleriesCache.find(g => g.id === galleryId) || {}).title) || galleryId)
+                    : 'Zonder galerie';
+                selectedPhotoIds.clear();
+                updateSelectedUI();
+                closeModal('verplaatsModal');
+                // Zonder dit lijkt er niets te gebeuren: het scherm bleef de oude
+                // indeling tonen tot je zelf ververste.
+                if (typeof loadPhotos === 'function') loadPhotos();
+                alert(`${ids.length} foto's staan nu in "${naam}".`);
+            } catch (e) {
+                console.error(e);
+                alert('Verplaatsen mislukt: ' + e.message);
+            } finally {
+                knop.disabled = false;
+            }
+        }
+
+        /** De foto's die nu in beeld staan — hetzelfde filter dat renderPhotos gebruikt. */
+        function zichtbareFotos() {
+            return photosCache.filter(photoMatchesFilter);
+        }
+
+        function selecteerAlleFotos() {
+            // alleen wat nu in beeld staat: het galerie-filter telt mee
+            zichtbareFotos().forEach(p => selectedPhotoIds.add(p.id));
+            updateSelectedUI();
+            renderPhotos();
+        }
+
+        function wisSelectie() {
             selectedPhotoIds.clear();
             updateSelectedUI();
+            renderPhotos();
         }
 
         // ---- Verwijderen (incl. Storage-bestanden) ----
