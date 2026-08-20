@@ -1649,7 +1649,15 @@
 
             <div class="form-group">
                 <label>📁 Galerie</label>
-                <select id="bulkGallerySelect"></select>
+                <select id="bulkGallerySelect" onchange="bulkGalerieGewisseld()"></select>
+            </div>
+
+            <div class="form-group" id="bulkNieuweGalerieVeld" style="display:none;">
+                <label>✏️ Naam van de nieuwe galerie</label>
+                <input type="text" id="bulkNieuweGalerieNaam" placeholder="bijvoorbeeld: Zomerfeest Glimmen 2026">
+                <p style="font-size:0.85rem; color:#7cc096; margin-top:0.4rem;">
+                    De galerie wordt aangemaakt zodra je op uploaden klikt, en de foto's gaan er meteen in.
+                </p>
             </div>
 
             <div id="bulkProgress" style="display:none; margin:1rem 0;">
@@ -2601,7 +2609,13 @@
                 .join('');
             ['bulkGallerySelect', 'editPhotoGallery', 'memberGallery'].forEach(id => {
                 const el = document.getElementById(id);
-                if (el) { const v = el.value; el.innerHTML = opts; el.value = v; }
+                if (!el) return;
+                const v = el.value;
+                // Alleen bij het uploaden kun je ter plekke een galerie maken.
+                el.innerHTML = id === 'bulkGallerySelect'
+                    ? opts + '<option value="__nieuw__">➕ Nieuwe galerie maken…</option>'
+                    : opts;
+                el.value = v;
             });
         }
 
@@ -2816,6 +2830,27 @@
             if (typeof loadPhotos === 'function') loadPhotos();
         }
 
+        // ---- Bestandsnamen die iets zeggen ----
+        // Een bestand heette photo-1755697412345-x9k2p.webp. Zo'n naam vertelt
+        // Google niets, terwijl de bestandsnaam wel meetelt bij het zoeken naar
+        // afbeeldingen. Nu wordt het bijvoorbeeld:
+        //   zevenaar-03-the-doggy-few-ierse-folkband.webp
+        function naarSlug(tekst) {
+            return (tekst || '')
+                .toLowerCase()
+                .normalize('NFD').replace(/[\u0300-\u036f]/g, '')   // accenten eraf
+                .replace(/[^a-z0-9]+/g, '-')
+                .replace(/^-+|-+$/g, '')
+                .slice(0, 40);
+        }
+
+        function fotoBestandsnaam(galleryId, volgnummer, extensie) {
+            const g = (galleriesCache || []).find(x => x.id === galleryId);
+            const plek = g ? naarSlug(galleryLabel(g.title)) : '';
+            const delen = [plek, String(volgnummer).padStart(2, '0'), 'the-doggy-few-ierse-folkband'].filter(Boolean);
+            return `${delen.join('-')}.${extensie}`;
+        }
+
         // ---- Concept-alt-tekst bij het uploaden ----
         // Een foto zonder alt-tekst is onzichtbaar voor een schermlezer en voor
         // Google Afbeeldingen. Daarom krijgt elke nieuwe foto meteen een concept:
@@ -2835,8 +2870,16 @@
         }
 
         // ---- Bulk upload ----
+        function bulkGalerieGewisseld() {
+            const nieuw = document.getElementById('bulkGallerySelect').value === '__nieuw__';
+            document.getElementById('bulkNieuweGalerieVeld').style.display = nieuw ? 'block' : 'none';
+            if (nieuw) document.getElementById('bulkNieuweGalerieNaam').focus();
+        }
+
         function openBulkUpload() {
             document.getElementById('bulkPhotoFiles').value = '';
+            document.getElementById('bulkNieuweGalerieNaam').value = '';
+            document.getElementById('bulkNieuweGalerieVeld').style.display = 'none';
             document.getElementById('bulkProgress').style.display = 'none';
             document.getElementById('bulkProgressBar').style.width = '0%';
             // standaard de huidige galerie voorselecteren
@@ -2848,26 +2891,50 @@
         async function handleBulkUpload() {
             const files = Array.from(document.getElementById('bulkPhotoFiles').files || []);
             if (files.length === 0) { alert('Selecteer minstens één foto'); return; }
-            const galleryId = document.getElementById('bulkGallerySelect').value || '';
 
+            let galleryId = document.getElementById('bulkGallerySelect').value || '';
             const btn = document.getElementById('bulkUploadBtn');
             const bar = document.getElementById('bulkProgressBar');
             const txt = document.getElementById('bulkProgressText');
             btn.disabled = true;
             document.getElementById('bulkProgress').style.display = 'block';
 
+            // Eerst de galerie, dan de foto's: zo komen ze er meteen goed in te staan.
+            if (galleryId === '__nieuw__') {
+                const naam = document.getElementById('bulkNieuweGalerieNaam').value.trim();
+                if (!naam) { alert('Geef de nieuwe galerie een naam.'); btn.disabled = false; return; }
+                try {
+                    txt.textContent = `Galerie "${naam}" aanmaken…`;
+                    const ref = await db.collection('galleries').add({
+                        title: { nl: naam, en: '', de: '' },
+                        desc: { nl: '', en: '', de: '' },
+                        membersOnly: false,
+                        visible: true,
+                        createdAt: new Date()
+                    });
+                    galleryId = ref.id;
+                    // meteen in de lijst, zodat de bestandsnaam en de concepttekst kloppen
+                    galleriesCache.push({ id: ref.id, title: { nl: naam, en: '', de: '' } });
+                } catch (e) {
+                    alert('Galerie aanmaken mislukt: ' + e.message);
+                    btn.disabled = false;
+                    return;
+                }
+            }
+
             let done = 0, failed = 0;
             for (const file of files) {
                 txt.textContent = `Uploaden ${done + 1} van ${files.length}: ${file.name}`;
                 try {
-                    const ts = Date.now() + '-' + Math.random().toString(36).slice(2, 7);
+                    const uniek = Date.now().toString(36) + Math.random().toString(36).slice(2, 5);
+                    const basis = fotoBestandsnaam(galleryId, done + 1, 'webp').replace('.webp', '');
                     // 1) origineel bewaren in Storage
-                    const origPath = `photos/originals/orig-${ts}.${fileExtension(file)}`;
+                    const origPath = `photos/originals/${basis}-origineel-${uniek}.${fileExtension(file)}`;
                     const originalUrl = await uploadBlobToStorage(origPath, file);
                     // 2) verkleinde WebP voor de website
                     const dataUrl = await new Promise(res => { const r = new FileReader(); r.onload = e => res(e.target.result); r.readAsDataURL(file); });
                     const { blob: webp } = await resizeToWebP(dataUrl, 1600, 0.8);
-                    const webpPath = `photos/photo-${ts}.webp`;
+                    const webpPath = `photos/${basis}-${uniek}.webp`;
                     const url = await uploadBlobToStorage(webpPath, webp);
                     // 3) Firestore-document
                     await db.collection('photos').add({
@@ -2891,6 +2958,8 @@
 
             btn.disabled = false;
             closeModal('bulkUploadModal');
+            if (typeof loadGalleries === 'function') loadGalleries();
+            if (typeof loadPhotos === 'function') loadPhotos();
             alert(`Klaar! ${done - failed} geüpload${failed ? `, ${failed} mislukt (zie console)` : ''}.`);
         }
 
