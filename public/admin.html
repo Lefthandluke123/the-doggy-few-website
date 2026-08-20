@@ -1604,6 +1604,11 @@
                 Vink een regel uit om hem over te slaan. Foto's die al een alt-tekst hebben staan
                 standaard uit.
             </p>
+            <div style="display:flex; gap:0.5rem; margin-bottom:0.75rem;">
+                <button class="btn btn-small btn-secondary" onclick="altAllesAanvinken(true)">Alles aanvinken</button>
+                <button class="btn btn-small btn-secondary" onclick="altAllesAanvinken(false)">Alles uitvinken</button>
+                <span id="altAantalAangevinkt" style="margin-left:auto; color:#7cc096; font-size:0.85rem;"></span>
+            </div>
             <div id="altVoorbeeldLijst" style="max-height:62vh; overflow-y:auto; overflow-x:hidden; display:flex; flex-direction:column; gap:1rem;"></div>
             <div style="display:flex; gap:0.5rem; margin-top:1rem;">
                 <button class="btn" id="altWegschrijfBtn" onclick="schrijfFotoTekstenWeg()" style="flex:1;">Aangevinkte regels wegschrijven</button>
@@ -2800,8 +2805,24 @@
             }
             if (regels.length === 0) { alert('Geen van de foto\'s uit het bestand staat (nog) in de database.'); return; }
             lijst.innerHTML = regels.join('');
-            console.log('[nakijkvenster] regels:', regels.length);
+            document.querySelectorAll('#altVoorbeeldLijst .altRegel')
+                .forEach(v => v.addEventListener('change', altTelAangevinkt));
+            altTelAangevinkt();
             document.getElementById('altVoorbeeldModal').classList.add('active');
+        }
+
+        // "Alles aanvinken" zet ook de foto's aan die al een oude tekst hebben.
+        // Wegschrijven vervangt die oude tekst dan door de nieuwe.
+        function altAllesAanvinken(aan) {
+            document.querySelectorAll('#altVoorbeeldLijst .altRegel').forEach(v => { v.checked = aan; });
+            altTelAangevinkt();
+        }
+
+        function altTelAangevinkt() {
+            const alle = document.querySelectorAll('#altVoorbeeldLijst .altRegel');
+            const aan = Array.from(alle).filter(v => v.checked).length;
+            const el = document.getElementById('altAantalAangevinkt');
+            if (el) el.textContent = `${aan} van ${alle.length} aangevinkt`;
         }
 
         async function schrijfFotoTekstenWeg() {
