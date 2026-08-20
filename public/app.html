@@ -1100,6 +1100,20 @@
             .gallery-credit { display: block; margin-left: 0; margin-top: 0.2rem; }
         }
 
+        .sla-over {
+            position: absolute;
+            left: -9999px;
+            top: 0;
+            z-index: 10000;
+            padding: 0.9rem 1.4rem;
+            background: #1e3a26;
+            color: #fff;
+            border-radius: 0 0 10px 0;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        .sla-over:focus { left: 0; }
+
         .photo-tags {
             padding: 0 1rem 1rem 1rem;
             display: flex;
@@ -1924,6 +1938,10 @@
     </style>
 </head>
 <body>
+    <!-- Voor wie met het toetsenbord navigeert: sla de menubalk over.
+         Onzichtbaar tot je er met Tab op belandt. -->
+    <a href="#band" class="sla-over" data-i18n="skip.inhoud">Direct naar de inhoud</a>
+
     <!-- Navigation -->
     <nav>
         <div class="container">
@@ -2197,7 +2215,7 @@
                 <!-- Honeypot field -->
                 <div style="position: absolute; left: -9999px; opacity: 0; pointer-events: none;" aria-hidden="true">
                     <label for="website">Website</label>
-                    <input type="text" id="website" name="website" tabindex="-1" autocomplete="off" value="">
+                    <input type="text" id="website" name="website" tabindex="-1" autocomplete="off" aria-hidden="true" value="">
                 </div>
                 
                 <button type="submit" class="submit-btn" data-i18n="contact.submit">Verstuur Boeking</button>
@@ -2212,6 +2230,9 @@
             <p data-i18n="footer.tagline">Authentieke Celtic Folk muziek uit Nederland</p>
             <p style="font-size: 0.9rem; margin-top: 1rem; color: #91c383;">
                 <a href="mailto:info@doggyfew.com" style="color: #91c383; text-decoration: none;" id="contactEmail">info@doggyfew.com</a>
+            </p>
+            <p style="font-size: 0.85rem; margin-top: 0.6rem;">
+                <a id="toegankelijkheidLink" href="/toegankelijkheid/" style="color: #91c383;" data-i18n="footer.toegankelijkheid">Toegankelijkheid</a>
             </p>
             
             <!-- Newsletter Signup -->
@@ -2237,7 +2258,7 @@
                         Abonneren
                     </button>
                     <!-- Honeypot -->
-                    <input type="text" name="website" style="position: absolute; left: -9999px; opacity: 0; pointer-events: none;" tabindex="-1" autocomplete="off" value="">
+                    <input type="text" name="website" style="position: absolute; left: -9999px; opacity: 0; pointer-events: none;" tabindex="-1" autocomplete="off" value="" aria-hidden="true">
                 </form>
             </div>
 
@@ -2335,6 +2356,7 @@
     <script>
         const translations = {
             nl: {
+                skip: { inhoud: 'Direct naar de inhoud' },
                 nav: {
                     boeken: 'Boeken',
                     band: 'Band',
@@ -2487,10 +2509,12 @@
                 footer: {
                     copyright: 'Alle rechten voorbehouden',
                     tagline: 'Irish Party Music',
+                    toegankelijkheid: 'Toegankelijkheid',
                     
                 }
             },
             en: {
+                skip: { inhoud: 'Skip to the content' },
                 nav: {
                     boeken: 'Book us',
                     band: 'Band',
@@ -2643,10 +2667,12 @@
                 footer: {
                     copyright: 'All rights reserved',
                     tagline: 'Irish Party Music',
+                    toegankelijkheid: 'Accessibility',
                     location: 'Based in Groningen'
                 }
             },
             de: {
+                skip: { inhoud: 'Direkt zum Inhalt' },
                 nav: {
                     boeken: 'Buchen',
                     band: 'Band',
@@ -2799,6 +2825,7 @@
                 footer: {
                     copyright: 'Alle Rechte vorbehalten',
                     tagline: 'Irish Party Music',
+                    toegankelijkheid: 'Barrierefreiheit',
                     
                 }
             }
@@ -3506,7 +3533,7 @@
                     // duidelijk is van wie de foto's zijn zonder dat het opvalt.
                     const rechten = [g.datum, g.fotograaf].filter(Boolean).join(' — ');
                     const rechtenHtml = rechten ? `<span class="gallery-credit">© ${escapeHtml(rechten)}</span>` : '';
-                    html += `<div class="gallery-block"><h3>${escapeHtml(galTitle(g))}${rechtenHtml}</h3>${d ? `<p class="gallery-desc">${escapeHtml(d)}</p>` : ''}<div class="photos-grid">${inGallery.map(photoCardHtml).join('')}</div></div>`;
+                    html += `<div class="gallery-block"><h3>${escapeHtml(galTitle(g))}</h3>${rechtenHtml}${d ? `<p class="gallery-desc">${escapeHtml(d)}</p>` : ''}<div class="photos-grid">${inGallery.map(photoCardHtml).join('')}</div></div>`;
                 });
                 const ungrouped = photos.filter(p => !(p.galleryId || ''));
                 // foto's zonder galerie niet tonen op de publieke site
@@ -4080,7 +4107,11 @@
             'veelgestelde-vragen':    { nl: '/veelgestelde-vragen/',    en: '/en/faq/',               de: '/de/haeufige-fragen/' },
         };
 
+        const VERKLARING = { nl: '/toegankelijkheid/', en: '/en/accessibility/', de: '/de/barrierefreiheit/' };
+
         function pasBoekLinksAan(taal) {
+            const v = document.getElementById('toegankelijkheidLink');
+            if (v && VERKLARING[taal]) v.setAttribute('href', VERKLARING[taal]);
             document.querySelectorAll('[data-boekpad]').forEach(a => {
                 const paden = BOEKPADEN[a.dataset.boekpad];
                 if (paden && paden[taal]) a.setAttribute('href', paden[taal]);
@@ -4791,7 +4822,7 @@
             <div class="member-page-header">
                 <img id="memberPagePhoto" class="member-page-photo" src="" alt="" style="display:none;">
                 <div>
-                    <h1 id="memberPageName"></h1>
+                    <h2 id="memberPageName" class="member-page-naam"></h2>
                     <div class="member-page-role" id="memberPageRole"></div>
                 </div>
             </div>
@@ -4842,7 +4873,7 @@
                     <textarea id="requestMessage" data-i18n-placeholder="request.messagePlaceholder" placeholder="Bijv. voor een speciale gelegenheid..."></textarea>
                 </div>
                 <!-- Honeypot -->
-                <input type="text" id="requestWebsite" name="website" style="position:absolute; left:-9999px; opacity:0;" tabindex="-1" autocomplete="off">
+                <input type="text" id="requestWebsite" name="website" style="position:absolute; left:-9999px; opacity:0;" tabindex="-1" autocomplete="off" aria-hidden="true">
                 <button type="submit" class="gig-request-btn" id="requestSubmitBtn" data-i18n="request.submit" style="margin-top:0;">🎶 Verstuur verzoekje</button>
             </form>
         </div>
