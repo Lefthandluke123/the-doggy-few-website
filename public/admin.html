@@ -1765,6 +1765,17 @@
                 </div>
             </div>
             <div class="form-group">
+                <label>📷 Fotograaf en datum (komt klein naast de titel te staan)</label>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.5rem;">
+                    <input type="text" id="galleryFotograaf" placeholder="Naam van de fotograaf">
+                    <input type="text" id="galleryDatum" placeholder="bijvoorbeeld: juli 2026">
+                </div>
+                <p style="font-size:0.85rem; color:#7cc096; margin-top:0.4rem;">
+                    Op de site verschijnt dit als: © juli 2026 — Naam van de fotograaf. Laat leeg om niets te tonen.
+                </p>
+            </div>
+
+            <div class="form-group">
                 <label>Beschrijving (optioneel)</label>
                 <div class="three-lang">
                     <textarea id="galleryDescNl" rows="2" placeholder="🇳🇱 Beschrijving"></textarea>
@@ -2639,6 +2650,8 @@
             document.getElementById('galleryTitleNl').value = '';
             document.getElementById('galleryTitleEn').value = '';
             document.getElementById('galleryTitleDe').value = '';
+            document.getElementById('galleryFotograaf').value = '';
+            document.getElementById('galleryDatum').value = '';
             document.getElementById('galleryDescNl').value = '';
             document.getElementById('galleryDescEn').value = '';
             document.getElementById('galleryDescDe').value = '';
@@ -2652,6 +2665,8 @@
             document.getElementById('galleryModalTitle').textContent = 'Galerie bewerken';
             document.getElementById('galleryId').value = id;
             const t = g.title || {};
+            document.getElementById('galleryFotograaf').value = g.fotograaf || '';
+            document.getElementById('galleryDatum').value = g.datum || '';
             document.getElementById('galleryTitleNl').value = (typeof t === 'string' ? t : t.nl) || '';
             document.getElementById('galleryTitleEn').value = (typeof t === 'string' ? '' : t.en) || '';
             document.getElementById('galleryTitleDe').value = (typeof t === 'string' ? '' : t.de) || '';
@@ -2677,9 +2692,12 @@
                 de: document.getElementById('galleryDescDe').value.trim()
             };
             const membersOnly = document.getElementById('galleryMembersOnly').checked;
+            // Rechthebbende bij de foto's van deze galerie.
+            const fotograaf = document.getElementById('galleryFotograaf').value.trim();
+            const datum = document.getElementById('galleryDatum').value.trim();
             const op = id
-                ? db.collection('galleries').doc(id).set({ title, desc, membersOnly, updatedAt: new Date() }, { merge: true })
-                : db.collection('galleries').add({ title, desc, membersOnly, createdAt: new Date() });
+                ? db.collection('galleries').doc(id).set({ title, desc, membersOnly, fotograaf, datum, updatedAt: new Date() }, { merge: true })
+                : db.collection('galleries').add({ title, desc, membersOnly, fotograaf, datum, createdAt: new Date() });
             op.then(() => closeModal('galleryModal'))
               .catch(err => alert('Opslaan mislukt: ' + err.message));
         }

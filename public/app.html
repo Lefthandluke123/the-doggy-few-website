@@ -1084,6 +1084,22 @@
             font-weight: 600;
         }
 
+        .gallery-credit {
+            display: inline-block;
+            margin-left: 0.75rem;
+            font-size: 0.7rem;
+            font-weight: 400;
+            letter-spacing: 0.02em;
+            color: #7cc096;
+            opacity: 0.75;
+            white-space: nowrap;
+            vertical-align: middle;
+        }
+
+        @media (max-width: 600px) {
+            .gallery-credit { display: block; margin-left: 0; margin-top: 0.2rem; }
+        }
+
         .photo-tags {
             padding: 0 1rem 1rem 1rem;
             display: flex;
@@ -3484,7 +3500,11 @@
                     const inGallery = photos.filter(p => (p.galleryId || '') === g.id);
                     if (inGallery.length === 0) return;
                     const d = galDesc(g.desc);
-                    html += `<div class="gallery-block"><h3>${escapeHtml(galTitle(g))}</h3>${d ? `<p class="gallery-desc">${escapeHtml(d)}</p>` : ''}<div class="photos-grid">${inGallery.map(photoCardHtml).join('')}</div></div>`;
+                    // Rechthebbende bij deze reeks: klein achter de titel, zodat
+                    // duidelijk is van wie de foto's zijn zonder dat het opvalt.
+                    const rechten = [g.datum, g.fotograaf].filter(Boolean).join(' — ');
+                    const rechtenHtml = rechten ? `<span class="gallery-credit">© ${escapeHtml(rechten)}</span>` : '';
+                    html += `<div class="gallery-block"><h3>${escapeHtml(galTitle(g))}${rechtenHtml}</h3>${d ? `<p class="gallery-desc">${escapeHtml(d)}</p>` : ''}<div class="photos-grid">${inGallery.map(photoCardHtml).join('')}</div></div>`;
                 });
                 const ungrouped = photos.filter(p => !(p.galleryId || ''));
                 // foto's zonder galerie niet tonen op de publieke site
