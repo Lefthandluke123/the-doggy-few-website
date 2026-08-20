@@ -63,20 +63,33 @@
             width: 260px;
             background-color: #243d2a;
             border-right: 1px solid #2d5a32;
-            /* Ruimte onderaan voor de Uitloggen-knop, die vast onderin zweeft.
-               Zonder die ruimte lag hij over het laatste menu-item heen en was
-               "Instellingen" onvindbaar. */
-            padding: 2rem 0 7rem 0;
+            padding: 1.2rem 0;
             overflow-y: auto;
             position: fixed;
             height: 100vh;
+            /* De Uitloggen-knop zweefde vast onderin en lag over het laatste
+               menu-item heen; "Instellingen" was daardoor onbereikbaar. Nu staat
+               alles gewoon onder elkaar in één kolom en schuift de knop mee. */
+            display: flex;
+            flex-direction: column;
+            gap: 0;
         }
+
+        nav .nav-btn { flex: 0 0 auto; }
+
+        /* Op een lager scherm past het menu niet helemaal. macOS verbergt de
+           schuifbalk standaard, waardoor het lijkt alsof het menu ophoudt bij
+           het laatste zichtbare item. Deze balk is altijd te zien. */
+        nav { scrollbar-width: thin; scrollbar-color: #5fa777 transparent; }
+        nav::-webkit-scrollbar { width: 8px; }
+        nav::-webkit-scrollbar-thumb { background: #5fa777; border-radius: 4px; }
+        nav::-webkit-scrollbar-track { background: transparent; }
 
         .logo {
             font-family: 'Fraunces', serif;
             font-size: 2rem;
             color: #e0922f;
-            margin-bottom: 2rem;
+            margin-bottom: 0.8rem;
             text-align: center;
             padding: 0 1rem;
         }
@@ -84,10 +97,13 @@
         nav button {
             display: flex;
             align-items: center;
-            gap: 0.8rem;
+            gap: 0.7rem;
             width: 100%;
-            padding: 0.8rem 1rem;
-            margin-bottom: 0.3rem;
+            /* Vijftien menu-items van 50 pixels pasten niet op een laptopscherm:
+               "Instellingen" viel er onderuit en je moest de zijbalk scrollen om
+               hem te vinden. Iets krapper en alles staat in beeld. */
+            padding: 0.55rem 1rem;
+            margin-bottom: 0.1rem;
             background: transparent;
             border: none;
             color: #e8e8e8;
@@ -111,10 +127,9 @@
         }
 
         .logout-btn {
-            position: absolute;
-            bottom: 2rem;
-            left: 1rem;
-            right: 1rem;
+            position: static;
+            flex: 0 0 auto;
+            margin: 1.5rem 1rem 0.5rem 1rem;
             padding: 0.8rem !important;
             background-color: #e0922f !important;
             color: #0c1310 !important;
