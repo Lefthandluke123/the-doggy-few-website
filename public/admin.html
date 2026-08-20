@@ -2748,10 +2748,16 @@
 
             const lijst = document.getElementById('altVoorbeeldLijst');
             const regels = [];
-            for (const [id, waarden] of Object.entries(teksten)) {
+            // Foto's met een concepttekst horen er ook bij: die vragen juist om
+            // een betere beschrijving.
+            const werklijst = { ...teksten };
+            photosCache.filter(p => p.altConcept).forEach(p => {
+                if (!werklijst[p.id]) werklijst[p.id] = { alt: p.alt || '', tags: p.tags || [] };
+            });
+            for (const [id, waarden] of Object.entries(werklijst)) {
                 const foto = photosCache.find(p => p.id === id);
                 if (!foto) continue;
-                const heeftAl = (foto.alt || '').trim().length > 0;
+                const heeftAl = (foto.alt || '').trim().length > 0 && !foto.altConcept;
                 regels.push(`
                     <div style="display:flex; gap:0.75rem; align-items:flex-start; background:#12301c; padding:0.6rem; border-radius:8px;">
                         <input type="checkbox" class="altRegel" data-id="${id}" ${heeftAl ? '' : 'checked'} style="margin-top:0.5rem;">
@@ -2783,7 +2789,7 @@
                 const tags = document.querySelector(`#altVoorbeeldLijst .altTags[data-id="${id}"]`).value
                     .split(',').map(s => s.trim()).filter(Boolean);
                 try {
-                    await db.collection('photos').doc(id).update({ alt, tags, updatedAt: new Date() });
+                    await db.collection('photos').doc(id).update({ alt, tags, altConcept: false, updatedAt: new Date() });
                     gevuld++;
                 } catch (e) {
                     mislukt++;
@@ -2794,6 +2800,24 @@
             closeModal('altVoorbeeldModal');
             alert(`${gevuld} foto's bijgewerkt${mislukt ? `, ${mislukt} mislukt (zie console)` : ''}.`);
             if (typeof loadPhotos === 'function') loadPhotos();
+        }
+
+        // ---- Concept-alt-tekst bij het uploaden ----
+        // Een foto zonder alt-tekst is onzichtbaar voor een schermlezer en voor
+        // Google Afbeeldingen. Daarom krijgt elke nieuwe foto meteen een concept:
+        // afgeleid van de galerie waar hij in komt. Het is nadrukkelijk een
+        // beginnetje - de knop "Alt-teksten & tags nakijken" is de plek om er
+        // iets te maken dat de foto echt beschrijft.
+        function conceptAltEnTags(galleryId) {
+            const g = (galleriesCache || []).find(x => x.id === galleryId);
+            const naam = g ? (galleryLabel(g.title) || '').trim() : '';
+            const alt = naam
+                ? `The Doggy Few — ${naam}`
+                : 'The Doggy Few tijdens een optreden';
+            const tags = ['the doggy few'];
+            if (naam) tags.push(naam.toLowerCase());
+            tags.push('live');
+            return { alt, tags, altConcept: true };
         }
 
         // ---- Bulk upload ----
@@ -2835,7 +2859,10 @@
                     await db.collection('photos').add({
                         url, filename: webpPath,
                         originalUrl, originalFilename: origPath,
-                        caption: '', alt: '', tags: [],
+                        caption: '',
+                        // Concept-alt-tekst en -tags, zodat een verse foto nooit
+                        // helemaal kaal in de galerij belandt.
+                        ...conceptAltEnTags(galleryId),
                         galleryId, cropData: null,
                         format: 'webp',
                         uploadedAt: new Date(), updatedAt: new Date()
@@ -2934,7 +2961,7 @@
                     ? `<label style="position:absolute; top:8px; left:8px; background:rgba(12,19,16,0.8); border-radius:4px; padding:2px 4px;">
                            <input type="checkbox" ${checked} onchange="togglePhotoSelect('${p.id}', this)"></label>`
                     : '';
-                const altBadge = p.alt ? '🟢 alt' : '⚪ geen alt';
+                const altBadge = !p.alt ? '⚪ geen alt' : (p.altConcept ? '🟠 concept-alt' : '🟢 alt');
                 return `
                     <div class="card" style="position:relative;">
                         ${checkbox}
@@ -3008,8 +3035,13 @@
                 // Firestore neemt maximaal 500 wijzigingen tegelijk aan.
                 for (let i = 0; i < ids.length; i += 400) {
                     const batch = db.batch();
-                    ids.slice(i, i + 400).forEach(id =>
-                        batch.update(db.collection('photos').doc(id), { galleryId, updatedAt: new Date() }));
+                    ids.slice(i, i + 400).forEach(id => {
+                        const foto = photosCache.find(x => x.id === id) || {};
+                        // Een concepttekst noemt de galerie; die klopt na het
+                        // verplaatsen niet meer. Zelf geschreven teksten blijven.
+                        const extra = foto.altConcept ? conceptAltEnTags(galleryId) : {};
+                        batch.update(db.collection('photos').doc(id), { galleryId, ...extra, updatedAt: new Date() });
+                    });
                     await batch.commit();
                 }
                 const naam = galleryId
@@ -3170,6 +3202,8 @@
                 alt: document.getElementById('editPhotoAlt').value.trim(),
                 tags: document.getElementById('editPhotoTags').value.split(',').map(t => t.trim()).filter(Boolean),
                 galleryId: document.getElementById('editPhotoGallery').value || '',
+                // Zelf nagekeken, dus geen concept meer.
+                altConcept: false,
                 updatedAt: new Date()
             };
 
