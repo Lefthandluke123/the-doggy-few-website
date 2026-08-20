@@ -2774,10 +2774,10 @@
                         <input type="checkbox" class="altRegel" data-id="${id}" ${heeftAl ? '' : 'checked'} style="margin-top:0.5rem;">
                         <img src="${foto.url}" style="width:110px; height:80px; object-fit:cover; border-radius:6px; flex-shrink:0;" alt="">
                         <div style="flex:1; min-width:0; display:flex; flex-direction:column; gap:0.35rem;">
-                            ${heeftAl ? `<p style="font-size:0.75rem; color:#e0922f; margin:0;">Heeft al een alt-tekst: "${escapeHtml(foto.alt)}"</p>` : ''}
-                            <input type="text" class="altTekst" data-id="${id}" value="${escapeHtml(waarden.alt || '')}"
+                            ${heeftAl ? `<p style="font-size:0.75rem; color:#e0922f; margin:0;">Heeft al een alt-tekst: "${escapeHtmlAttr(foto.alt)}"</p>` : ''}
+                            <input type="text" class="altTekst" data-id="${id}" value="${escapeHtmlAttr(waarden.alt || '')}"
                                    style="width:100%; font-size:0.9rem;">
-                            <input type="text" class="altTags" data-id="${id}" value="${escapeHtml((waarden.tags || []).join(', '))}"
+                            <input type="text" class="altTags" data-id="${id}" value="${escapeHtmlAttr((waarden.tags || []).join(', '))}"
                                    style="width:100%; font-size:0.8rem; color:#7cc096;" placeholder="tags, gescheiden door komma's">
                         </div>
                     </div>`);
