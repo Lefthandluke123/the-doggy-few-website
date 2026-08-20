@@ -775,6 +775,9 @@
                 <input type="password" id="loginPassword" placeholder="je wachtwoord">
             </div>
             <button class="btn" style="width: 100%;" onclick="handleLogin()">Inloggen</button>
+            <p style="text-align:center; margin-top:0.8rem;">
+                <a href="#" onclick="stuurHerstelmail(); return false;" style="color:#7cc096; font-size:0.9rem;">Wachtwoord vergeten?</a>
+            </p>
             <div id="loginError" style="color: #ff6b6b; margin-top: 1rem; text-align: center;"></div>
             
             <div class="info-box" style="margin-top: 2rem; font-size: 0.85rem;">
@@ -2133,6 +2136,26 @@
             auth.signInWithEmailAndPassword(email, password)
                 .catch(error => {
                     errorDiv.textContent = 'Login mislukt: ' + error.message;
+                });
+        }
+
+        // Wachtwoord kwijt? Firebase stuurt zelf een herstellink naar het
+        // e-mailadres van het account. Niemand hoeft het wachtwoord te kennen,
+        // ook ik niet - er valt hier dus niets te lekken.
+        function stuurHerstelmail() {
+            const veld = document.getElementById('loginEmail');
+            const email = (veld.value || '').trim() || prompt('Naar welk e-mailadres mag de herstellink?');
+            const errorDiv = document.getElementById('loginError');
+            if (!email) return;
+            auth.sendPasswordResetEmail(email)
+                .then(() => {
+                    errorDiv.style.color = '#7cc096';
+                    errorDiv.textContent = 'Er is een e-mail met een herstellink onderweg naar ' + email +
+                        '. Kijk ook even in de map ongewenste post.';
+                })
+                .catch(err => {
+                    errorDiv.style.color = '';
+                    errorDiv.textContent = 'Versturen mislukt: ' + err.message;
                 });
         }
 
