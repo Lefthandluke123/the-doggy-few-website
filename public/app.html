@@ -4069,12 +4069,23 @@
         }
 
         function applyHeroBanner(url) {
-            // De hero is nu een STATISCH bestand (/hero.webp) dat met de hosting
-            // mee-deployt. Dat is nodig voor een snelle LCP: geen Firestore-rondje,
-            // geen tweede download. De Firestore-instelling (admin/settings.heroImage)
-            // wordt daarom bewust genegeerd. Nieuwe hero? Vervang public/hero.webp
-            // (geoptimaliseerd, ~1200px breed, <150 KB) en deploy opnieuw.
-            return;
+            // De hero staat als vast bestand op de server (/hero.webp): dat laadt
+            // het snelst, want er hoeft niets opgevraagd te worden. Maar wie in het
+            // beheerscherm een nieuwe banner uploadde, zag er niets van gebeuren -
+            // de instelling werd hier domweg genegeerd.
+            //
+            // Nu geldt: is er in het beheerscherm een andere banner ingesteld dan
+            // het vaste bestand, dan wordt die alsnog getoond. De bezoeker ziet dan
+            // heel even de oude en daarna de nieuwe. Om dat te voorkomen wordt het
+            // vaste bestand bij een volgende uitrol gelijkgetrokken.
+            if (!url) return;
+            const img = document.getElementById('heroBannerImg');
+            if (!img) return;
+            const huidig = (img.getAttribute('src') || '').split('?')[0];
+            if (url.split('?')[0] === huidig) return;      // al hetzelfde beeld
+            img.src = url;
+            img.removeAttribute('width');
+            img.removeAttribute('height');
         }
 
         function applySiteText(text) {
