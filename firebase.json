@@ -726,6 +726,271 @@
         "source": "/english/",
         "destination": "/en/",
         "type": 301
+      },
+      {
+        "source": "/gigs",
+        "destination": "/#gigs",
+        "type": 301
+      },
+      {
+        "source": "/gigs/",
+        "destination": "/#gigs",
+        "type": 301
+      },
+      {
+        "source": "/shows",
+        "destination": "/#gigs",
+        "type": 301
+      },
+      {
+        "source": "/shows/",
+        "destination": "/#gigs",
+        "type": 301
+      },
+      {
+        "source": "/optredens",
+        "destination": "/#gigs",
+        "type": 301
+      },
+      {
+        "source": "/optredens/",
+        "destination": "/#gigs",
+        "type": 301
+      },
+      {
+        "source": "/fotos",
+        "destination": "/#photos",
+        "type": 301
+      },
+      {
+        "source": "/fotos/",
+        "destination": "/#photos",
+        "type": 301
+      },
+      {
+        "source": "/photos",
+        "destination": "/#photos",
+        "type": 301
+      },
+      {
+        "source": "/photos/",
+        "destination": "/#photos",
+        "type": 301
+      },
+      {
+        "source": "/foto",
+        "destination": "/#photos",
+        "type": 301
+      },
+      {
+        "source": "/foto/",
+        "destination": "/#photos",
+        "type": 301
+      },
+      {
+        "source": "/videos",
+        "destination": "/#videos",
+        "type": 301
+      },
+      {
+        "source": "/videos/",
+        "destination": "/#videos",
+        "type": 301
+      },
+      {
+        "source": "/videos-2",
+        "destination": "/#videos",
+        "type": 301
+      },
+      {
+        "source": "/videos-2/",
+        "destination": "/#videos",
+        "type": 301
+      },
+      {
+        "source": "/band",
+        "destination": "/#band",
+        "type": 301
+      },
+      {
+        "source": "/band/",
+        "destination": "/#band",
+        "type": 301
+      },
+      {
+        "source": "/over-ons",
+        "destination": "/#band",
+        "type": 301
+      },
+      {
+        "source": "/over-ons/",
+        "destination": "/#band",
+        "type": 301
+      },
+      {
+        "source": "/about",
+        "destination": "/#band",
+        "type": 301
+      },
+      {
+        "source": "/about/",
+        "destination": "/#band",
+        "type": 301
+      },
+      {
+        "source": "/boeken",
+        "destination": "/ierse-feestband-boeken/",
+        "type": 301
+      },
+      {
+        "source": "/boeken/",
+        "destination": "/ierse-feestband-boeken/",
+        "type": 301
+      },
+      {
+        "source": "/boeking",
+        "destination": "/ierse-feestband-boeken/",
+        "type": 301
+      },
+      {
+        "source": "/boeking/",
+        "destination": "/ierse-feestband-boeken/",
+        "type": 301
+      },
+      {
+        "source": "/liedjes",
+        "destination": "/liedjes.html",
+        "type": 301
+      },
+      {
+        "source": "/liedjes/",
+        "destination": "/liedjes.html",
+        "type": 301
+      },
+      {
+        "source": "/tuneboek",
+        "destination": "/liedjes.html",
+        "type": 301
+      },
+      {
+        "source": "/tuneboek/",
+        "destination": "/liedjes.html",
+        "type": 301
+      },
+      {
+        "source": "/tunes",
+        "destination": "/liedjes.html",
+        "type": 301
+      },
+      {
+        "source": "/tunes/",
+        "destination": "/liedjes.html",
+        "type": 301
+      },
+      {
+        "source": "/faq",
+        "destination": "/veelgestelde-vragen/",
+        "type": 301
+      },
+      {
+        "source": "/faq/",
+        "destination": "/veelgestelde-vragen/",
+        "type": 301
+      },
+      {
+        "source": "/vragen",
+        "destination": "/veelgestelde-vragen/",
+        "type": 301
+      },
+      {
+        "source": "/vragen/",
+        "destination": "/veelgestelde-vragen/",
+        "type": 301
+      },
+      {
+        "source": "/st-patrick",
+        "destination": "/st-patricks-day/",
+        "type": 301
+      },
+      {
+        "source": "/st-patrick/",
+        "destination": "/st-patricks-day/",
+        "type": 301
+      },
+      {
+        "source": "/stpatricksday",
+        "destination": "/st-patricks-day/",
+        "type": 301
+      },
+      {
+        "source": "/stpatricksday/",
+        "destination": "/st-patricks-day/",
+        "type": 301
+      },
+      {
+        "source": "/home",
+        "destination": "/",
+        "type": 301
+      },
+      {
+        "source": "/home/",
+        "destination": "/",
+        "type": 301
+      },
+      {
+        "source": "/nl",
+        "destination": "/",
+        "type": 301
+      },
+      {
+        "source": "/nl/",
+        "destination": "/",
+        "type": 301
+      },
+      {
+        "source": "/feed",
+        "destination": "/",
+        "type": 301
+      },
+      {
+        "source": "/feed/",
+        "destination": "/",
+        "type": 301
+      },
+      {
+        "source": "/comments/feed",
+        "destination": "/",
+        "type": 301
+      },
+      {
+        "source": "/comments/feed/",
+        "destination": "/",
+        "type": 301
+      },
+      {
+        "source": "/sitemap_index.xml",
+        "destination": "/sitemap.xml",
+        "type": 301
+      },
+      {
+        "source": "/wp-sitemap.xml",
+        "destination": "/sitemap.xml",
+        "type": 301
+      },
+      {
+        "source": "/category/**",
+        "destination": "/",
+        "type": 301
+      },
+      {
+        "source": "/tag/**",
+        "destination": "/",
+        "type": 301
+      },
+      {
+        "source": "/author/**",
+        "destination": "/",
+        "type": 301
       }
     ],
     "rewrites": [
