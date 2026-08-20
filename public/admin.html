@@ -63,7 +63,10 @@
             width: 260px;
             background-color: #243d2a;
             border-right: 1px solid #2d5a32;
-            padding: 2rem 0;
+            /* Ruimte onderaan voor de Uitloggen-knop, die vast onderin zweeft.
+               Zonder die ruimte lag hij over het laatste menu-item heen en was
+               "Instellingen" onvindbaar. */
+            padding: 2rem 0 7rem 0;
             overflow-y: auto;
             position: fixed;
             height: 100vh;
@@ -5572,19 +5575,32 @@
             var vanafTekst = datumTekst(vanaf);
 
             try {
-                var snap = await db.collection('bezoeken')
+                // Firestore neemt hoogstens 10.000 regels per opvraag aan; er stond
+                // 20.000, en dan weigert hij de hele opvraag. Nu halen we ze in
+                // porties op, zodat ook drukke maanden compleet geteld worden.
+                var PORTIE = 5000;
+                var basis = db.collection('bezoeken')
                     .where('datum', '>=', vanafTekst)
-                    .limit(20000)
-                    .get();
+                    .orderBy('datum')
+                    .limit(PORTIE);
 
-                if (snap.empty) {
+                var rijen = [];
+                var laatste = null;
+                while (true) {
+                    var snap = await (laatste ? basis.startAfter(laatste).get() : basis.get());
+                    if (snap.empty) break;
+                    snap.forEach(function (doc) { rijen.push(doc.data()); });
+                    laatste = snap.docs[snap.docs.length - 1];
+                    if (snap.size < PORTIE) break;
+                    if (rijen.length >= 100000) break;      // noodrem
+                }
+
+                if (rijen.length === 0) {
                     status.innerHTML = 'Nog geen bezoeken geteld in deze periode.<br>' +
                         '<span style="font-size:0.9rem;">De teller begint pas te werken zodra de nieuwe beveiligingsregels live staan.</span>';
                     return;
                 }
 
-                var rijen = [];
-                snap.forEach(function (doc) { rijen.push(doc.data()); });
                 toonBezoekers(rijen, dagen, vanaf);
             } catch (err) {
                 status.style.color = '#ff8a8a';
