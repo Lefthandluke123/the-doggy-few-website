@@ -920,6 +920,7 @@
                         <button class="btn btn-secondary" onclick="openGalleryModal()">+ Galerie</button>
                         <button class="btn" onclick="openBulkUpload()">+ Foto's uploaden (bulk)</button>
                         <button class="btn btn-secondary" onclick="vulFotoTeksten()" title="Laat eerst zien wat er komt te staan; u kunt alles aanpassen voor het wegschrijven">🏷️ Alt-teksten &amp; tags nakijken</button>
+                        <button class="btn btn-danger" onclick="maakAltTekstenLeeg()" title="Wist alt-teksten en tags van alle foto's - er komt niets voor terug">🧽 Alt-teksten leegmaken</button>
                         <button class="btn btn-secondary" onclick="schoonIngebakkenFotos()" title="Zet foto's die als tekst in de database staan om naar echte bestanden">🧹 Ingebakken foto's opschonen</button>
                     </div>
                 </div>
@@ -2699,6 +2700,39 @@
         function toggleGalleryVisibility(id, currentlyVisible) {
             db.collection('galleries').doc(id).set({ visible: !currentlyVisible }, { merge: true })
               .catch(err => alert('Opslaan mislukt: ' + err.message));
+        }
+
+        // ---- Alt-teksten en tags leegmaken ----
+        // Onomkeerbaar: er komt niets voor terug. De teksten van vóór 20 augustus
+        // 2026 staan in back-ups/alt-teksten-voor-20-aug-2026.json in de code.
+        // Let op: een lege alt-tekst betekent dat een schermlezer niets voorleest
+        // en dat Google Afbeeldingen niets over de foto weet.
+        async function maakAltTekstenLeeg() {
+            const snap = await db.collection('photos').get();
+            const metTekst = snap.docs.filter(d => {
+                const p = d.data();
+                return (p.alt || '').trim() || (Array.isArray(p.tags) && p.tags.length);
+            });
+            if (metTekst.length === 0) { alert('Er staat nergens een alt-tekst of tag.'); return; }
+
+            if (!confirm(
+                `${metTekst.length} foto('s) hebben een alt-tekst of tags.\n\n` +
+                'Alles leegmaken? Er komt niets voor terug: een schermlezer leest dan ' +
+                'niets voor en Google weet niets over deze foto\'s.\n\n' +
+                'Wil je ze liever vervangen door betere teksten, klik dan op ' +
+                '"Alt-teksten & tags nakijken" en daar op "Alles aanvinken".'
+            )) return;
+            if (!confirm('Zeker weten? Dit is niet ongedaan te maken.')) return;
+
+            let gewist = 0, mislukt = 0;
+            for (const d of metTekst) {
+                try {
+                    await d.ref.update({ alt: '', tags: [], altConcept: false, updatedAt: new Date() });
+                    gewist++;
+                } catch (e) { mislukt++; console.error('Leegmaken mislukt voor', d.id, e); }
+            }
+            alert(`${gewist} foto's leeggemaakt${mislukt ? `, ${mislukt} mislukt (zie console)` : ''}.`);
+            if (typeof loadPhotos === 'function') loadPhotos();
         }
 
         // ---- Ingebakken foto's opschonen ----
