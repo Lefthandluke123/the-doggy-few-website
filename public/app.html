@@ -2103,22 +2103,22 @@
             <h2 data-i18n="boeken.title">Waarvoor kun je ons boeken?</h2>
             <p style="color:#acb7a4;text-align:center;max-width:46rem;margin:0 auto 2rem;" data-i18n="boeken.intro">Elke gelegenheid vraagt iets anders van een band. Op deze pagina's staat per soort avond wat je van ons kunt verwachten, wat het kost en hoeveel ruimte we nodig hebben.</p>
             <div class="boek-kaarten">
-                <a class="boek-kaart" href="/st-patricks-day/">
+                <a class="boek-kaart" href="/st-patricks-day/" data-boekpad="st-patricks-day">
                     <span class="boek-icoon">☘️</span>
                     <strong data-i18n="boeken.patrick">St. Patrick's Day</strong>
                     <span data-i18n="boeken.patrick_sub">17 maart — boek op tijd, die avond is snel vol</span>
                 </a>
-                <a class="boek-kaart" href="/ierse-feestband-boeken/">
+                <a class="boek-kaart" href="/ierse-feestband-boeken/" data-boekpad="ierse-feestband-boeken">
                     <span class="boek-icoon">🍺</span>
                     <strong data-i18n="boeken.feest">Kroeg, festival of feest</strong>
                     <span data-i18n="boeken.feest_sub">Versterkt, dansbaar, met optionele dansworkshop</span>
                 </a>
-                <a class="boek-kaart" href="/akoestische-ierse-folk/">
+                <a class="boek-kaart" href="/akoestische-ierse-folk/" data-boekpad="akoestische-ierse-folk">
                     <span class="boek-icoon">🎻</span>
                     <strong data-i18n="boeken.akoestisch">Bruiloft of besloten feest</strong>
                     <span data-i18n="boeken.akoestisch_sub">Akoestisch en intiem, ook zonder installatie</span>
                 </a>
-                <a class="boek-kaart" href="/veelgestelde-vragen/">
+                <a class="boek-kaart" href="/veelgestelde-vragen/" data-boekpad="veelgestelde-vragen">
                     <span class="boek-icoon">❓</span>
                     <strong data-i18n="boeken.vragen">Veelgestelde vragen</strong>
                     <span data-i18n="boeken.vragen_sub">Ruimte, geluid, speelduur en wat het kost</span>
@@ -2860,6 +2860,7 @@
         }
 
         function initializeLanguage() {
+            if (typeof pasBoekLinksAan === 'function') pasBoekLinksAan(currentLanguage);
             // Set active button
             document.querySelectorAll('.lang-btn').forEach(btn => {
                 btn.classList.remove('active');
@@ -2896,6 +2897,7 @@
             currentLanguage = lang;
             initializeLanguage();
             if (typeof applySiteText === 'function') applySiteText();
+            pasBoekLinksAan(lang);
         }
 
         // Zet per taal het juiste canonieke adres en de verwijzingen naar de
@@ -4065,6 +4067,23 @@
                 } else {
                     root.setProperty('--font-' + h, 'var(--font-heading)');
                 }
+            });
+        }
+
+        // De vier knoppen onder "Waarvoor kun je ons boeken?" wezen altijd naar de
+        // Nederlandse pagina's. Een Engelse of Duitse bezoeker klikte dus vanuit
+        // zijn eigen taal een Nederlandse pagina in. Deze tabel houdt ze bij elkaar.
+        const BOEKPADEN = {
+            'st-patricks-day':        { nl: '/st-patricks-day/',        en: '/en/st-patricks-day/',   de: '/de/st-patricks-day/' },
+            'ierse-feestband-boeken': { nl: '/ierse-feestband-boeken/', en: '/en/irish-party-band/',  de: '/de/irische-band-buchen/' },
+            'akoestische-ierse-folk': { nl: '/akoestische-ierse-folk/', en: '/en/irish-wedding-music/', de: '/de/irische-hochzeitsmusik/' },
+            'veelgestelde-vragen':    { nl: '/veelgestelde-vragen/',    en: '/en/faq/',               de: '/de/haeufige-fragen/' },
+        };
+
+        function pasBoekLinksAan(taal) {
+            document.querySelectorAll('[data-boekpad]').forEach(a => {
+                const paden = BOEKPADEN[a.dataset.boekpad];
+                if (paden && paden[taal]) a.setAttribute('href', paden[taal]);
             });
         }
 
