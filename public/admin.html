@@ -919,7 +919,7 @@
                     <div style="display:flex; gap:0.5rem; flex-wrap:wrap;">
                         <button class="btn btn-secondary" onclick="openGalleryModal()">+ Galerie</button>
                         <button class="btn" onclick="openBulkUpload()">+ Foto's uploaden (bulk)</button>
-                        <button class="btn btn-secondary" onclick="vulFotoTeksten()" title="Vult alt-tekst en tags in voor foto's die ze nog niet hebben">🏷️ Alt-teksten &amp; tags invullen</button>
+                        <button class="btn btn-secondary" onclick="vulFotoTeksten()" title="Laat eerst zien wat er komt te staan; u kunt alles aanpassen voor het wegschrijven">🏷️ Alt-teksten &amp; tags nakijken</button>
                         <button class="btn btn-secondary" onclick="schoonIngebakkenFotos()" title="Zet foto's die als tekst in de database staan om naar echte bestanden">🧹 Ingebakken foto's opschonen</button>
                     </div>
                 </div>
@@ -1589,6 +1589,26 @@
                 <button class="close-btn" onclick="closeModal('blogPreviewModal')">✕</button>
             </div>
             <div id="blogPreviewContent"></div>
+        </div>
+    </div>
+
+    <!-- Alt-teksten en tags nakijken vóór het wegschrijven -->
+    <div id="altVoorbeeldModal" class="modal">
+        <div class="modal-content" style="max-width:900px;">
+            <div class="modal-header">
+                <h2>Alt-teksten en tags nakijken</h2>
+                <button class="close-btn" onclick="closeModal('altVoorbeeldModal')">✕</button>
+            </div>
+            <p style="color:#a8c8b2; margin-bottom:1rem;">
+                Hieronder staat per foto wat er weggeschreven wordt. U kunt alles nog aanpassen.
+                Vink een regel uit om hem over te slaan. Foto's die al een alt-tekst hebben staan
+                standaard uit.
+            </p>
+            <div id="altVoorbeeldLijst" style="max-height:60vh; overflow:auto; display:flex; flex-direction:column; gap:0.75rem;"></div>
+            <div style="display:flex; gap:0.5rem; margin-top:1rem;">
+                <button class="btn" id="altWegschrijfBtn" onclick="schrijfFotoTekstenWeg()" style="flex:1;">Aangevinkte regels wegschrijven</button>
+                <button class="btn btn-secondary" onclick="closeModal('altVoorbeeldModal')">Annuleren</button>
+            </div>
         </div>
     </div>
 
@@ -2710,7 +2730,6 @@
         // geschreven bij de foto zelf; deze knop zet ze alleen nog in de database.
         // Foto's die al een alt-tekst hebben blijven ongemoeid.
         async function vulFotoTeksten() {
-            if (!confirm("Alt-teksten en tags invullen voor foto's die ze nog niet hebben?\n\nFoto's waar al iets staat blijven zoals ze zijn.")) return;
             let teksten;
             try {
                 const r = await fetch('/fototeksten.json?t=' + Date.now());
@@ -2721,27 +2740,59 @@
                 return;
             }
 
-            let gevuld = 0, overgeslagen = 0, onbekend = 0, mislukt = 0;
+            // De foto's erbij zoeken, zodat je ziet waar de tekst bij hoort.
+            if (!photosCache || photosCache.length === 0) {
+                const snap = await db.collection('photos').get();
+                photosCache = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+            }
+
+            const lijst = document.getElementById('altVoorbeeldLijst');
+            const regels = [];
             for (const [id, waarden] of Object.entries(teksten)) {
+                const foto = photosCache.find(p => p.id === id);
+                if (!foto) continue;
+                const heeftAl = (foto.alt || '').trim().length > 0;
+                regels.push(`
+                    <div style="display:flex; gap:0.75rem; align-items:flex-start; background:#12301c; padding:0.6rem; border-radius:8px;">
+                        <input type="checkbox" class="altRegel" data-id="${id}" ${heeftAl ? '' : 'checked'} style="margin-top:0.5rem;">
+                        <img src="${foto.url}" style="width:110px; height:80px; object-fit:cover; border-radius:6px; flex-shrink:0;" alt="">
+                        <div style="flex:1; min-width:0; display:flex; flex-direction:column; gap:0.35rem;">
+                            ${heeftAl ? `<p style="font-size:0.75rem; color:#e0922f; margin:0;">Heeft al een alt-tekst: "${escapeHtml(foto.alt)}"</p>` : ''}
+                            <input type="text" class="altTekst" data-id="${id}" value="${escapeHtml(waarden.alt || '')}"
+                                   style="width:100%; font-size:0.9rem;">
+                            <input type="text" class="altTags" data-id="${id}" value="${escapeHtml((waarden.tags || []).join(', '))}"
+                                   style="width:100%; font-size:0.8rem; color:#7cc096;" placeholder="tags, gescheiden door komma's">
+                        </div>
+                    </div>`);
+            }
+            if (regels.length === 0) { alert('Geen van de foto\'s uit het bestand staat (nog) in de database.'); return; }
+            lijst.innerHTML = regels.join('');
+            document.getElementById('altVoorbeeldModal').classList.add('active');
+        }
+
+        async function schrijfFotoTekstenWeg() {
+            const vakjes = Array.from(document.querySelectorAll('#altVoorbeeldLijst .altRegel')).filter(v => v.checked);
+            if (vakjes.length === 0) { alert('Er staat niets aangevinkt.'); return; }
+            const knop = document.getElementById('altWegschrijfBtn');
+            knop.disabled = true;
+
+            let gevuld = 0, mislukt = 0;
+            for (const vak of vakjes) {
+                const id = vak.dataset.id;
+                const alt = document.querySelector(`#altVoorbeeldLijst .altTekst[data-id="${id}"]`).value.trim();
+                const tags = document.querySelector(`#altVoorbeeldLijst .altTags[data-id="${id}"]`).value
+                    .split(',').map(s => s.trim()).filter(Boolean);
                 try {
-                    const ref = db.collection('photos').doc(id);
-                    const snap = await ref.get();
-                    if (!snap.exists) { onbekend++; continue; }
-                    const nu = snap.data();
-                    const heeftAlt = (nu.alt || '').trim().length > 0;
-                    const heeftTags = Array.isArray(nu.tags) && nu.tags.length > 0;
-                    if (heeftAlt && heeftTags) { overgeslagen++; continue; }
-                    const wijziging = { updatedAt: new Date() };
-                    if (!heeftAlt) wijziging.alt = waarden.alt || '';
-                    if (!heeftTags) wijziging.tags = waarden.tags || [];
-                    await ref.update(wijziging);
+                    await db.collection('photos').doc(id).update({ alt, tags, updatedAt: new Date() });
                     gevuld++;
                 } catch (e) {
                     mislukt++;
                     console.error('Mislukt voor foto', id, e);
                 }
             }
-            alert(`Klaar.\n${gevuld} foto's ingevuld\n${overgeslagen} overgeslagen (hadden al tekst)\n${onbekend} niet gevonden\n${mislukt} mislukt`);
+            knop.disabled = false;
+            closeModal('altVoorbeeldModal');
+            alert(`${gevuld} foto's bijgewerkt${mislukt ? `, ${mislukt} mislukt (zie console)` : ''}.`);
             if (typeof loadPhotos === 'function') loadPhotos();
         }
 
