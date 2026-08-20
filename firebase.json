@@ -1029,6 +1029,26 @@
           "region": "europe-west1"
         }
       }
+    ],
+    "headers": [
+      {
+        "source": "**/@(admin|kantoor).html",
+        "headers": [
+          {
+            "key": "Cache-Control",
+            "value": "no-cache, max-age=0"
+          }
+        ]
+      },
+      {
+        "source": "/fototeksten.json",
+        "headers": [
+          {
+            "key": "Cache-Control",
+            "value": "no-cache, max-age=0"
+          }
+        ]
+      }
     ]
   },
   "firestore": {

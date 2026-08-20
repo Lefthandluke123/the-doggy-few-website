@@ -2729,7 +2729,18 @@
         // De teksten staan in /fototeksten.json, per foto-id. Ze zijn met de hand
         // geschreven bij de foto zelf; deze knop zet ze alleen nog in de database.
         // Foto's die al een alt-tekst hebben blijven ongemoeid.
+        // Alles wat hier misgaat moet je kunnen zien. Zonder deze omhulling
+        // gebeurde er bij een fout letterlijk niets: geen venster, geen melding.
         async function vulFotoTeksten() {
+            try {
+                await vulFotoTekstenInhoud();
+            } catch (e) {
+                console.error(e);
+                alert('Er ging iets mis bij het openen van het nakijkvenster:\n\n' + (e && e.message ? e.message : e));
+            }
+        }
+
+        async function vulFotoTekstenInhoud() {
             let teksten;
             try {
                 const r = await fetch('/fototeksten.json?t=' + Date.now());
@@ -2773,6 +2784,7 @@
             }
             if (regels.length === 0) { alert('Geen van de foto\'s uit het bestand staat (nog) in de database.'); return; }
             lijst.innerHTML = regels.join('');
+            console.log('[nakijkvenster] regels:', regels.length);
             document.getElementById('altVoorbeeldModal').classList.add('active');
         }
 
