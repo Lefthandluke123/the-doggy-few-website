@@ -920,6 +920,7 @@
                         <button class="btn btn-secondary" onclick="openGalleryModal()">+ Galerie</button>
                         <button class="btn" onclick="openBulkUpload()">+ Foto's uploaden (bulk)</button>
                         <button class="btn btn-secondary" onclick="vulFotoTeksten()" title="Vult alt-tekst en tags in voor foto's die ze nog niet hebben">🏷️ Alt-teksten &amp; tags invullen</button>
+                        <button class="btn btn-secondary" onclick="schoonIngebakkenFotos()" title="Zet foto's die als tekst in de database staan om naar echte bestanden">🧹 Ingebakken foto's opschonen</button>
                     </div>
                 </div>
 
@@ -2638,6 +2639,49 @@
         function toggleGalleryVisibility(id, currentlyVisible) {
             db.collection('galleries').doc(id).set({ visible: !currentlyVisible }, { merge: true })
               .catch(err => alert('Opslaan mislukt: ' + err.message));
+        }
+
+        // ---- Ingebakken foto's opschonen ----
+        // Een enkele foto is ooit als tekst (data:image/...) in de database beland
+        // in plaats van als bestand in Storage. Zo'n foto wordt bij elk bezoek
+        // volledig meegestuurd en gaat niet door de verkleining heen. Deze knop
+        // zet ze alsnog om: het origineel gaat naar Storage, er komt een
+        // verkleinde WebP voor de website, en de foto wijst voortaan naar dat
+        // bestand. Bijschrift, tags en galerie blijven ongemoeid.
+        async function schoonIngebakkenFotos() {
+            const snap = await db.collection('photos').get();
+            const teDoen = [];
+            snap.forEach(d => {
+                const u = (d.data().url || '');
+                if (u.startsWith('data:')) teDoen.push({ id: d.id, url: u });
+            });
+            if (teDoen.length === 0) { alert('Niets te doen: alle foto\'s zijn al echte bestanden.'); return; }
+            if (!confirm(`${teDoen.length} foto('s) staan als tekst in de database.\n\nOmzetten naar echte bestanden?`)) return;
+
+            let klaar = 0, mislukt = 0;
+            for (const f of teDoen) {
+                try {
+                    const origineel = await (await fetch(f.url)).blob();
+                    const ts = Date.now() + '-' + Math.random().toString(36).slice(2, 7);
+                    const ext = (origineel.type.split('/')[1] || 'jpg').replace('jpeg', 'jpg');
+                    const origPath = `photos/originals/orig-${ts}.${ext}`;
+                    const originalUrl = await uploadBlobToStorage(origPath, origineel);
+                    const { blob: webp } = await resizeToWebP(f.url, 1600, 0.8);
+                    const webpPath = `photos/photo-${ts}.webp`;
+                    const url = await uploadBlobToStorage(webpPath, webp);
+                    await db.collection('photos').doc(f.id).update({
+                        url, filename: webpPath,
+                        originalUrl, originalFilename: origPath,
+                        format: 'webp', updatedAt: new Date()
+                    });
+                    klaar++;
+                } catch (e) {
+                    mislukt++;
+                    console.error('Opschonen mislukt voor', f.id, e);
+                }
+            }
+            alert(`Klaar. ${klaar} omgezet${mislukt ? `, ${mislukt} mislukt (zie console)` : ''}.`);
+            if (typeof loadPhotos === 'function') loadPhotos();
         }
 
         // ---- Alt-teksten en tags in bulk invullen ----
