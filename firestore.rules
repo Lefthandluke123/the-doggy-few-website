@@ -52,6 +52,7 @@ service cloud.firestore {
     match /pages/{doc}         { allow read: if true; allow write: if isBeheerder(); }
     match /links/{doc}         { allow read: if true; allow write: if isBeheerder(); }
     match /lyrics/{doc}        { allow read: if true; allow write: if isBeheerder(); }
+    match /recensies/{doc}     { allow read: if true; allow write: if isBeheerder(); }
     match /landing_pages/{doc} { allow read: if true; allow write: if isBeheerder(); }
     match /settings/{doc}      { allow read: if true; allow write: if isBeheerder(); }
     match /admin/{doc}         { allow read: if true; allow write: if isBeheerder(); }

@@ -284,7 +284,45 @@
             </section>
         </main>
 
-        <section class="booking">
+        
+<section class="lp-block" id="recensies-blok" style="display:none;">
+  <h2 id="recensies-kop">Wat organisatoren zeggen</h2>
+  <div id="recensies-lijst" style="display:grid; gap:1.1rem; margin-top:0.8rem;"></div>
+</section>
+<script>
+(function () {
+  // Recensies staan in Firestore en worden hier rechtstreeks opgehaald: deze
+  // pagina heeft verder geen database-code nodig. Niets te tonen? Dan blijft
+  // het blok weg in plaats van een lege kop achter te laten.
+  var url = 'https://firestore.googleapis.com/v1/projects/the-doggy-few/databases/(default)/documents/recensies?pageSize=50&key=AIzaSyD7j7nLLpLnH8vNznqiGWyBXvZrwZ6-Jjs';
+  fetch(url).then(function (r) { return r.json(); }).then(function (d) {
+    var uit = (d.documents || []).map(function (doc) {
+      var f = doc.fields || {};
+      var tekst = function (k) { return (f[k] && f[k].stringValue) || ''; };
+      return {
+        citaat: tekst('citaat'), naam: tekst('naam'), plaats: tekst('plaats'),
+        gelegenheid: tekst('gelegenheid'), datum: tekst('datum'),
+        zichtbaar: !(f.zichtbaar && f.zichtbaar.booleanValue === false)
+      };
+    }).filter(function (r) { return r.zichtbaar && r.citaat; })
+      .sort(function (a, b) { return (b.datum || '').localeCompare(a.datum || ''); })
+      .slice(0, 3);
+    if (!uit.length) return;
+    var veilig = function (s) { return String(s).replace(/[&<>"]/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); };
+    document.getElementById('recensies-lijst').innerHTML = uit.map(function (r) {
+      var onder = [r.naam, r.plaats, r.gelegenheid].filter(Boolean).map(veilig).join(' &middot; ');
+      return '<figure style="margin:0; border-left:2px solid #d4a94e; padding-left:1rem;">' +
+             '<blockquote style="margin:0 0 .4rem; font-style:italic; line-height:1.55;">&ldquo;' +
+             veilig(r.citaat) + '&rdquo;</blockquote>' +
+             (onder ? '<cite style="font-style:normal; font-size:.86rem; opacity:.75;">' + onder + '</cite>' : '') +
+             '</figure>';
+    }).join('');
+    document.getElementById('recensies-blok').style.display = '';
+  }).catch(function (e) { console.error('Recensies laden mislukt:', e); });
+})();
+</script>
+<section class="booking">
             <h2>Beschikbaarheid opvragen</h2>
             <span class="type-pill">☘️ St. Patrick&rsquo;s Day</span>
             <form id="bookingForm" novalidate>

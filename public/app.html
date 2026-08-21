@@ -425,6 +425,18 @@
 
         /* Kaarten naar de landingspagina's. Vier op een rij op een groot
            scherm, twee op een tablet, onder elkaar op een telefoon. */
+        .recensie-strook {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+            gap: 1.25rem; margin-top: 1.5rem;
+        }
+        .recensie {
+            border-left: 2px solid #d4a94e; padding: 0.2rem 0 0.2rem 1rem;
+        }
+        .recensie blockquote {
+            margin: 0 0 0.6rem; font-style: italic; line-height: 1.55; color: #e8efe6;
+        }
+        .recensie cite { font-style: normal; font-size: 0.86rem; color: #acb7a4; }
+
         .boek-kaarten {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
@@ -2145,6 +2157,16 @@
         </div>
     </section>
 
+    <!-- Wat organisatoren zeggen. Smal gehouden: het is een steuntje bij de
+         keuze, geen etalage. Leeg? Dan blijft de hele strook weg. -->
+    <section id="recensies" style="display:none;">
+        <div class="container">
+            <h2 data-i18n="recensies.title">Wat organisatoren zeggen</h2>
+            <div class="recensie-strook" id="recensiesContainer"></div>
+        </div>
+    </section>
+
+
     <section id="links">
         <div class="container">
             <h2 data-i18n="links.title">Links</h2>
@@ -2357,6 +2379,7 @@
         const translations = {
             nl: {
                 skip: { inhoud: 'Direct naar de inhoud' },
+                recensies: { title: 'Wat organisatoren zeggen' },
                 nav: {
                     boeken: 'Boeken',
                     band: 'Band',
@@ -2515,6 +2538,7 @@
             },
             en: {
                 skip: { inhoud: 'Skip to the content' },
+                recensies: { title: 'What organisers say' },
                 nav: {
                     boeken: 'Book us',
                     band: 'Band',
@@ -2673,6 +2697,7 @@
             },
             de: {
                 skip: { inhoud: 'Direkt zum Inhalt' },
+                recensies: { title: 'Was Veranstalter sagen' },
                 nav: {
                     boeken: 'Buchen',
                     band: 'Band',
@@ -2888,6 +2913,7 @@
 
         function initializeLanguage() {
             if (typeof pasBoekLinksAan === 'function') pasBoekLinksAan(currentLanguage);
+            if (typeof laadRecensies === 'function') laadRecensies();
             // Set active button
             document.querySelectorAll('.lang-btn').forEach(btn => {
                 btn.classList.remove('active');
@@ -4108,6 +4134,33 @@
         };
 
         const VERKLARING = { nl: '/toegankelijkheid/', en: '/en/accessibility/', de: '/de/barrierefreiheit/' };
+
+        // Recensies ophalen. Alleen wat zichtbaar staat, nieuwste eerst, hoogstens
+        // drie: meer leest niemand, en een lange rij gaat als opschepperij klinken.
+        async function laadRecensies() {
+            const vak = document.getElementById('recensiesContainer');
+            const sectie = document.getElementById('recensies');
+            if (!vak || !sectie) return;
+            try {
+                const snap = await firebase.firestore().collection('recensies').get();
+                const items = snap.docs.map(d => d.data())
+                    .filter(r => r.zichtbaar !== false && (r.citaat || '').trim())
+                    .sort((a, b) => (b.datum || '').localeCompare(a.datum || ''))
+                    .slice(0, 3);
+                if (items.length === 0) { sectie.style.display = 'none'; return; }
+                vak.innerHTML = items.map(r => {
+                    const onder = [r.naam, r.plaats, r.gelegenheid].filter(Boolean).map(escapeHtml).join(' · ');
+                    return `<figure class="recensie">
+                        <blockquote>&ldquo;${escapeHtml(r.citaat)}&rdquo;</blockquote>
+                        ${onder ? `<cite>${onder}</cite>` : ''}
+                    </figure>`;
+                }).join('');
+                sectie.style.display = '';
+            } catch (e) {
+                console.error('Recensies laden mislukt:', e);
+                sectie.style.display = 'none';
+            }
+        }
 
         function pasBoekLinksAan(taal) {
             const v = document.getElementById('toegankelijkheidLink');

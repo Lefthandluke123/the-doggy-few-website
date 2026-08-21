@@ -827,6 +827,7 @@
             <button class="nav-btn" data-section="landing">🎯 Landingspagina's</button>
             <button class="nav-btn" data-section="socials">📱 Social</button>
             <button class="nav-btn" data-section="links">🔗 Links</button>
+            <button class="nav-btn" data-section="recensies">⭐ Recensies</button>
             <button class="nav-btn" data-section="messages">✉️ Berichten</button>
             <button class="nav-btn" data-section="requests">🎶 Verzoekjes</button>
             <button class="nav-btn" data-section="newsletter">📧 Nieuwsbrief</button>
@@ -955,6 +956,20 @@
                 </div>
 
                 <div id="photosList" class="grid"></div>
+            </section>
+
+            <!-- RECENSIES -->
+            <section id="recensies" class="section">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap:wrap; gap:0.5rem;">
+                    <h1 style="margin: 0;">Recensies</h1>
+                    <button class="btn" onclick="openRecensieForm()">+ Nieuwe recensie</button>
+                </div>
+                <p style="color:#a8c8b2; margin-bottom:1.5rem; max-width:46rem;">
+                    Wat organisatoren over jullie zeggen. Ze verschijnen op de boekingspagina's, vlak boven het
+                    formulier, en in een smalle strook op de homepage. Vraag altijd even of de naam en plaats
+                    erbij mogen &mdash; zonder toestemming plaats je ze niet.
+                </p>
+                <div id="recensiesList" class="list"></div>
             </section>
 
             <!-- VIDEOS -->
@@ -1630,6 +1645,54 @@
             <div style="display:flex; gap:0.5rem; margin-top:1rem;">
                 <button class="btn" id="altWegschrijfBtn" onclick="schrijfFotoTekstenWeg()" style="flex:1;">Aangevinkte regels wegschrijven</button>
                 <button class="btn btn-secondary" onclick="closeModal('altVoorbeeldModal')">Annuleren</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recensie toevoegen of bewerken -->
+    <div id="recensieModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="recensieModalTitel">Nieuwe recensie</h2>
+                <button class="close-btn" onclick="closeModal('recensieModal')">✕</button>
+            </div>
+            <input type="hidden" id="recensieId">
+            <div class="form-group">
+                <label>Het citaat (kort houden: één of twee zinnen)</label>
+                <textarea id="recensieCitaat" rows="3" placeholder="De zaal stond binnen tien minuten in een kring."></textarea>
+            </div>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.75rem;">
+                <div class="form-group">
+                    <label>Naam</label>
+                    <input type="text" id="recensieNaam" placeholder="Marjan de Boer">
+                </div>
+                <div class="form-group">
+                    <label>Plaats</label>
+                    <input type="text" id="recensiePlaats" placeholder="Usquert">
+                </div>
+            </div>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.75rem;">
+                <div class="form-group">
+                    <label>Gelegenheid</label>
+                    <input type="text" id="recensieGelegenheid" placeholder="dorpshuis, bruiloft, festival&hellip;">
+                </div>
+                <div class="form-group">
+                    <label>Datum van het optreden</label>
+                    <input type="date" id="recensieDatum">
+                </div>
+            </div>
+            <div class="form-group">
+                <label>
+                    <input type="checkbox" id="recensieZichtbaar" checked style="width:auto; margin-right:0.5rem;">
+                    Tonen op de website
+                </label>
+                <p style="font-size:0.85rem; color:#7cc096; margin-top:0.4rem;">
+                    Uitgevinkt = bewaard, maar niet zichtbaar voor bezoekers.
+                </p>
+            </div>
+            <div style="display:flex; gap:0.5rem; margin-top:1rem;">
+                <button class="btn" onclick="saveRecensie()" style="flex:1;">Opslaan</button>
+                <button class="btn btn-secondary" onclick="closeModal('recensieModal')">Annuleren</button>
             </div>
         </div>
     </div>
@@ -4719,6 +4782,7 @@
             loadLandingPages();
             loadSocials();
             loadLinks();
+            loadRecensies();
             loadSettings();
             loadMessages();
             loadNewsletter();
@@ -4989,6 +5053,86 @@
 
             op.then(() => { closeModal('linkModal'); loadLinks(); })
               .catch(err => alert('Opslaan mislukt: ' + err.message));
+        }
+
+        // ---- Recensies ----
+        // Wat organisatoren zeggen. Ze komen op de boekingspagina's te staan,
+        // vlak boven het formulier — daar waar iemand zit te twijfelen.
+        function loadRecensies() {
+            db.collection('recensies').onSnapshot(snapshot => {
+                const list = document.getElementById('recensiesList');
+                if (!list) return;
+                if (snapshot.empty) {
+                    list.innerHTML = '<div class="empty-state"><p>Nog geen recensies.</p>' +
+                        '<p>Vraag na het volgende optreden of de organisator iets wil opschrijven.</p></div>';
+                    return;
+                }
+                const items = snapshot.docs.map(d => ({ id: d.id, ...d.data() }))
+                    .sort((a, b) => (b.datum || '').localeCompare(a.datum || ''));
+                list.innerHTML = items.map(r => `
+                    <div class="list-item">
+                        <div class="list-item-info">
+                            <h3 style="font-style:italic;">&ldquo;${escapeHtmlAttr(r.citaat || '')}&rdquo;</h3>
+                            <p>${escapeHtmlAttr([r.naam, r.plaats, r.gelegenheid].filter(Boolean).join(' &middot; '))}</p>
+                            <p style="font-size:0.8rem; color:${r.zichtbaar === false ? '#c9a15a' : '#7cc096'};">
+                                ${r.zichtbaar === false ? '🙈 niet zichtbaar op de site' : '👁️ zichtbaar'}${r.datum ? ' &middot; ' + r.datum : ''}
+                            </p>
+                        </div>
+                        <div class="list-item-actions">
+                            <button class="btn btn-small" onclick="editRecensie('${r.id}')">✏️ Bewerk</button>
+                            <button class="btn btn-small btn-danger" onclick="deleteRecensie('${r.id}')">Verwijder</button>
+                        </div>
+                    </div>`).join('');
+            });
+        }
+
+        function openRecensieForm() {
+            document.getElementById('recensieModalTitel').textContent = 'Nieuwe recensie';
+            ['recensieId','recensieCitaat','recensieNaam','recensiePlaats','recensieGelegenheid','recensieDatum']
+                .forEach(id => { document.getElementById(id).value = ''; });
+            document.getElementById('recensieZichtbaar').checked = true;
+            document.getElementById('recensieModal').classList.add('active');
+        }
+
+        async function editRecensie(id) {
+            const snap = await db.collection('recensies').doc(id).get();
+            if (!snap.exists) return;
+            const r = snap.data();
+            document.getElementById('recensieModalTitel').textContent = 'Recensie bewerken';
+            document.getElementById('recensieId').value = id;
+            document.getElementById('recensieCitaat').value = r.citaat || '';
+            document.getElementById('recensieNaam').value = r.naam || '';
+            document.getElementById('recensiePlaats').value = r.plaats || '';
+            document.getElementById('recensieGelegenheid').value = r.gelegenheid || '';
+            document.getElementById('recensieDatum').value = r.datum || '';
+            document.getElementById('recensieZichtbaar').checked = r.zichtbaar !== false;
+            document.getElementById('recensieModal').classList.add('active');
+        }
+
+        function saveRecensie() {
+            const id = document.getElementById('recensieId').value;
+            const citaat = document.getElementById('recensieCitaat').value.trim();
+            if (!citaat) { alert('Zonder citaat valt er niets te tonen.'); return; }
+            const data = {
+                citaat,
+                naam: document.getElementById('recensieNaam').value.trim(),
+                plaats: document.getElementById('recensiePlaats').value.trim(),
+                gelegenheid: document.getElementById('recensieGelegenheid').value.trim(),
+                datum: document.getElementById('recensieDatum').value,
+                zichtbaar: document.getElementById('recensieZichtbaar').checked,
+                updatedAt: new Date()
+            };
+            const op = id
+                ? db.collection('recensies').doc(id).set(data, { merge: true })
+                : db.collection('recensies').add({ ...data, createdAt: new Date() });
+            op.then(() => closeModal('recensieModal'))
+              .catch(err => alert('Opslaan mislukt: ' + err.message));
+        }
+
+        function deleteRecensie(id) {
+            if (!confirm('Deze recensie verwijderen?')) return;
+            db.collection('recensies').doc(id).delete()
+              .catch(err => alert('Verwijderen mislukt: ' + err.message));
         }
 
         function deleteLink(id) {
