@@ -277,6 +277,21 @@
             background-color: var(--color-bg-deep); border-top: 2px solid var(--color-accent2);
             text-align: center; padding: 2rem 1.5rem; margin-top: 2rem; color: #91c383; font-size: 0.9rem;
         }
+        /* Links in de lopende tekst hadden geen kleur en werden dus
+           browserblauw — het enige blauw op de hele site. Nu de accentkleur,
+           met een onderstreping die pas bij aanwijzen oplicht. */
+        .lp-block a, .lp-block a:visited,
+        main p a, main li a {
+            color: var(--color-accent);
+            text-decoration: underline;
+            text-underline-offset: 0.2em;
+            text-decoration-thickness: 1px;
+            text-decoration-color: rgba(218,138,54,0.45);
+        }
+        .lp-block a:hover, main p a:hover, main li a:hover {
+            text-decoration-color: var(--color-accent);
+        }
+
         footer a { color: #91c383; text-decoration: none; }
         footer a:hover { color: #fff; }
 
